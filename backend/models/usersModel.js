@@ -25,7 +25,7 @@ let userSchema = new Schema({
         trim: true
     },
     currentBalance: {
-        type: String,
+        type: Number,
         trim: true
     }
 });
