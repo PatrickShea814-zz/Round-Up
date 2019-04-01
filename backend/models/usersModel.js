@@ -3,7 +3,9 @@ let Schema = mongoose.Schema;
 
 let userSchema = new Schema({
     //user id auto gen by mongo
-    username: {
+    
+    user: [{
+        username: {
         type: String,
         unique: true,
         trim: true
@@ -20,6 +22,11 @@ let userSchema = new Schema({
         type: String,
         trim: true
     },
+    email: {
+        type: String,
+        unique: true,
+        match: [/.+@.+\..+/, "Please enter a valid e-mail address"]
+    },
     connectedAccts: {
         type: String,
         trim: true
@@ -27,7 +34,12 @@ let userSchema = new Schema({
     currentBalance: {
         type: Number,
         trim: true
-    }
+    },
+    userCreated: {
+        type: Date,
+        default: Date.now
+      }
+    }]
 });
 
 let User = mongoose.model("User", userSchema)
