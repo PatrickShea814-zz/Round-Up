@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // MONGOOSE
 const mongoose = require('mongoose');
-var db = require("./models")
+const db = require("./models");
 
 //connect to mongoose database
 //old mongoose connect code
@@ -73,7 +73,7 @@ var bodyParser = require('body-parser');
 var moment = require('moment');
 var plaid = require('plaid');
 
-var APP_PORT = envvar.number('APP_PORT', 8090);
+var APP_PORT = envvar.number('APP_PORT', 8028);
 var PLAID_CLIENT_ID = envvar.string('PLAID_CLIENT_ID', process.env.PLAID_CLIENT_ID);
 var PLAID_SECRET = envvar.string('PLAID_SECRET', process.env.PLAID_SECRET);
 var PLAID_PUBLIC_KEY = envvar.string('PLAID_PUBLIC_KEY', process.env.PLAID_PUBLIC_KEY);
@@ -158,21 +158,23 @@ app.get('/transactions', function(request, response, next) {
     } else {
       console.log(transactionsResponse.transactions.length);
       for (let i=0; i < transactionsResponse.transactions.length;i++){
-        console.log(transactionsResponse.transactions[i].name);
-        stuffWeNeed.push({
-          "name": transactionsResponse.transactions[i].name,
-          "amount": transactionsResponse.transactions[i].amount,
-          "transaction_id": transactionsResponse.transactions[i].transaction_id,
-          "date": transactionsResponse.transactions[i].date
-        });
+       
+        db.transactions.create({ 
+          name: transactionsResponse.transactions[i].name,
+          amount: transactionsResponse.transactions[i].amount,
+          transaction_id: transactionsResponse.transactions[i].transaction_id,
+          date: transactionsResponse.transactions[i].date
+        })
+          .then(response => console.log(response))
+          .catch(err => console.log(err))
       }
-      console.log(stuffWeNeed);
-      // prettyPrintResponse(transactionsResponse.transactions);
-      // console.log(transactionsResponse.transactions[0].transaction_id)
+      
       response.json({error: null, transactions: transactionsResponse.transactions});
+    
     }
-  });
+  })
 });
+
 
 // Retrieve Identity for an Item
 // https://plaid.com/docs/#identity
@@ -382,36 +384,6 @@ app.post('/set_access_token', function(request, response, next) {
   });
   console.log(access_token)
 });
-
-
-
-
-
-// db.User.create(dummyUser).then(function (data) {
-//   console.log(`user added ${dummyUser}`)
-// }).catch(function (err) {
-//   console.log(err.message)
-// });
-
-// db.Item.create(dummyItem).then(function (data) {
-//   console.log(`Item added ${dummyItem}`)
-// }).catch(function (err) {
-//   console.log(err.message)
-// });
-
-// db.Withdrawal.create(dummyWithdrawal).then(function (data) {
-//   console.log(`Withdrawal added ${dummyWithdrawal}`)
-// }).catch(function (err) {
-//   console.log(err.message)
-// });
-
-// db.Deposit.create(dummyDeposit).then(function (data) {
-//   console.log(`Deposit added ${dummyDeposit}`)
-// }).catch(function (err) {
-//   console.log(err.message)
-// });
-
-
 
 // ROUTES
 app.use('/', indexRouter);
