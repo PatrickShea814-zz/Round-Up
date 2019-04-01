@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+require('dotenv').config();
 var indexRouter = require('./routes/index');
 
 var app = express();
@@ -64,8 +64,6 @@ dummyDeposit = {
 
 'use strict';
 
-'use strict';
-
 var util = require('util');
 
 var envvar = require('envvar');
@@ -75,9 +73,9 @@ var moment = require('moment');
 var plaid = require('plaid');
 
 var APP_PORT = envvar.number('APP_PORT', 8090);
-var PLAID_CLIENT_ID = envvar.string('PLAID_CLIENT_ID', "5ca15372f3f601001150b026");
-var PLAID_SECRET = envvar.string('PLAID_SECRET', 'bdd5a70cb1d6fb93ece06b69f1b2b7');
-var PLAID_PUBLIC_KEY = envvar.string('PLAID_PUBLIC_KEY', '8e1c6c0fe57e1fd6609f3f30f72af4');
+var PLAID_CLIENT_ID = envvar.string('PLAID_CLIENT_ID', process.env.PLAID_CLIENT_ID);
+var PLAID_SECRET = envvar.string('PLAID_SECRET', process.env.PLAID_SECRET);
+var PLAID_PUBLIC_KEY = envvar.string('PLAID_PUBLIC_KEY', process.env.PLAID_PUBLIC_KEY);
 var PLAID_ENV = envvar.string('PLAID_ENV', 'sandbox');
 
 // PLAID_PRODUCTS is a comma-separated list of products to use when initializing
