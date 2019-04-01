@@ -28,9 +28,10 @@ var db = require("./models")
 // mongoose.connect("mongodb://localhost/roundup_db", { useNewUrlParser: true });
 
 //use this code to work on heroku
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/roundup_db";
-mongoose.connect(MONGODB_URI);
 
+var MONGODB_URI = "mongodb://localhost/roundUpDB";
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+mongoose.set('useCreateIndex', true);
 
 //===============DUMMY DATA FOR MONGO DB...MAY NOT NEED ===========================
 dummyUser = {
@@ -161,7 +162,8 @@ app.get('/transactions', function(request, response, next) {
         stuffWeNeed.push({
           "name": transactionsResponse.transactions[i].name,
           "amount": transactionsResponse.transactions[i].amount,
-          "transaction_id": transactionsResponse.transactions[i].transaction_id
+          "transaction_id": transactionsResponse.transactions[i].transaction_id,
+          "date": transactionsResponse.transactions[i].date
         });
       }
       console.log(stuffWeNeed);
