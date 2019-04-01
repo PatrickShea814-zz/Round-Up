@@ -11,6 +11,12 @@ let depositSchema = new Schema({
         date: {
             type: Date,
             trim: true
+        },
+        transactionID: {
+            type: Number,
+            trim: true,
+            unique: true,
+            required: true
         }
     }]
 });
