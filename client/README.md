@@ -1,68 +1,96 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Auth0 React Authorization
 
-## Available Scripts
+This sample demonstrates how to include user authorization in a React application with Auth0.
 
-In the project directory, you can run:
+## Getting Started
 
-### `npm start`
+If you haven't already done so, [sign up](https://auth0.com) for your free Auth0 account and create a new client in the [dashboard](https://manage.auth0.com). Find the **domain** and **client ID** from the settings area and add the URL for your application to the **Allowed Callback URLs** box. The default URL is `http://localhost:3000/callback`.  Also configure **Allowed Web Origins** to the default application URL `http://localhost:3000`.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Clone the repo or download it from the React quickstart page in Auth0's documentation.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+Open the demo.
 
-### `npm test`
+```bash
+cd 04-Authorization
+```
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Install the dependencies for the app.
 
-### `npm run build`
+```
+npm install
+```
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Set up a new API
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+More complete documentation is available at [React Calling an API](https://auth0.com/docs/quickstart/spa/react/03-calling-an-api).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+From the Auth0 dashboard, select the APIs section and select "Create API":
 
-### `npm run eject`
+* Add a name for the API. `A friendly name for the API.`
+* Select an identifier for the endpoint. `A logical identifier for this API. We recommend using a URL but note that this doesn’t have to be a publicly available URL, Auth0 will not call your API at all. Important! This field cannot be modified.`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+For purposes of this demo, you may want to consider using http://localhost:3001 as your identifier.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+You will also need to add in a new scope. `Scopes allow you to define the data that will be accessed through the applications to your API. Set a name for them and its description for better understanding.`
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+* Select the Scopes tab from the API section.
+* In the name textbox, enter in `read:messages`.
+* Add a description for this scope ex: `permission to read messages` and click the 'add' button.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Set the Client ID, Domain, and API identifier
 
-## Learn More
+If you download the sample from the quickstart page, it will come pre-populated with the **client ID** and **domain** for your application. If you clone the repo directly from Github, rename the `auth0-variables.js.example` file to `auth0-variables.js` and provide the **client ID** and **domain** there. This file is located in `src/Auth/`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+You should also provide the identifier for the API you create in the Auth0 dashboard as your `apiUrl`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Set Up the `.env` File
 
-### Code Splitting
+In addition to the above-mentioned `auth0-variables.js` file, a `.env` file is provided at the root of the application. This file provides your application's credentials to the small Node server located in `server.js`.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+This file has two values, `AUTH0_AUDIENCE` and `AUTH0_DOMAIN`. If you download this sample from the quickstart page, the value for `AUTH0_DOMAIN` will be populated automatically, but you will still need to populate `AUTH0_AUDIENCE` manually. The value for `AUTH0_AUDIENCE` is the identifier used for an API that you create in the Auth0 dashboard.
 
-### Analyzing the Bundle Size
+## Run the Application
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+The demo comes ready to serve locally using react-scripts.
 
-### Making a Progressive Web App
+```bash
+npm start
+```
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+The application will be served at `http://localhost:3000`.
 
-### Advanced Configuration
+## Run the Application With Docker
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+In order to run the example with docker you need to have `docker` installed.
 
-### Deployment
+You also need to set the environment variables as explained [previously](#set-the-client-id-and-domain).
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
+Execute in command line `sh exec.sh` to run the Docker in Linux, or `.\exec.ps1` to run the Docker in Windows.
 
-### `npm run build` fails to minify
+## What is Auth0?
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Auth0 helps you to:
+
+* Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, among others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
+* Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
+* Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
+* Support for generating signed [Json Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
+* Analytics of how, when and where users are logging in.
+* Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
+
+## Create a Free Auth0 Account
+
+1. Go to [Auth0](https://auth0.com/signup) and click Sign Up.
+2. Use Google, GitHub or Microsoft Account to login.
+
+## Issue Reporting
+
+If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
+
+## Author
+
+[Auth0](https://auth0.com)
+
+## License
+
+This project is licensed under the MIT license. See the [LICENSE](LICENSE.txt) file for more info.
