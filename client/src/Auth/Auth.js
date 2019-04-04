@@ -69,7 +69,7 @@ export default class Auth {
     this.scopes = authResult.scope || this.requestedScopes || '';
 
     // navigate to the home route
-    history.replace('/home');
+    history.replace('/vault');
   }
 
   renewSession() {
