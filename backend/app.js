@@ -27,8 +27,8 @@ const userId = 'IggKjOZ4znfGIB2hKgxZ';
 
 // This is our roundup function
 const minus = (minuend, subtrahend) => {
-    let difference = minuend - subtrahend;
-    return difference.toFixed(2)
+  let difference = minuend - subtrahend;
+  return difference.toFixed(2)
 };
 //connect to mongoose database
 //old mongoose connect code
@@ -93,7 +93,7 @@ var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', 'transactions');
 
 // We store the access_token in memory - in production, store it in a secure
 // persistent data store
-var ACCESS_TOKEN = 'access-sandbox-59d928d0-7966-4f42-aa1a-99d4cf07b3ea';
+var ACCESS_TOKEN = 'access-sandbox-f2919baf-3028-44f2-8913-25fa97518981';
 var PUBLIC_TOKEN = null;
 var ITEM_ID = null;
 
@@ -164,41 +164,35 @@ app.get('/transactions', function (request, response, next) {
       });
     } else {
       for (let i = 0; i < transactionsResponse.transactions.length; i++) {
-
         db.transactions.create({
           name: transactionsResponse.transactions[i].name,
           amount: transactionsResponse.transactions[i].amount,
           transaction_id: transactionsResponse.transactions[i].transaction_id,
           date: transactionsResponse.transactions[i].date
         })
-          .then(response => console.log(response))
+          .then(response => {
+            console.log(response)
+            for (let i = 0; i < transactionsResponse.transactions.length; i++) {
+              let toBeRounded = Math.ceil(transactionsResponse.transactions[i].amount);
+              console.log(toBeRounded);
+              db.roundedTrans.create({
+                name: transactionsResponse.transactions[i].name,
+                roundedAmount: transactionsResponse.transactions[i].roundedAmount,
+                transaction_id: transactionsResponse.transactions[i].transaction_id,
+                date: transactionsResponse.transactions[i].date,
+                userID: 'IggKjOZ4znfGIB2hKgxZ',
+                roundedAmount: minus(toBeRounded, transactionsResponse.transactions[i].amount)
+              })
+                .then(response => console.log(response))
+                .catch(err => console.log(err));
+            }
+          })
           .catch(err => console.log(err));
       };
-      for (let i = 0; i < transactionsResponse.transactions.length; i++) {
-        let toBeRounded = Math.ceil(transactionsResponse.transactions[i].amount);
-        
-        console.log(toBeRounded);
-        db.roundedTrans.create({
-          name: transactionsResponse.transactions[i].name,
-          roundedAmount: transactionsResponse.transactions[i].roundedAmount,
-          transaction_id: transactionsResponse.transactions[i].transaction_id,
-          date: transactionsResponse.transactions[i].date,
-          userID: 'IggKjOZ4znfGIB2hKgxZ',
-          roundedAmount: minus (toBeRounded, transactionsResponse.transactions[i].amount)
-        })
-          .then(response => {return response;})
-          .then(responseAgain => {console.log(responseAgain)})
-          .catch(err => console.log(err));
-      };
-
-
-
       response.json({ error: null, transactions: transactionsResponse.transactions });
-
     }
   })
 });
-
 
 // Retrieve Identity for an Item
 // https://plaid.com/docs/#identity
