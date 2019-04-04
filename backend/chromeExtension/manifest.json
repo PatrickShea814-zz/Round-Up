@@ -1,0 +1,41 @@
+{
+    "manifest_version": 2,
+    "name": "RaterFox",
+    "description": "The most popular movies and TV shows in your   default tab.Includes ratings, summaries and the ability to watch trailers.",
+    "options_page": "options.html",
+    "version": "1",
+    "author": "Jake Prins",
+    "browser_action": {
+        "default_icon": "tab-icon.png",
+        "default_title": "Have a good day"
+    },
+    "page_action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "images/get_started16.png",
+            "32": "images/get_started32.png",
+            "48": "images/get_started48.png",
+            "128": "images/get_started128.png"
+        }
+    },
+    "icons": {
+        "16": "images/get_started16.png",
+        "32": "images/get_started32.png",
+        "48": "images/get_started48.png",
+        "128": "images/get_started128.png"
+    },
+    "chrome_url_overrides": {
+        "newtab": "newtab.html"
+    },
+    "permissions": [
+        "activeTab",
+        "storage",
+        "declarativeContent"
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    }
+}
