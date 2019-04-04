@@ -23,6 +23,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 const mongoose = require('mongoose');
 const db = require("./models");
 
+const userId = 'IggKjOZ4znfGIB2hKgxZ';
+
+// This is our roundup function
+const minus = (minuend, subtrahend) => {
+    let difference = minuend - subtrahend;
+    return difference.toFixed(2)
+};
 //connect to mongoose database
 //old mongoose connect code
 // mongoose.connect("mongodb://localhost/roundup_db", { useNewUrlParser: true });
@@ -86,7 +93,7 @@ var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', 'transactions');
 
 // We store the access_token in memory - in production, store it in a secure
 // persistent data store
-var ACCESS_TOKEN = "access-sandbox-5fd78432-c7d3-4bca-8d98-d4b6aeaef643";
+var ACCESS_TOKEN = 'access-sandbox-59d928d0-7966-4f42-aa1a-99d4cf07b3ea';
 var PUBLIC_TOKEN = null;
 var ITEM_ID = null;
 
@@ -168,15 +175,19 @@ app.get('/transactions', function (request, response, next) {
           .catch(err => console.log(err));
       };
       for (let i = 0; i < transactionsResponse.transactions.length; i++) {
-        var toBeRounded = Math.ceil(transactionsResponse.transactions[i].amount);
+        let toBeRounded = Math.ceil(transactionsResponse.transactions[i].amount);
+        
         console.log(toBeRounded);
-        db.RoundedTrans.create({
+        db.roundedTrans.create({
           name: transactionsResponse.transactions[i].name,
           roundedAmount: transactionsResponse.transactions[i].roundedAmount,
           transaction_id: transactionsResponse.transactions[i].transaction_id,
-          date: transactionsResponse.transactions[i].date
+          date: transactionsResponse.transactions[i].date,
+          userID: 'IggKjOZ4znfGIB2hKgxZ',
+          roundedAmount: minus (toBeRounded, transactionsResponse.transactions[i].amount)
         })
-          .then(response => console.log(response))
+          .then(response => {return response;})
+          .then(responseAgain => {console.log(responseAgain)})
           .catch(err => console.log(err));
       };
 

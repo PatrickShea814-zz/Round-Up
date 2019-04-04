@@ -3,5 +3,6 @@ module.exports = {
     items: require("./itemModel"),
     users: require("./usersModel"),
     withdrawal: require("./withdrawalModel"),
-    transactions: require('./transactions')
+    transactions: require('./transactions'),
+    roundedTrans: require('./roundedTrans')
 }; 
