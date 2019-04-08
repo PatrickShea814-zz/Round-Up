@@ -4,7 +4,8 @@ let Schema = mongoose.Schema;
 let userSchema = new Schema({
 
     //user id auto gen by mongo
-    username: {
+    // This is the username stored that comes from Auth0
+    usernameAuth: {
         type: String,
         required: true,
         unique: true,
@@ -20,6 +21,7 @@ let userSchema = new Schema({
         required: true,
         trim: true
     },
+    // This is the password stored that comes from Auth0
     password: {
         type: String,
         trim: true,
@@ -31,7 +33,8 @@ let userSchema = new Schema({
             "Password should be longer."
         ]
     },
-    email: {
+    // This is the email stored that comes from Auth0
+    emailAuth: {
         type: String,
         unique: true,
         match: [/.+@.+\..+/, "Please enter a valid e-mail address"]
@@ -43,12 +46,26 @@ let userSchema = new Schema({
                 return /\d{3}-\d{3}-\d{4}/.test(v);
             },
             message: props => `${props.value} is not a valid phone number!`
-        },
-        required: [true, 'A valid phone number required.']
+        }
     },
-    connectedAccts: {
-        type: String,
-        trim: true
+    // wishList is an array of objects. The object it accepts is model wishItem.js.
+    wishList: {
+        type: Array
+    },
+    // plaidAccounts is an array of objects. The objects it accepts is model plaidAcc.js. 
+    // In Plaid and Item = an Account. User might have multiple Items(Accounts).
+    plaidAccounts: {
+        type: Array,
+    },
+    // withdrawals is an array of objects. The object it accepts comes from stripeWithdrawal.js
+    // These are records of the COMPLETED withdrawals.
+    withdrawals: {
+        type: Array
+    },
+    // deposits is an array of objects. The object it accepts comes from stripeDeposits.js
+    // These are records of the COMPLETED deposits.
+    deposits: {
+        type: Array
     },
     currentBalance: {
         type: Number,
