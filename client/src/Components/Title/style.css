@@ -3,6 +3,9 @@
   text-align: center;
   font-size: 3rem;
   text-decoration: none;
-  color: #2A77AE;
   margin-bottom: 50px;
+}
+
+.owlGreenText {
+  color:#0AB1BC !important;
 }
