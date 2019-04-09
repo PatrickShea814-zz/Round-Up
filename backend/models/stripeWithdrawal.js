@@ -27,6 +27,6 @@ let stripeWithdrawalSchema = new Schema({
     }
 });
 
-let stripeWithdrawal = mongoose.model("stripeWithdrawal", stripeWithdrawalSchema)
+let StripeWithdrawal = mongoose.model("StripeWithdrawal", stripeWithdrawalSchema)
 
-module.exports = stripeWithdrawal;
+module.exports = StripeWithdrawal;

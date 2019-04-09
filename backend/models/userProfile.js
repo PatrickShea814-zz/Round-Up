@@ -2,10 +2,9 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 let userSchema = new Schema({
-
     //user id auto gen by mongo
     // This is the username stored that comes from Auth0
-    usernameAuth: {
+    username: {
         type: String,
         required: true,
         unique: true,
@@ -25,19 +24,12 @@ let userSchema = new Schema({
     password: {
         type: String,
         trim: true,
-        required: "Password is Required",
-        validate: [
-            function (input) {
-                return input.length >= 6;
-            },
-            "Password should be longer."
-        ]
+        required: true
     },
     // This is the email stored that comes from Auth0
-    emailAuth: {
+    email: {
         type: String,
-        unique: true,
-        match: [/.+@.+\..+/, "Please enter a valid e-mail address"]
+        unique: true
     },
     phoneNum: {
         type: String,
@@ -48,18 +40,26 @@ let userSchema = new Schema({
             message: props => `${props.value} is not a valid phone number!`
         }
     },
+    profilePicture: {
+        type: String
+    },
     // wishList is an array of objects. The object it accepts is model wishItem.js.
     wishList: {
         type: Array
     },
-    // plaidAccounts is an array of objects. The objects it accepts is model plaidAcc.js. 
-    // In Plaid and Item = an Account. User might have multiple Items(Accounts).
-    plaidAccounts: {
-        type: Array,
+    // plaidItems is an array of objects. The object it accepts is model plaidItems.js
+    // In Plaid an Item is a Bank or Institution. Each Item had its own Access_Token and Item_ID.
+    // A User can have multiple Items(Accounts) connected.
+    plaidItems: {
+        type: Array
     },
-    // withdrawals is an array of objects. The object it accepts comes from stripeWithdrawal.js
-    // These are records of the COMPLETED withdrawals.
-    withdrawals: {
+    // plaidAccounts is an array of objects. The object it accepts is model plaidAccounts.js
+    // In Plaid and Item(Bank Institution) can have multiple Accounts.
+    plaidAccounts: {
+        type: Array
+    },
+    // ACHAuth is an array of objects. The object it accepts is model plaidACHAuth.js
+    plaidACHAuth: {
         type: Array
     },
     // deposits is an array of objects. The object it accepts comes from stripeDeposits.js
@@ -71,7 +71,13 @@ let userSchema = new Schema({
         type: Number,
         trim: true
     },
-    userCreated: {
+    // withdrawals is an array of objects. The object it accepts comes from stripeWithdrawal.js
+    // These are records of the COMPLETED withdrawals.
+    withdrawals: {
+        type: Array
+    },
+    // Date/Timestamp of User's initial registration.
+    createDate: {
         type: Date,
         default: Date.now
     }

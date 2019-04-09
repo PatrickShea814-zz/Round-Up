@@ -26,6 +26,6 @@ let wishItemSchema = new Schema({
   }
 });
 
-let wishItem = mongoose.model("wishItem", wishItemSchema);
+let WishItem = mongoose.model("WishItem", wishItemSchema);
 
-module.exports = wishItem;
+module.exports = WishItem;
