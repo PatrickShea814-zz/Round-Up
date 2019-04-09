@@ -67,6 +67,9 @@ let userSchema = new Schema({
     deposits: {
         type: Array
     },
+    rounded: {
+        type: Array
+    },
     currentBalance: {
         type: Number,
         trim: true

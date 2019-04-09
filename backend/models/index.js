@@ -1,6 +1,7 @@
 module.exports = {
     // Model for User's individual Accounts(checking, savings, etc.) within an Item(Institution)
     PlaidUserAccounts: require("./plaidAccounts"),
+    // THIS MODEL IS NOT FOR PRODUCTION AND IS ONLY FOR TESTING PURPOSES. WE DO NOT WANT TO STORE THIS INFORMATION
     // Model for Bank Information for ACH Authorization 
     PlaidACHAuth: require("./plaidACHAuth"),
     // Model for User's Items(Institutions)

@@ -3,7 +3,7 @@ let Schema = mongoose.Schema;
 
 let plaidUserAccSchema = new Schema({
     // User_ID from userProfile that is automatically generated.
-    userId: {
+    userID: {
         type: String,
         required: true
     },
