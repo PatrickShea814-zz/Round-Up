@@ -64,7 +64,7 @@ var PLAID_ENV = envvar.string('PLAID_ENV', 'sandbox');
 // PLAID_PRODUCTS is a comma-separated list of products to use when initializing
 // Link. Note that this list must contain 'assets' in order for the app to be
 // able to create and retrieve asset reports.
-var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', ['auth', 'transactions', 'balance', 'assets']);
+var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', 'transactions');
 
 // We store the access_token in memory - in production, store it in a secure
 // persistent data store
@@ -136,17 +136,19 @@ app.get('/transactions', function (request, response, next) {
         error: error
       });
     } else {
-      prettyPrintResponse(transactionsResponse.transactions);
       for (let i = 0; i < transactionsResponse.transactions.length; i++) {
         let toBeRounded = Math.ceil(transactionsResponse.transactions[i].amount);
         console.log(toBeRounded);
         db.RoundedTrans.create({
-          name: transactionsResponse.transactions[i].name,
+          userID: 'IggKjOZ4znfGIB2hKgxZ',
+          account_id: transactionsResponse.transactions[i].account_id,
+          transactionName: transactionsResponse.transactions[i].name,
+          originalAmount: transactionsResponse.transactions[i].amount,
+          currencyCode: transactionsResponse.transactions[i].iso_currency_code,
+          category: transactionsResponse.transactions[i].category,
           roundedAmount: transactionsResponse.transactions[i].roundedAmount,
           transaction_id: transactionsResponse.transactions[i].transaction_id,
-          date: transactionsResponse.transactions[i].date,
-          userID: 'IggKjOZ4znfGIB2hKgxZ',
-          roundedAmount: minus(toBeRounded, transactionsResponse.transactions[i].amount)
+          transactionDate: transactionsResponse.transactions[i].date
         })
           .then(response => console.log(response))
           .catch(err => console.log(err));
@@ -198,15 +200,22 @@ app.get('/accounts', function (request, response, next) {
       });
     } else {
       for (let i = 0; i < accountsResponse.accounts.length; i++) {
-        // ADJUST QUERY TO UPDATE EXISTING USER
-        db.PlaidUserAccount.create({
-          account_id: accountsResponse.accounts[i].account_id,
-          accountName: accountsResponse.accounts[i].name,
-          subtype: accountsResponse.accounts[i].subtype,
-          type: accountsResponse.accounts[i].type,
-        })
-          .then(response => console.log(response))
-          .catch(err => console.log(err));
+        if (accountsResponse.accounts[i].subtype === 'checking') {
+          // ADJUST QUERY TO UPDATE EXISTING USER
+          db.PlaidUserAccounts.create({
+            userID: 'IggKjOZ4znfGIB2hKgxZ',
+            accessToken: ACCESS_TOKEN,
+            account_id: accountsResponse.accounts[i].account_id,
+            accountName: accountsResponse.accounts[i].name,
+            official_name: accountsResponse.accounts[i].official_name,
+            availableBalance: accountsResponse.accounts[i].balances.available,
+            mask: accountsResponse.accounts[i].mask,
+            type: accountsResponse.accounts[i].type,
+            subtype: accountsResponse.accounts[i].subtype
+          })
+            .then(response => console.log(response))
+            .catch(err => console.log(err));
+        }
       }
     }
     prettyPrintResponse(accountsResponse);
