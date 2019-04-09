@@ -1,3 +1,24 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.container {
+  margin-top:0px;
+  margin-bottom:0xp;
+  padding-top:0px;
+  padding-bottom:0px;
+}
+
 .btn-margin {
   margin: 7px 3px;
+}
+
+.btn {
+  background-color:#0AB1BC;
+  border:1px solid #05A4AE;
+  color:white;
+}
+
+.owlGreenText {
+  color:#0AB1BC !important;
 }

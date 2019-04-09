@@ -1,8 +1,12 @@
 import React from "react";
 import "./style.css";
+import "../../Auth/Auth";
+
 
 function Title(props) {
-  return <h1 className="title">{props.children}</h1>;
+  console.log("TITLE PROPS = ", props.children);
+  return <h1 className="title owlGreenText">{props.children}</h1>;
 }
+
 
 export default Title;
