@@ -13,8 +13,7 @@ let plaidACHAuthSchema = new Schema({
     // ACCESS TOKEN does not expire. 
     accessToken: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     account_id: {
         type: String,

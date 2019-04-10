@@ -233,10 +233,8 @@ app.get('/auth', function (request, response, next) {
         error: error,
       });
     }
-
     // Handle err
     var accountData = authResponse.numbers;
-    
     if (accountData.ach.length > 0) {
       // Handle ACH numbers (US accounts)
       var achNumbers = accountData.ach;
@@ -252,7 +250,6 @@ app.get('/auth', function (request, response, next) {
       return eftNumbers;
       // QUERY FOR MATCHING TO PLAIDUSERACC IF/ELSE STATEMENT
     }
-    
   });
 });
 
