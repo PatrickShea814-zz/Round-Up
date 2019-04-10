@@ -55,7 +55,7 @@ var bodyParser = require('body-parser');
 var moment = require('moment');
 var plaid = require('plaid');
 
-var APP_PORT = envvar.number('APP_PORT', 8028);
+var APP_PORT = envvar.number('APP_PORT', 8034);
 var PLAID_CLIENT_ID = envvar.string('PLAID_CLIENT_ID', process.env.PLAID_CLIENT_ID);
 var PLAID_SECRET = envvar.string('PLAID_SECRET', process.env.PLAID_SECRET);
 var PLAID_PUBLIC_KEY = envvar.string('PLAID_PUBLIC_KEY', process.env.PLAID_PUBLIC_KEY);
@@ -68,7 +68,7 @@ var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', 'transactions');
 
 // We store the access_token in memory - in production, store it in a secure
 // persistent data store
-var ACCESS_TOKEN = 'access-sandbox-f2919baf-3028-44f2-8913-25fa97518981';
+var ACCESS_TOKEN = 'access-sandbox-5fde0079-29a3-40ac-b254-1814eb75a629';
 var PUBLIC_TOKEN = null;
 var ITEM_ID = null;
 
@@ -233,19 +233,26 @@ app.get('/auth', function (request, response, next) {
         error: error,
       });
     }
+
     // Handle err
-    var accountData = results.accounts;
-    if (results.numbers.ach.length > 0) {
+    var accountData = authResponse.numbers;
+    
+    if (accountData.ach.length > 0) {
       // Handle ACH numbers (US accounts)
-      var achNumbers = results.numbers.ach;
+      var achNumbers = accountData.ach;
+      prettyPrintResponse(accountData);
+      response.json({ error: null, auth: accountData });
+      return achNumbers;
       // QUERY FOR MATCHING TO PLAIDUSERACC IF/ELSE STATEMENT
-    } else if (results.numbers.eft.length > 0) {
+    } else if (accountData.eft.length > 0) {
       // Handle EFT numbers (Canadian accounts)
-      var eftNumbers = results.numbers.eft;
+      var eftNumbers = accountData.eft;
+      prettyPrintResponse(accountData);
+      response.json({ error: null, auth: accountData });
+      return eftNumbers;
       // QUERY FOR MATCHING TO PLAIDUSERACC IF/ELSE STATEMENT
     }
-    prettyPrintResponse(authResponse);
-    response.json({ error: null, auth: authResponse });
+    
   });
 });
 
@@ -397,6 +404,9 @@ app.post('/set_access_token', function (request, response, next) {
   });
   console.log(access_token)
 });
+
+// REMEMBER TO ADD AN .OPEN WITHIN A ROUTE HIT BY THE USER SO THAT THEY CAN ACCESS THEIR ACCOUNT SELECTION PROCESS AGAIN, BOTH
+// DELETING THEIR CURRENT CONNECTED ACCOUNTS AND ADDING NEW ONES IN ONE FELL SWOOP!
 
 // ROUTES
 app.use('/', indexRouter);
