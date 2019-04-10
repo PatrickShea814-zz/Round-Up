@@ -7,7 +7,11 @@ import Title from "../Title/index";
 import "./Vault.css";
 
 
+
 class Vault extends Component {
+
+  // let user = "";
+
   state = {
     items
   };
@@ -28,11 +32,28 @@ class Vault extends Component {
     );
   };
 
+  getUser = () => {
+    // let { nickname } = this.state;
+    this.props.auth.getProfile(function(err, getProfile){
+      if(err){
+        console.log(err);
+      }
+      else {
+        console.log("getProfile() ran...", getProfile);
+        console.log("Function colog = ", getProfile.nickname);
+        this.setState({
+          currentUser: getProfile.nickname
+        })
+        // return getProfile.nickname;
+      }
+    });
+  }
+
+
   render() {
-    // const { AuthClass } = this.state;
     return (
       <Wrapper className="container">
-        <Title>TITLE</Title>
+        <Title currentUser={this.state.currentUser} />
         <div className="cardContainer">
           {this.state.items.map(item => (
             <ItemCard

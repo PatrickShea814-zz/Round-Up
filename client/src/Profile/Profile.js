@@ -3,6 +3,7 @@ import { Panel, ControlLabel, Glyphicon } from 'react-bootstrap';
 import './Profile.css';
 
 class Profile extends Component {
+  
   componentWillMount() {
     this.setState({ profile: {} });
     const { userProfile, getProfile } = this.props.auth;
@@ -24,8 +25,7 @@ class Profile extends Component {
           <Panel header="Profile">
             <img src={profile.picture} alt="profile" />
             <div>
-              <ControlLabel><Glyphicon glyph="user" /> Nickname</ControlLabel>
-              <h3>{profile.nickname}</h3>
+              <ControlLabel><Glyphicon className="icons" glyph="user" />{profile.nickname}</ControlLabel>
             </div>
             <pre>{JSON.stringify(profile, null, 2)}</pre>
           </Panel>

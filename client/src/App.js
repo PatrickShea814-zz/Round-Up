@@ -29,10 +29,10 @@ class App extends Component {
     return (
       <div>
         <Navbar container-fluid>
-          <Navbar.Header>
+          <Navbar.Header id="navHeader">
             <Navbar.Brand>
               {/* <img className="logo" src="https://ps.w.org/simple-owl-carousel/assets/icon-256x256.png?rev=1839276"/> */}
-              <a className="owlGreenText" href="#">RoundUp</a>
+              <a className="owlGreenText" href="#">PennyWise</a>
             </Navbar.Brand>
             <Button
               bsStyle="primary"
