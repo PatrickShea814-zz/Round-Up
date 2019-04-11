@@ -30,6 +30,27 @@ body {
   border-right:1px solid #E7FBFC;
 }
 
+.btn:hover {
+  color:#fafafa;
+  background-color:#088f99;
+  outline:0;
+  border:none;
+}
+
+.btn:active {
+  color:#fafafa;
+  background-color:#088f99;
+  outline:0;
+  border:none;
+}
+
+.btn:focus {
+  color:#fafafa;
+  background-color:#088f99;
+  outline:0;
+  border:none;
+}
+
 .owlGreenText {
   color:#0AB1BC !important;
 }

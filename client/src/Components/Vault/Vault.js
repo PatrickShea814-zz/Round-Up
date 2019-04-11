@@ -5,16 +5,19 @@ import ItemCard from "../Items/ItemCard";
 import items from "../../items.json";
 import Title from "../Title/index";
 import "./Vault.css";
+import { stringify } from "querystring";
 
 
 
 class Vault extends Component {
 
-  // let user = "";
-
   state = {
-    items
+    // items
   };
+
+  componentDidMount() {
+    this.getUser()
+  }
 
   // removeFriend = id => {
   //   // Filter this.state.friends for friends with an id not equal to the id being removed
@@ -34,17 +37,23 @@ class Vault extends Component {
 
   getUser = () => {
     // let { nickname } = this.state;
+    this.setState({test: 'test'}, console.log(this.state.test))
+    let currentComponent = this; 
     this.props.auth.getProfile(function(err, getProfile){
       if(err){
         console.log(err);
       }
       else {
-        console.log("getProfile() ran...", getProfile);
-        console.log("Function colog = ", getProfile.nickname);
-        this.setState({
-          currentUser: getProfile.nickname
+        // console.log("getProfile() ran...", getProfile);
+        // console.log("Function colog = ", getProfile.nickname);
+        var username = getProfile.nickname;
+        username = username.charAt(0).toUpperCase() + username.slice(1);
+        console.log(username)
+
+        currentComponent.setState({currentUser: username}, () => {
+          console.log(currentComponent.state.currentUser)
         })
-        // return getProfile.nickname;
+        // return username;
       }
     });
   }
@@ -55,7 +64,7 @@ class Vault extends Component {
       <Wrapper className="container">
         <Title currentUser={this.state.currentUser} />
         <div className="cardContainer">
-          {this.state.items.map(item => (
+          {items.map(item => (
             <ItemCard
               key={item.id}
               item={item.item}

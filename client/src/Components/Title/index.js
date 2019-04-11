@@ -7,7 +7,7 @@ import "./style.css";
 function Title(props) {
   // const { Vault } = this.props.Vault;
   // console.log("Title Props = ", Vault)
-  return <h1 className="title owlGreenText">{props.children}</h1>
+  return <div className="container"><h1 className="title owlGrayText">{props.currentUser}'s Vault</h1></div>
 }
 
 export default Title;
