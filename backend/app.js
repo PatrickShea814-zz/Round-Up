@@ -82,6 +82,15 @@ var client = new plaid.Client(
   { version: '2018-05-22' }
 );
 
+client.exchangePublicToken({ PUBLIC_TOKEN }, function (err, res) {
+  console.log(res);
+  var accessToken = res.ACCESS_TOKEN;
+  // Generate a bank account token
+  client.createStripeToken(accessToken, { ACCOUNT_ID }, function (err, res) {
+    var bankAccountToken = res.stripe_bank_account_token;
+  });
+});
+
 var app = express();
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));

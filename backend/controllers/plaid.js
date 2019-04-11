@@ -6,7 +6,7 @@
 
     var handler = Plaid.create({
         apiVersion: 'v2',
-        clientName: 'Plaid Quickstart',
+        clientName: 'PennyWise',
         env: '<%= PLAID_ENV %>',
         product: products,
         key: '<%= PLAID_PUBLIC_KEY %>',
