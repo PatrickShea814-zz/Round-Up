@@ -64,7 +64,8 @@ var PLAID_ENV = envvar.string('PLAID_ENV', 'sandbox');
 // PLAID_PRODUCTS is a comma-separated list of products to use when initializing
 // Link. Note that this list must contain 'assets' in order for the app to be
 // able to create and retrieve asset reports.
-var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', ['auth', 'transactions', 'balance', 'assets']);
+// var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', ['auth', 'transactions']);
+var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', 'transactions');
 
 // We store the access_token in memory - in production, store it in a secure
 // persistent data store
@@ -94,6 +95,13 @@ app.get('/', function (request, response, next) {
     PLAID_PRODUCTS: PLAID_PRODUCTS,
   });
 });
+//============ROUTE TO TEST CONCURRENT RUNNING OF FRONT/BACK ends================
+
+app.get("/contestroute", function(req, res){
+  res.json("working from app.js")
+});
+
+//=============END TEST=============
 
 // Exchange token flow - exchange a Link public_token for
 // an API access_token

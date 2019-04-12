@@ -1,4 +1,4 @@
-let mongoose = require('mongoose');
+    let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 let plaidUserAccSchema = new Schema({
