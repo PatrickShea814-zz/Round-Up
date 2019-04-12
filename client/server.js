@@ -5,12 +5,14 @@ const jwtAuthz = require('express-jwt-authz');
 const jwksRsa = require('jwks-rsa');
 const cors = require('cors');
 require('dotenv').config();
+const stripe = require("stripe")("sk_test_UFklRy6FXFeOh2Y6FPIrl2mg");
 
 if (!process.env.AUTH0_DOMAIN || !process.env.AUTH0_AUDIENCE) {
   throw 'Make sure you have AUTH0_DOMAIN, and AUTH0_AUDIENCE in your .env file'
 }
 
 app.use(cors());
+app.use(require("body-parser").text());
 
 const checkJwt = jwt({
   // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
@@ -42,5 +44,21 @@ app.post('/api/admin', checkJwt, checkScopesAdmin, function(req, res) {
   res.json({ message: "Hello from an admin endpoint! You need to be authenticated and have a scope of write:messages to see this." });
 });
 
+app.post("/charge", async (req, res) => {
+  try {
+    let {status} = await stripe.charges.create({
+      amount: 2000,
+      currency: "usd",
+      description: "An example charge",
+      source: req.body
+    });
+
+    res.json({status});
+  } catch (err) {
+    res.status(500).end();
+  }
+});
+
 app.listen(3001);
 console.log('Server listening on http://localhost:3001. The React app will be built and served at http://localhost:3000.');
+

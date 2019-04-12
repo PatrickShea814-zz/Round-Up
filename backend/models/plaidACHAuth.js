@@ -1,6 +1,8 @@
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
+
+// THIS MODEL IS NOT FOR PRODUCTION AND IS ONLY FOR TESTING PURPOSES. WE DO NOT WANT TO STORE THIS INFORMATION
 let plaidACHAuthSchema = new Schema({
     // User_ID from userProfile that is automatically generated.
     userId: {
@@ -11,8 +13,7 @@ let plaidACHAuthSchema = new Schema({
     // ACCESS TOKEN does not expire. 
     accessToken: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     account_id: {
         type: String,

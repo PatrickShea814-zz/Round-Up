@@ -3,7 +3,7 @@ let Schema = mongoose.Schema;
 
 let plaidUserAccSchema = new Schema({
     // User_ID from userProfile that is automatically generated.
-    userId: {
+    userID: {
         type: String,
         required: true
     },
@@ -11,8 +11,7 @@ let plaidUserAccSchema = new Schema({
     // ACCESS TOKEN does not expire. 
     accessToken: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     account_id: {
         type: String,

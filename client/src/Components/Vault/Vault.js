@@ -1,37 +1,46 @@
 import React, { Component } from "react";
+import StripeCheckout from 'react-stripe-checkout';
 import Wrapper from "../Wrapper/index";
 import ItemCard from "../Items/ItemCard";
-import friends from "../../items.json";
-import Title from "../Title/index"
+import items from "../../items.json";
+import Title from "../Title/index";
 import "./Vault.css";
 
 
-
 class Vault extends Component {
-
   state = {
-    friends
-  }
+    items
+  };
 
-  removeFriend = id => {
-    // Filter this.state.friends for friends with an id not equal to the id being removed
-    const friends = this.state.friends.filter(friend => friend.id !== id);
-    // Set this.state.friends equal to the new friends array
-    this.setState({ friends });
+  // removeFriend = id => {
+  //   // Filter this.state.friends for friends with an id not equal to the id being removed
+  //   const friends = this.state.friends.filter(friend => friend.id !== id);
+  //   // Set this.state.friends equal to the new friends array
+  //   this.setState({ friends });
+  // };
+
+  purchaseItem = token => {
+    return (
+      <StripeCheckout
+        stripeKey="pk_test_qWg3WHGQczXmNw5EXh8mv17W"
+        token={this.onToken}
+      />
+    );
   };
 
   render() {
+    // const { AuthClass } = this.state;
     return (
       <Wrapper className="container">
-        <Title>Wish List</Title>
+        <Title>TITLE</Title>
         <div className="cardContainer">
-          {this.state.friends.map(friend => (
+          {this.state.items.map(item => (
             <ItemCard
-              id={friend.id}
-              item={friend.item}
-              price={friend.price}
-              image={friend.image}
-              description={friend.description}
+              key={item.id}
+              item={item.item}
+              price={item.price}
+              image={item.image}
+              description={item.description}
             />
           ))}
         </div>
