@@ -59,6 +59,7 @@
 
   .card:hover {
     box-shadow:4px 0px 12px 10px #d9d9d9;
+    border:1px solid #d9d9d9;
   }
 
   .purchaseButton {

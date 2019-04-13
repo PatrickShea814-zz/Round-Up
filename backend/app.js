@@ -26,6 +26,7 @@ app.use(helmet());
 
 // MONGOOSE
 const mongoose = require('mongoose');
+
 const db = require("./models");
 
 const userId = 'IggKjOZ4znfGIB2hKgxZ';
