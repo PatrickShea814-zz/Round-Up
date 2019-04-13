@@ -29,10 +29,10 @@ class App extends Component {
     return (
       <div>
         <Navbar container-fluid>
-          <Navbar.Header>
+          <Navbar.Header id="navHeader">
             <Navbar.Brand>
               {/* <img className="logo" src="https://ps.w.org/simple-owl-carousel/assets/icon-256x256.png?rev=1839276"/> */}
-              <a className="owlGreenText" href="#">RoundUp</a>
+              <a className="owlGreenText" href="#">PennyWise</a>
             </Navbar.Brand>
             <Button
               bsStyle="primary"
@@ -76,6 +76,15 @@ class App extends Component {
                 onClick={this.goTo.bind(this, "vault")}
               >
                 Vault
+              </Button>
+            )}
+            {isAuthenticated() && (
+              <Button
+                bsStyle="primary"
+                className="btn-margin"
+                onClick={this.goTo.bind(this, "signup")}
+              >
+                Sign Up
               </Button>
             )}
             {isAuthenticated() && userHasScopes(["write:messages"]) && (

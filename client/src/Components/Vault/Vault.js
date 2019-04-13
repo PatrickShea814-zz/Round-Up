@@ -5,12 +5,19 @@ import ItemCard from "../Items/ItemCard";
 import items from "../../items.json";
 import Title from "../Title/index";
 import "./Vault.css";
+import { stringify } from "querystring";
+
 
 
 class Vault extends Component {
+
   state = {
-    items
+    // items
   };
+
+  componentDidMount() {
+    this.getUser()
+  }
 
   // removeFriend = id => {
   //   // Filter this.state.friends for friends with an id not equal to the id being removed
@@ -28,13 +35,35 @@ class Vault extends Component {
     );
   };
 
+  getUser = () => {
+    // let { nickname } = this.state;
+    this.setState({test: 'test'}, console.log(this.state.test))
+    let currentComponent = this; 
+    this.props.auth.getProfile(function(err, getProfile){
+      if(err){
+        console.log(err);
+      }
+      else {
+        // console.log("getProfile() ran...", getProfile);
+        // console.log("Function colog = ", getProfile.nickname);
+        var username = getProfile.nickname;
+        username = username.charAt(0).toUpperCase() + username.slice(1);
+
+        currentComponent.setState({currentUser: username}, () => {
+          console.log(currentComponent.state.currentUser)
+        })
+        // return username;
+      }
+    });
+  }
+
+
   render() {
-    // const { AuthClass } = this.state;
     return (
       <Wrapper className="container">
-        <Title>TITLE</Title>
+        <Title currentUser={this.state.currentUser} />
         <div className="cardContainer">
-          {this.state.items.map(item => (
+          {items.map(item => (
             <ItemCard
               key={item.id}
               item={item.item}
