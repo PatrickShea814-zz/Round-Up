@@ -23,7 +23,7 @@ export default class Checkout extends React.Component {
         description={this.description}
         image="https://ps.w.org/simple-owl-carousel/assets/icon-256x256.png?rev=1839276"
         locale="auto"
-        name="RoundUp"
+        name="PennyWise"
         zipCode
       />
     )
