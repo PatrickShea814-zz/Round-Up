@@ -62,6 +62,10 @@ let userSchema = new Schema({
     plaidACHAuth: {
         type: Array
     },
+    // Stripe Created Customer Profile
+    stripeCustomer: {
+        type: Object
+    },
     // deposits is an array of objects. The object it accepts comes from stripeDeposits.js
     // These are records of the COMPLETED deposits.
     deposits: {

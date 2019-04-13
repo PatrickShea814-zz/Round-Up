@@ -106,31 +106,43 @@ app.post('/get_access_token', function (request, response, next) {
         error: error,
       });
     } else {
-        var accessToken = tokenResponse.access_token;
-        // Generate a bank account token
-        client.createStripeToken(accessToken, ACCOUNT_ID, function(err, res) {
-          let bankAccountToken = res.stripe_bank_account_token;
-          // This is the request_id for each transaction
-          let request_id = res.request_id;
+      var stripe = require("stripe")("sk_test_WgA74kA8BnaibsBj2Dd5BSBh00jPiJeM2S");
+      stripe.customers.create({
+        email: '',
+        payment_method: ''
+      }, function (err, customer) {
+        // asynchronously called
+      });
+      var accessToken = tokenResponse.access_token;
+      // Generate a bank account token
+      client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
+        let bankAccountToken = res.stripe_bank_account_token;
+        // This is the request_id for each transaction
+        let request_id = res.request_id;
 
-          let customer = {
-            "stripe_bank_account_token": bankAccountToken,
-            "request_id": request_id
-          }
+        let customer = {
+          "stripe_bank_account_token": bankAccountToken,
+          "request_id": request_id
+        }
 
-          console.log(customer);
-        });
-      }
-      // ACCESS_TOKEN = tokenResponse.access_token;
-      // ITEM_ID = tokenResponse.item_id;
-      // prettyPrintResponse(tokenResponse);
-      // response.json({
-      //   access_token: ACCESS_TOKEN,
-      //   item_id: ITEM_ID,
-      //   error: null,
-      // });
-    })
-  });
+        console.log(customer);
+      });
+    }
+    // ACCESS_TOKEN = tokenResponse.access_token;
+    // ITEM_ID = tokenResponse.item_id;
+    // prettyPrintResponse(tokenResponse);
+    // response.json({
+    //   access_token: ACCESS_TOKEN,
+    //   item_id: ITEM_ID,
+    //   error: null,
+    // });
+  })
+});
+
+// Stripe route for creating a new customer.
+app.post('/create-customer', function (request, response, next) {
+
+})
 
 
 // Retrieve Transactions for an Item

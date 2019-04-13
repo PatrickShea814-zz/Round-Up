@@ -8,6 +8,8 @@ module.exports = {
     PlaidItems: require("./plaidItems"),
     // Model for storing the values of rounded up transactions for Stripe to access.
     RoundedTrans: require("./roundedTrans"),
+    // Model for storing the Stripe Customer Object.
+    StripeCustomer: require("./stripeCustomer"),
     // Model for completed Stripe ACH Charges
     StripeDepos: require("./stripeDeposits"),
     // Model for the User Profile.
