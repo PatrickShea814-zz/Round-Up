@@ -88,11 +88,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get('/', function (request, response, next) {
-  response.json({
-    PLAID_PUBLIC_KEY: PLAID_PUBLIC_KEY,
-    PLAID_ENV: PLAID_ENV,
-    PLAID_PRODUCTS: PLAID_PRODUCTS,
-  });
+  response.sendFile(path.join(__dirname, 'index.html'))
 });
 //============ROUTE TO TEST CONCURRENT RUNNING OF FRONT/BACK ends================
 
@@ -106,7 +102,9 @@ app.get("/contestroute", function(req, res){
 // an API access_token
 // https://plaid.com/docs/#exchange-token-flow
 app.post('/get_access_token', function (request, response, next) {
+  console.log(request.body);
   PUBLIC_TOKEN = request.body.public_token;
+  ACCOUNT_ID = request.body.account_id
   client.exchangePublicToken(PUBLIC_TOKEN, function (error, tokenResponse) {
     if (error != null) {
       prettyPrintResponse(error);
@@ -114,17 +112,31 @@ app.post('/get_access_token', function (request, response, next) {
         error: error,
       });
     } else {
-      ACCESS_TOKEN = tokenResponse.access_token;
-      ITEM_ID = tokenResponse.item_id;
-      prettyPrintResponse(tokenResponse);
-      response.json({
-        access_token: ACCESS_TOKEN,
-        item_id: ITEM_ID,
-        error: null,
-      });
-    }
+        var accessToken = tokenResponse.access_token;
+        // Generate a bank account token
+        client.createStripeToken(accessToken, ACCOUNT_ID, function(err, res) {
+          let bankAccountToken = res.stripe_bank_account_token;
+          // This is the request_id for each transaction
+          let request_id = res.request_id;
+
+          let customer = {
+            "stripe_bank_account_token": bankAccountToken,
+            "request_id": request_id
+          }
+
+          console.log(customer);
+        });
+      }
+      // ACCESS_TOKEN = tokenResponse.access_token;
+      // ITEM_ID = tokenResponse.item_id;
+      // prettyPrintResponse(tokenResponse);
+      // response.json({
+      //   access_token: ACCESS_TOKEN,
+      //   item_id: ITEM_ID,
+      //   error: null,
+      // });
+    })
   });
-});
 
 
 // Retrieve Transactions for an Item
