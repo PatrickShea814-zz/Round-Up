@@ -21,11 +21,10 @@ class Profile extends Component {
     return (
       <div className="container">
         <div className="profile-area">
-          <h1>{profile.nickname}</h1>
-          <Panel header="Profile">
+          <Panel id="profile" header={profile.nickname}>
             <img src={profile.picture} alt="profile" />
             <div>
-              <ControlLabel><Glyphicon className="icons" glyph="user" />{profile.nickname}</ControlLabel>
+              <ControlLabel><Glyphicon className="icons marginRight10" glyph="user" />{profile.nickname}</ControlLabel>
             </div>
             <pre>{JSON.stringify(profile, null, 2)}</pre>
           </Panel>

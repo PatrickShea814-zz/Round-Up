@@ -10,6 +10,7 @@ import Auth from "./Auth/Auth";
 import history from "./history";
 import Vault from "./Components/Vault/Vault";
 import CheckoutForm from "./Components/CheckoutForm";
+import Signup from "./Components/SignUp/index";
 
 const auth = new Auth();
 
@@ -65,6 +66,16 @@ export const makeMainRoutes = () => {
             )
           }
         />
+        <Route
+        path="/signup"
+        render={props =>
+          !auth.isAuthenticated() ? (
+            <Redirect to="/Vault" />
+          ) : (
+            <Signup auth={auth} {...props} />
+          )
+        }
+      />
         <Route
           path="/admin"
           render={props =>

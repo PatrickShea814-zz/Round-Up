@@ -48,7 +48,6 @@ class Vault extends Component {
         // console.log("Function colog = ", getProfile.nickname);
         var username = getProfile.nickname;
         username = username.charAt(0).toUpperCase() + username.slice(1);
-        console.log(username)
 
         currentComponent.setState({currentUser: username}, () => {
           console.log(currentComponent.state.currentUser)

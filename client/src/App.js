@@ -78,6 +78,15 @@ class App extends Component {
                 Vault
               </Button>
             )}
+            {isAuthenticated() && (
+              <Button
+                bsStyle="primary"
+                className="btn-margin"
+                onClick={this.goTo.bind(this, "signup")}
+              >
+                Sign Up
+              </Button>
+            )}
             {isAuthenticated() && userHasScopes(["write:messages"]) && (
               <Button
                 bsStyle="primary"
