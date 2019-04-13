@@ -61,6 +61,8 @@ var PLAID_CLIENT_ID = envvar.string('PLAID_CLIENT_ID', process.env.PLAID_CLIENT_
 var PLAID_SECRET = envvar.string('PLAID_SECRET', process.env.PLAID_SECRET);
 var PLAID_PUBLIC_KEY = envvar.string('PLAID_PUBLIC_KEY', process.env.PLAID_PUBLIC_KEY);
 var PLAID_ENV = envvar.string('PLAID_ENV', 'sandbox');
+var STRIPE_ENV = process.env.STRIPE_KEY;
+const stripe = require('stripe')(STRIPE_ENV);
 
 // PLAID_PRODUCTS is a comma-separated list of products to use when initializing
 // Link. Note that this list must contain 'assets' in order for the app to be
@@ -96,7 +98,8 @@ app.get('/', function (request, response, next) {
 // an API access_token
 // https://plaid.com/docs/#exchange-token-flow
 app.post('/get_access_token', function (request, response, next) {
-  console.log(request.body);
+  // This is the initial user signup route for plaid.
+  // Once the user signs up, the integration between plaid and stripe occurs.
   PUBLIC_TOKEN = request.body.public_token;
   ACCOUNT_ID = request.body.account_id
   client.exchangePublicToken(PUBLIC_TOKEN, function (error, tokenResponse) {
@@ -106,43 +109,34 @@ app.post('/get_access_token', function (request, response, next) {
         error: error,
       });
     } else {
-      var stripe = require("stripe")("sk_test_WgA74kA8BnaibsBj2Dd5BSBh00jPiJeM2S");
-      stripe.customers.create({
-        email: '',
-        payment_method: ''
-      }, function (err, customer) {
-        // asynchronously called
-      });
-      var accessToken = tokenResponse.access_token;
-      // Generate a bank account token
-      client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
-        let bankAccountToken = res.stripe_bank_account_token;
-        // This is the request_id for each transaction
-        let request_id = res.request_id;
+        console.log(tokenResponse);
+        var accessToken = tokenResponse.access_token;
+        // Generate a bank account token
+        client.createStripeToken(accessToken, ACCOUNT_ID, function(err, res) {
+          let bankAccountToken = res.stripe_bank_account_token;
+          // This is the request_id for each transaction
+          let request_id = res.request_id;
 
-        let customer = {
-          "stripe_bank_account_token": bankAccountToken,
-          "request_id": request_id
-        }
+          stripe.customers.create({
+            "source": bankAccountToken,
+          })
+          .then(function (response){
+            console.log(response)
+          })
+          .catch(err => console.log(err))
 
-        console.log(customer);
-      });
-    }
-    // ACCESS_TOKEN = tokenResponse.access_token;
-    // ITEM_ID = tokenResponse.item_id;
-    // prettyPrintResponse(tokenResponse);
-    // response.json({
-    //   access_token: ACCESS_TOKEN,
-    //   item_id: ITEM_ID,
-    //   error: null,
-    // });
-  })
-});
-
-// Stripe route for creating a new customer.
-app.post('/create-customer', function (request, response, next) {
-
-})
+        });
+      }
+      // ACCESS_TOKEN = tokenResponse.access_token;
+      // ITEM_ID = tokenResponse.item_id;
+      // prettyPrintResponse(tokenResponse);
+      // response.json({
+      //   access_token: ACCESS_TOKEN,
+      //   item_id: ITEM_ID,
+      //   error: null,
+      // });
+    })
+  });
 
 
 // Retrieve Transactions for an Item
