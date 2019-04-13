@@ -1,6 +1,6 @@
 .title {
   width: 100%;
-  text-align: center;
+  text-align: left;
   font-size: 3rem;
   text-decoration: none;
   margin-bottom: 50px;
@@ -8,4 +8,8 @@
 
 .owlGreenText {
   color:#0AB1BC !important;
+}
+
+.owlGrayText {
+  color:#4d4d4d !important;
 }

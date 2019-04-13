@@ -14,11 +14,61 @@ body {
 }
 
 .btn {
-  background-color:#0AB1BC;
-  border:1px solid #05A4AE;
-  color:white;
+  height:100%;
+  background-color:#fafafa;
+  color:#0ab1bc;
+  border-left:1px solid #E7FBFC;
+  border-top:none;
+  border-bottom:none;
+  border-right:none;
+  margin:0px;
+  border-radius:0px;
+  padding:0px 25px 0px 25px !important;
+}
+
+.btn-secondary {
+  padding:10px 35px !important;
+
+}
+
+.btn:last-of-type {
+  border-right:1px solid #E7FBFC;
+}
+
+.btn:hover {
+  color:#fafafa;
+  background-color:#088f99;
+  outline:0;
+  border:none;
+}
+
+.btn:active {
+  color:#fafafa;
+  background-color:#088f99;
+  outline:0;
+  border:none;
+}
+
+.btn:focus {
+  color:#fafafa;
+  background-color:#088f99;
+  outline:0;
+  border:none;
 }
 
 .owlGreenText {
   color:#0AB1BC !important;
 }
+
+.navbar {
+  margin-bottom:0px;
+}
+
+#navHeader {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  height:70px;
+}
+
+
