@@ -4,3 +4,4 @@ export const AUTH_CONFIG = {
   callbackUrl: 'http://localhost:3000/callback'
   // apiUrl: 'http://roundup.auth0.com/callback'
 }
+
