@@ -117,11 +117,22 @@ app.post('/get_access_token', function (request, response, next) {
           // This is the request_id for each transaction
           let request_id = res.request_id;
 
+          // This connects to a stripe account
           stripe.customers.create({
             "source": bankAccountToken,
           })
           .then(function (response){
             console.log(response)
+            db.User.create({
+                username: 'Tony Dang',
+                firstName: 'Tony',
+                lastName: 'Dang',
+                password: 'Password',
+                stripeCustomer: response
+            })
+            .then(function (response){
+              console.log(response)
+            })
           })
           .catch(err => console.log(err))
 
