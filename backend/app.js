@@ -109,34 +109,34 @@ app.post('/get_access_token', function (request, response, next) {
         error: error,
       });
     } else {
-        console.log(tokenResponse);
-        var accessToken = tokenResponse.access_token;
-        // Generate a bank account token
-        client.createStripeToken(accessToken, ACCOUNT_ID, function(err, res) {
-          let bankAccountToken = res.stripe_bank_account_token;
-          // This is the request_id for each transaction
-          let request_id = res.request_id;
+      console.log(tokenResponse);
+      var accessToken = tokenResponse.access_token;
+      // Generate a bank account token
+      client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
+        let bankAccountToken = res.stripe_bank_account_token;
+        // This is the request_id for each transaction
+        let request_id = res.request_id;
 
-          stripe.customers.create({
-            "source": bankAccountToken,
-          })
-          .then(function (response){
+        stripe.customers.create({
+          "source": bankAccountToken,
+        })
+          .then(function (response) {
             console.log(response)
           })
           .catch(err => console.log(err))
 
-        });
-      }
-      // ACCESS_TOKEN = tokenResponse.access_token;
-      // ITEM_ID = tokenResponse.item_id;
-      // prettyPrintResponse(tokenResponse);
-      // response.json({
-      //   access_token: ACCESS_TOKEN,
-      //   item_id: ITEM_ID,
-      //   error: null,
-      // });
-    })
-  });
+      });
+    }
+    // ACCESS_TOKEN = tokenResponse.access_token;
+    // ITEM_ID = tokenResponse.item_id;
+    // prettyPrintResponse(tokenResponse);
+    // response.json({
+    //   access_token: ACCESS_TOKEN,
+    //   item_id: ITEM_ID,
+    //   error: null,
+    // });
+  })
+});
 
 
 // Retrieve Transactions for an Item
