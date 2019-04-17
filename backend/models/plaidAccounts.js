@@ -1,6 +1,8 @@
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
+// PlaidUserAccounts are the individual Bank Accounts under an Institution (Plaid Item) that a User connects to Plaid.
+
 let plaidUserAccSchema = new Schema({
     // User_ID from userProfile that is automatically generated.
     userID: {
@@ -13,16 +15,18 @@ let plaidUserAccSchema = new Schema({
         type: String,
         required: true
     },
+    // Unique ID associated to each individual Bank Accounts that a User Connected.
     account_id: {
         type: String,
         required: true,
         unique: true
     },
-    // Access: accounts.name
+    // Example) Tony's Checking
     accountName: {
         type: String,
         required: true
     },
+    // Example) BofA Cash Back Rewards
     official_name: {
         type: String,
         required: true

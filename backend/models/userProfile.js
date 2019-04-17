@@ -3,11 +3,9 @@ let Schema = mongoose.Schema;
 
 let userSchema = new Schema({
     //user id auto gen by mongo
-    firstName: {
-        type: String,
-        trim: true
-    },
-    lastName: {
+
+    // Identity Route - Plaid
+    fullName: {
         type: String,
         trim: true
     },
@@ -23,9 +21,11 @@ let userSchema = new Schema({
         unique: true,
         required: true
     },
+    // Identity Route - Plaid
     phoneNum: {
         type: String
     },
+
     profilePicture: {
         type: String
     },
