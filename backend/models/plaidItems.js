@@ -3,11 +3,11 @@ let Schema = mongoose.Schema;
 
 let plaidItemsSchema = new Schema({
     // User_ID from userProfile that is automatically generated.
-    userId: {
+    userID: {
         type: String,
         required: true
     },
-    institutionName: {
+    institutionID: {
         type: String
     },
     accessToken: {
@@ -15,7 +15,7 @@ let plaidItemsSchema = new Schema({
         required: true,
         unique: true
     },
-    itemId: {
+    itemID: {
         type: String,
         required: true,
         unique: true

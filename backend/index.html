@@ -34,7 +34,8 @@
           // Select Account view is enabled.
           $.post('/get_access_token', {
             public_token: public_token,
-            account_id: metadata.account_id
+            account_id: metadata.account_id,
+            institution: metadata.institution
           });
         },
         onExit: function(err, metadata) {
