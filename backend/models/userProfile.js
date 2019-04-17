@@ -1,15 +1,21 @@
-let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const WishItem = require('./wishItem').schema;
+const PlaidItems = require('./plaidItems').schema;
+const PlaidUserAccounts = require('./plaidAccounts').schema;
+const PlaidACHAuth = require('./plaidACHAuth').schema;
+const StripeCustomer = require('./stripeCustomer').schema;
+const StripeDepos = require('./stripeDeposits').schema;
+const RoundedTrans = require('./roundedTrans').schema;
+const StripeWithdrawal = require('./stripeWithdrawal').schema;
+const WithdrawRequest = require('./withdrawRequest').schema;
 
 let userSchema = new Schema({
     //user id auto gen by mongo
-    firstName: {
+    name: {
         type: String,
-        trim: true
-    },
-    lastName: {
-        type: String,
-        trim: true
+        trim: true,
+        required: true
     },
     // This is the password stored that comes from Auth0
     password: {

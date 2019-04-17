@@ -85,6 +85,12 @@ var client = new plaid.Client(
   { version: '2018-05-22' }
 );
 
+let TonyDang = {
+  email: 'TonyDang@gmail.com',
+  password: 'Password',
+  _id: 'AeR5A1#@ed'
+}
+
 var app = express();
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -100,8 +106,12 @@ app.get('/', function (request, response, next) {
 app.post('/get_access_token', function (request, response, next) {
   // This is the initial user signup route for plaid.
   // Once the user signs up, the integration between plaid and stripe occurs.
+  
   PUBLIC_TOKEN = request.body.public_token;
-  ACCOUNT_ID = request.body.account_id
+  ACCOUNT_ID = request.body.account_id;
+
+  // console.log(ACCOUNT_ID);
+  
   client.exchangePublicToken(PUBLIC_TOKEN, function (error, tokenResponse) {
     if (error != null) {
       prettyPrintResponse(error);
@@ -109,8 +119,58 @@ app.post('/get_access_token', function (request, response, next) {
         error: error,
       });
     } else {
-      console.log(tokenResponse);
+      // console.log(tokenResponse);
       var accessToken = tokenResponse.access_token;
+      
+      client.getIdentity(accessToken, function (error, identityResponse) {
+        if(error){
+          console.log(error)
+        }
+        else {
+          // console.log(identityResponse);
+          db.User.create({
+            name: identityResponse.identity.names[0],
+            password: TonyDang.password,
+            email: TonyDang.email,
+            phoneNum: identityResponse.identity.phone_numbers[0].data
+        })
+        .then(response => {
+          
+          db.PlaidItems.create({
+            userID: response._id,
+            institutionID: identityResponse.item.institution_id,
+            accessToken: accessToken,
+            itemID: identityResponse.item.institution_id
+          })
+          .then(PlaidItem =>{
+              console.log('This is our PLAID account', PlaidItem)
+          })
+          .catch(err => console.log(err))
+          
+          for (let i = 0; i < identityResponse.accounts.length; i++){
+
+            if (identityResponse.accounts[i].subtype === 'checking'){
+            db.PlaidUserAccounts.create({
+              userID: response._id,
+              accessToken: accessToken,
+              account_id: identityResponse.accounts[i].account_id,
+              accountName: identityResponse.accounts[i].name,
+              official_name: identityResponse.accounts[i].official_name,
+              availableBalance: identityResponse.accounts[i].balances.available,
+              mask: identityResponse.accounts[i].mask,
+              type: identityResponse.accounts[i].type,
+              subtype: identityResponse.accounts[i].subtype,
+
+            })
+            .then (accounts => console.log(accounts))
+            .catch(err => console.log(err))
+
+          }
+
+        }
+        
+      })
+      
       // Generate a bank account token
       client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
         let bankAccountToken = res.stripe_bank_account_token;
@@ -120,13 +180,39 @@ app.post('/get_access_token', function (request, response, next) {
         stripe.customers.create({
           "source": bankAccountToken,
         })
-          .then(function (response) {
-            console.log(response)
+          .then(stripe => {
+            // console.log(stripe)
+            db.User.findOne({ email: TonyDang.email })
+              .then(response => {
+                // console.log(response);
+                db.StripeCustomer.create({
+                  userId: response._id,
+                  stripeID: stripe.id,
+                  created: stripe.created,
+                  default_source: stripe.default_source,
+                  sourceURL: stripe.sources.url,
+                  subscriptionsURL: stripe.subscriptions.url
+                })
+                .then(stripeCreated => console.log('Customer created:', stripeCreated))
+              })
+              .catch(err => console.log(err))
           })
-          .catch(err => console.log(err))
-
+          
       });
-    }
+
+    };
+
+    })
+
+  }
+
+})
+
+})
+    
+
+
+  
     // ACCESS_TOKEN = tokenResponse.access_token;
     // ITEM_ID = tokenResponse.item_id;
     // prettyPrintResponse(tokenResponse);
@@ -135,8 +221,8 @@ app.post('/get_access_token', function (request, response, next) {
     //   item_id: ITEM_ID,
     //   error: null,
     // });
-  })
-});
+//   })
+// });
 
 
 // Retrieve Transactions for an Item
@@ -175,7 +261,9 @@ app.get('/transactions', function (request, response, next) {
       prettyPrintResponse(transactionsResponse);
       response.json({ error: null, transactions: transactionsResponse.transactions });
     }
+
   });
+
 });
 
 // Retrieve Identity for an Item
