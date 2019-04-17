@@ -162,7 +162,7 @@ app.post('/get_access_token', function (request, response, next) {
               subtype: identityResponse.accounts[i].subtype,
 
             })
-            .then (accounts => console.log(accounts))
+            .then (accounts => console.log('These are the connected accounts:', accounts))
             .catch(err => console.log(err))
 
           }
@@ -196,34 +196,31 @@ app.post('/get_access_token', function (request, response, next) {
                 .then(stripeCreated => console.log('Customer created:', stripeCreated))
               })
               .catch(err => console.log(err))
-          })
+          });
           
       });
 
     };
 
-    })
+    });
 
-  }
+  };
 
 })
 
+})
+
+app.get('/userIntegration', function(request, response, next){
+  db.User.findOne({ email: TonyDang.email})
+    .then(user => {
+      db.PlaidItems.findOne({ userID: user.userID})
+      .then(PlaidItem => {
+        db.User.update({ _id: PlaidItem.userID},{$set: {PlaidItems: PlaidItem}})
+          .then(response => console.log(response))
+      })
+    })
 })
     
-
-
-  
-    // ACCESS_TOKEN = tokenResponse.access_token;
-    // ITEM_ID = tokenResponse.item_id;
-    // prettyPrintResponse(tokenResponse);
-    // response.json({
-    //   access_token: ACCESS_TOKEN,
-    //   item_id: ITEM_ID,
-    //   error: null,
-    // });
-//   })
-// });
-
 
 // Retrieve Transactions for an Item
 // https://plaid.com/docs/#transactions
