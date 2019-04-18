@@ -127,49 +127,63 @@ app.post('/get_access_token', function (request, response, next) {
           console.log(error)
         }
         else {
-          // console.log(identityResponse);
+
+          // Creates the user in our database.
+
           db.User.create({
             name: identityResponse.identity.names[0],
             password: TonyDang.password,
             email: TonyDang.email,
             phoneNum: identityResponse.identity.phone_numbers[0].data
-        })
+          })
+
           .catch(err => console.log(err))
+
+          // Creates the list of plaid items for our user.
+
           .then(response => {
-          console.log(response)
-          db.PlaidItems.create({
-            userID: response._id,
-            institutionID: identityResponse.item.institution_id,
-            accessToken: accessToken,
-            itemID: identityResponse.item.institution_id
-          })
-          .catch(err => console.log(err))
-          .then(PlaidItem =>{
-            console.log("This is the user's PlaidItem:", PlaidItem);
-              db.User.findOneAndUpdate({_id: PlaidItem.userID}, {$set: { plaidItems: PlaidItem}})
-              .catch(err => console.log(err))
-              .then(updatePlaidItems=> {
-                return updatePlaidItems;
+
+              console.log(response)
+
+              db.PlaidItems.create({
+                userID: response._id,
+                institutionID: identityResponse.item.institution_id,
+                accessToken: accessToken,
+                itemID: identityResponse.item.institution_id
               })
-          })
+
+              .catch(err => console.log(err))
+
+              // Pushes this list into our user model.
+              .then(PlaidItem =>{
+
+                console.log("This is the user's PlaidItem:", PlaidItem);
+
+                  db.User.findOneAndUpdate({ _id: PlaidItem.userID}, {$push: { plaidItems: PlaidItem }})
+
+                  .catch(err => console.log(err))
+  
+              })
+
           .catch (err => console.log(err))
-          .then(updatePlaidItems => console.log('Items integrated:', updatePlaidItems))
           
           for (let i = 0; i < identityResponse.accounts.length; i++){
 
             if (identityResponse.accounts[i].subtype === 'checking'){
-            db.PlaidUserAccounts.create({
-              userID: response._id,
-              accessToken: accessToken,
-              account_id: identityResponse.accounts[i].account_id,
-              accountName: identityResponse.accounts[i].name,
-              official_name: identityResponse.accounts[i].official_name,
-              availableBalance: identityResponse.accounts[i].balances.available,
-              mask: identityResponse.accounts[i].mask,
-              type: identityResponse.accounts[i].type,
-              subtype: identityResponse.accounts[i].subtype,
+              
+                db.PlaidUserAccounts.create({
+                  userID: response._id,
+                  accessToken: accessToken,
+                  account_id: identityResponse.accounts[i].account_id,
+                  accountName: identityResponse.accounts[i].name,
+                  official_name: identityResponse.accounts[i].official_name,
+                  availableBalance: identityResponse.accounts[i].balances.available,
+                  mask: identityResponse.accounts[i].mask,
+                  type: identityResponse.accounts[i].type,
+                  subtype: identityResponse.accounts[i].subtype,
 
-            })
+                  })
+
             .catch(err => console.log(err))
             .then (accounts => console.log('These are the connected accounts:', accounts))
             .catch(err => console.log(err))
@@ -184,7 +198,7 @@ app.post('/get_access_token', function (request, response, next) {
 
   })
       
-      // Generate a bank account token
+      // Generate a stripe token for the user
       client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
         let bankAccountToken = res.stripe_bank_account_token;
         // This is the request_id for each transaction
@@ -195,21 +209,25 @@ app.post('/get_access_token', function (request, response, next) {
         })
           .catch(err => console.log)
           .then(stripe => {
-            // console.log(stripe)
+            
             db.User.findOne({ email: TonyDang.email })
               .then(response => {
-                // console.log(response);
-                db.StripeCustomer.create({
-                  userId: response._id,
-                  stripeID: stripe.id,
-                  created: stripe.created,
-                  default_source: stripe.default_source,
-                  sourceURL: stripe.sources.url,
-                  subscriptionsURL: stripe.subscriptions.url
-                })
+               
+                  db.StripeCustomer.create({
+                    userId: response._id,
+                    stripeID: stripe.id,
+                    created: stripe.created,
+                    default_source: stripe.default_source,
+                    sourceURL: stripe.sources.url,
+                    subscriptionsURL: stripe.subscriptions.url
+                  })
+
                 .catch(err => console.log (err))
+
                 .then(stripeCreated => {
-                  console.log("This is what you're looking for", stripeCreated)
+
+                  console.log("User stripe information:", stripeCreated)
+                  // Adds the stripe information to our userprofile
                   db.User.findOneAndUpdate(
                     {_id: stripeCreated.userId},
                     {$set: {stripeCustomer: stripeCreated}}
@@ -227,22 +245,22 @@ app.post('/get_access_token', function (request, response, next) {
     };
 
   })
-  response.redirect('/userIntegration');
+  response.send('User created!');
 })
 
 app.get('/userIntegration', function(request, response, next){
 
-  db.User.findOne({ email: TonyDang.email})
-    .catch(err => console.log(err))
-    .then(user => {
-      console.log('Looking to integrate PlaidItems:', user)
-      db.PlaidItems.findOne({ userID: user._id})
-      .catch(err => console.log(err))
-      .then(response => console.log('Here is the PlaidItem we found:', response))
-      db.User.findByIdAndUpdate({ _id: user._id}, {$set: { plaidItems: response}})
-      .catch(err => console.log(err))
-      .then(updatedUser => console.log('Here is our updated user:', updatedUser))
-    })
+  // db.User.findOne({ email: TonyDang.email})
+  //   .catch(err => console.log(err))
+  //   .then(user => {
+  //     console.log('Looking to integrate PlaidItems:', user)
+  //     db.PlaidItems.findOne({ userID: user._id})
+  //     .catch(err => console.log(err))
+  //     .then(response => console.log('Here is the PlaidItem we found:', response))
+  //     db.User.findByIdAndUpdate({ _id: user._id}, {$set: { plaidItems: response}})
+  //     .catch(err => console.log(err))
+  //     .then(updatedUser => console.log('Here is our updated user:', updatedUser))
+  //   })
     
     });
     
