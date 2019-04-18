@@ -27,15 +27,14 @@
         },
 
         onSuccess: function(public_token, metadata) {
-          console.log(metadata.account_id);
+          console.log(metadata);
           // Send the public_token to your app server.
           // The metadata object contains info about the institution the
           // user selected and the account ID or IDs, if the
           // Select Account view is enabled.
           $.post('/get_access_token', {
             public_token: public_token,
-            account_id: metadata.account_id,
-            institution: metadata.institution
+            account_id: metadata.account_id
           });
         },
         onExit: function(err, metadata) {

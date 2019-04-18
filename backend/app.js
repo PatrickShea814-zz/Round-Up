@@ -134,18 +134,26 @@ app.post('/get_access_token', function (request, response, next) {
             email: TonyDang.email,
             phoneNum: identityResponse.identity.phone_numbers[0].data
         })
-        .then(response => {
-          
+          .catch(err => console.log(err))
+          .then(response => {
+          console.log(response)
           db.PlaidItems.create({
             userID: response._id,
             institutionID: identityResponse.item.institution_id,
             accessToken: accessToken,
             itemID: identityResponse.item.institution_id
           })
-          .then(PlaidItem =>{
-              console.log('This is our PLAID account', PlaidItem)
-          })
           .catch(err => console.log(err))
+          .then(PlaidItem =>{
+            console.log("This is the user's PlaidItem:", PlaidItem);
+              db.User.findOneAndUpdate({_id: PlaidItem.userID}, {$set: { plaidItems: PlaidItem}})
+              .catch(err => console.log(err))
+              .then(updatePlaidItems=> {
+                return updatePlaidItems;
+              })
+          })
+          .catch (err => console.log(err))
+          .then(updatePlaidItems => console.log('Items integrated:', updatePlaidItems))
           
           for (let i = 0; i < identityResponse.accounts.length; i++){
 
@@ -162,6 +170,7 @@ app.post('/get_access_token', function (request, response, next) {
               subtype: identityResponse.accounts[i].subtype,
 
             })
+            .catch(err => console.log(err))
             .then (accounts => console.log('These are the connected accounts:', accounts))
             .catch(err => console.log(err))
 
@@ -170,6 +179,10 @@ app.post('/get_access_token', function (request, response, next) {
         }
         
       })
+
+    }
+
+  })
       
       // Generate a bank account token
       client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
@@ -180,6 +193,7 @@ app.post('/get_access_token', function (request, response, next) {
         stripe.customers.create({
           "source": bankAccountToken,
         })
+          .catch(err => console.log)
           .then(stripe => {
             // console.log(stripe)
             db.User.findOne({ email: TonyDang.email })
@@ -193,33 +207,44 @@ app.post('/get_access_token', function (request, response, next) {
                   sourceURL: stripe.sources.url,
                   subscriptionsURL: stripe.subscriptions.url
                 })
-                .then(stripeCreated => console.log('Customer created:', stripeCreated))
+                .catch(err => console.log (err))
+                .then(stripeCreated => {
+                  console.log("This is what you're looking for", stripeCreated)
+                  db.User.findOneAndUpdate(
+                    {_id: stripeCreated.userId},
+                    {$set: {stripeCustomer: stripeCreated}}
+                    )
+                    .catch(err => console.log(err))
+                    .then(updateStripeUser => console.log('Here is our user with Stripe integration:', updateStripeUser))
+                })
+                
               })
               .catch(err => console.log(err))
-          });
-          
+          })
+
       });
 
     };
 
-    });
-
-  };
-
-})
-
+  })
+  response.redirect('/userIntegration');
 })
 
 app.get('/userIntegration', function(request, response, next){
+
   db.User.findOne({ email: TonyDang.email})
+    .catch(err => console.log(err))
     .then(user => {
-      db.PlaidItems.findOne({ userID: user.userID})
-      .then(PlaidItem => {
-        db.User.update({ _id: PlaidItem.userID},{$set: {PlaidItems: PlaidItem}})
-          .then(response => console.log(response))
-      })
+      console.log('Looking to integrate PlaidItems:', user)
+      db.PlaidItems.findOne({ userID: user._id})
+      .catch(err => console.log(err))
+      .then(response => console.log('Here is the PlaidItem we found:', response))
+      db.User.findByIdAndUpdate({ _id: user._id}, {$set: { plaidItems: response}})
+      .catch(err => console.log(err))
+      .then(updatedUser => console.log('Here is our updated user:', updatedUser))
     })
-})
+    
+    });
     
 
 // Retrieve Transactions for an Item
