@@ -1,24 +1,21 @@
-let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const WishItem = require('./wishItem').schema;
+const PlaidItems = require('./plaidItems').schema;
+const PlaidUserAccounts = require('./plaidAccounts').schema;
+const PlaidACHAuth = require('./plaidACHAuth').schema;
+const StripeCustomer = require('./stripeCustomer').schema;
+const StripeDepos = require('./stripeDeposits').schema;
+const RoundedTrans = require('./roundedTrans').schema;
+const StripeWithdrawal = require('./stripeWithdrawal').schema;
+const WithdrawRequest = require('./withdrawRequest').schema;
 
 let userSchema = new Schema({
     //user id auto gen by mongo
-    // This is the username stored that comes from Auth0
-    username: {
+    name: {
         type: String,
-        required: true,
-        unique: true,
-        trim: true
-    },
-    firstName: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    lastName: {
-        type: String,
-        required: true,
-        trim: true
+        trim: true,
+        required: true
     },
     // This is the password stored that comes from Auth0
     password: {
@@ -29,60 +26,42 @@ let userSchema = new Schema({
     // This is the email stored that comes from Auth0
     email: {
         type: String,
-        unique: true
+        unique: true,
+        required: true
     },
     phoneNum: {
-        type: String,
-        validate: {
-            validator: function (v) {
-                return /\d{3}-\d{3}-\d{4}/.test(v);
-            },
-            message: props => `${props.value} is not a valid phone number!`
-        }
+        type: String
     },
     profilePicture: {
         type: String
     },
     // wishList is an array of objects. The object it accepts is model wishItem.js.
-    wishList: {
-        type: Array
-    },
+    wishList: [WishItem],
     // plaidItems is an array of objects. The object it accepts is model plaidItems.js
     // In Plaid an Item is a Bank or Institution. Each Item had its own Access_Token and Item_ID.
     // A User can have multiple Items(Accounts) connected.
-    plaidItems: {
-        type: Array
-    },
+    plaidItems: [PlaidItems],
     // plaidAccounts is an array of objects. The object it accepts is model plaidAccounts.js
     // In Plaid and Item(Bank Institution) can have multiple Accounts.
-    plaidAccounts: {
-        type: Array
-    },
+    plaidAccounts: [PlaidUserAccounts],
     // ACHAuth is an array of objects. The object it accepts is model plaidACHAuth.js
-    plaidACHAuth: {
-        type: Array
-    },
+    plaidACHAuth: [PlaidACHAuth],
     // Stripe Created Customer Profile
-    stripeCustomer: {
-        type: Object
-    },
+    stripeCustomer: [StripeCustomer],
     // deposits is an array of objects. The object it accepts comes from stripeDeposits.js
     // These are records of the COMPLETED deposits.
-    deposits: {
-        type: Array
-    },
-    rounded: {
-        type: Array
-    },
+    deposits: [StripeDepos],
+    rounded: [RoundedTrans],
     currentBalance: {
         type: Number,
         trim: true
     },
-    // withdrawals is an array of objects. The object it accepts comes from stripeWithdrawal.js
-    // These are records of the COMPLETED withdrawals.
-    withdrawals: {
-        type: Array
-    },
+    // withdrawalSuccess is an array of objects. The object it accepts comes from stripeWithdrawal.js
+    // These are records of the COMPLETED withdrawals to the user.
+    withdrawalSuccess: [StripeWithdrawal],
+    // withdrawalRequest is an array of objects. The object it accepts comes from withdrawRequest.js
+    // These are records of the REQUESTED withdrawals by the user.
+    withdrawalRequest: [WithdrawRequest],
     // Date/Timestamp of User's initial registration.
     createDate: {
         type: Date,

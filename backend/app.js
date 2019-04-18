@@ -85,6 +85,12 @@ var client = new plaid.Client(
   { version: '2018-05-22' }
 );
 
+let TonyDang = {
+  email: 'TonyDang@gmail.com',
+  password: 'Password',
+  _id: 'AeR5A1#@ed'
+}
+
 var app = express();
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -100,8 +106,12 @@ app.get('/', function (request, response, next) {
 app.post('/get_access_token', function (request, response, next) {
   // This is the initial user signup route for plaid.
   // Once the user signs up, the integration between plaid and stripe occurs.
+  
   PUBLIC_TOKEN = request.body.public_token;
-  ACCOUNT_ID = request.body.account_id
+  ACCOUNT_ID = request.body.account_id;
+
+  // console.log(ACCOUNT_ID);
+  
   client.exchangePublicToken(PUBLIC_TOKEN, function (error, tokenResponse) {
     if (error != null) {
       prettyPrintResponse(error);
@@ -109,35 +119,151 @@ app.post('/get_access_token', function (request, response, next) {
         error: error,
       });
     } else {
-        console.log(tokenResponse);
-        var accessToken = tokenResponse.access_token;
-        // Generate a bank account token
-        client.createStripeToken(accessToken, ACCOUNT_ID, function(err, res) {
-          let bankAccountToken = res.stripe_bank_account_token;
-          // This is the request_id for each transaction
-          let request_id = res.request_id;
+      // console.log(tokenResponse);
+      var accessToken = tokenResponse.access_token;
+      
+      client.getIdentity(accessToken, function (error, identityResponse) {
+        if(error){
+          console.log(error)
+        }
+        else {
 
-          stripe.customers.create({
-            "source": bankAccountToken,
+          // Creates the user in our database.
+
+          db.User.create({
+            name: identityResponse.identity.names[0],
+            password: TonyDang.password,
+            email: TonyDang.email,
+            phoneNum: identityResponse.identity.phone_numbers[0].data
           })
-          .then(function (response){
-            console.log(response)
-          })
+
           .catch(err => console.log(err))
 
-        });
-      }
-      // ACCESS_TOKEN = tokenResponse.access_token;
-      // ITEM_ID = tokenResponse.item_id;
-      // prettyPrintResponse(tokenResponse);
-      // response.json({
-      //   access_token: ACCESS_TOKEN,
-      //   item_id: ITEM_ID,
-      //   error: null,
-      // });
-    })
-  });
+          // Creates the list of plaid items for our user.
 
+          .then(response => {
+
+              console.log(response)
+
+              db.PlaidItems.create({
+                userID: response._id,
+                institutionID: identityResponse.item.institution_id,
+                accessToken: accessToken,
+                itemID: identityResponse.item.institution_id
+              })
+
+              .catch(err => console.log(err))
+
+              // Pushes this list into our user model.
+              .then(PlaidItem =>{
+
+                console.log("This is the user's PlaidItem:", PlaidItem);
+
+                  db.User.findOneAndUpdate({ _id: PlaidItem.userID}, {$push: { plaidItems: PlaidItem }})
+
+                  .catch(err => console.log(err))
+  
+              })
+
+          .catch (err => console.log(err))
+          
+          for (let i = 0; i < identityResponse.accounts.length; i++){
+
+            if (identityResponse.accounts[i].subtype === 'checking'){
+              
+                db.PlaidUserAccounts.create({
+                  userID: response._id,
+                  accessToken: accessToken,
+                  account_id: identityResponse.accounts[i].account_id,
+                  accountName: identityResponse.accounts[i].name,
+                  official_name: identityResponse.accounts[i].official_name,
+                  availableBalance: identityResponse.accounts[i].balances.available,
+                  mask: identityResponse.accounts[i].mask,
+                  type: identityResponse.accounts[i].type,
+                  subtype: identityResponse.accounts[i].subtype,
+
+                  })
+
+            .catch(err => console.log(err))
+            .then (accounts => console.log('These are the connected accounts:', accounts))
+            .catch(err => console.log(err))
+
+          }
+
+        }
+        
+      })
+
+    }
+
+  })
+      
+      // Generate a stripe token for the user
+      client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
+        let bankAccountToken = res.stripe_bank_account_token;
+        // This is the request_id for each transaction
+        let request_id = res.request_id;
+
+        stripe.customers.create({
+          "source": bankAccountToken,
+        })
+          .catch(err => console.log)
+          .then(stripe => {
+            
+            db.User.findOne({ email: TonyDang.email })
+              .then(response => {
+               
+                  db.StripeCustomer.create({
+                    userId: response._id,
+                    stripeID: stripe.id,
+                    created: stripe.created,
+                    default_source: stripe.default_source,
+                    sourceURL: stripe.sources.url,
+                    subscriptionsURL: stripe.subscriptions.url
+                  })
+
+                .catch(err => console.log (err))
+
+                .then(stripeCreated => {
+
+                  console.log("User stripe information:", stripeCreated)
+                  // Adds the stripe information to our userprofile
+                  db.User.findOneAndUpdate(
+                    {_id: stripeCreated.userId},
+                    {$set: {stripeCustomer: stripeCreated}}
+                    )
+                    .catch(err => console.log(err))
+                    .then(updateStripeUser => console.log('Here is our user with Stripe integration:', updateStripeUser))
+                })
+                
+              })
+              .catch(err => console.log(err))
+          })
+
+      });
+
+    };
+
+  })
+  response.send('User created!');
+})
+
+app.get('/userIntegration', function(request, response, next){
+
+  // db.User.findOne({ email: TonyDang.email})
+  //   .catch(err => console.log(err))
+  //   .then(user => {
+  //     console.log('Looking to integrate PlaidItems:', user)
+  //     db.PlaidItems.findOne({ userID: user._id})
+  //     .catch(err => console.log(err))
+  //     .then(response => console.log('Here is the PlaidItem we found:', response))
+  //     db.User.findByIdAndUpdate({ _id: user._id}, {$set: { plaidItems: response}})
+  //     .catch(err => console.log(err))
+  //     .then(updatedUser => console.log('Here is our updated user:', updatedUser))
+  //   })
+    
+    });
+    
 
 // Retrieve Transactions for an Item
 // https://plaid.com/docs/#transactions
@@ -175,7 +301,9 @@ app.get('/transactions', function (request, response, next) {
       prettyPrintResponse(transactionsResponse);
       response.json({ error: null, transactions: transactionsResponse.transactions });
     }
+
   });
+
 });
 
 // Retrieve Identity for an Item
