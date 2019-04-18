@@ -1,4 +1,10 @@
 var request = require("request");
+var path = require("path")
+// require('dotenv').config();
+require('dotenv').config({ path: '../.env' })
+
+var AUTH0_API_CLIENT_ID = process.env.AUTH0_API_CLIENT_ID
+var AUTH0_API_CLIENT_SECRET = process.env.AUTH0_API_CLIENT_SECRET
 
 function getAuth0Token(AuthAPICall) {
     var authToken = "";
@@ -7,8 +13,8 @@ function getAuth0Token(AuthAPICall) {
     headers: { 'content-type': 'application/json' },
     body: 
     { grant_type: 'client_credentials',
-        client_id: 'jPpC5RW9l1lmGY2xcxoR5y7T6m7MQZLX',
-        client_secret: 'gMa_5i79fcuF10n-eWGIEneBQrP-IYrO2vIIyv30wxajlZ8GM8ewpVOYf4V53flr',
+        client_id: AUTH0_API_CLIENT_ID,
+        client_secret: AUTH0_API_CLIENT_SECRET,
         audience: 'https://getpennywise.auth0.com/api/v2/' },
     json: true };
 
@@ -16,6 +22,7 @@ function getAuth0Token(AuthAPICall) {
     if (error) throw new Error(error);
 
     authToken = body.access_token
+    // console.log(body)
     AuthAPICall(authToken)
     });
 }
