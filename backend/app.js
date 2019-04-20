@@ -30,6 +30,7 @@ function pseries(list) {
   }, p);
 }
 
+// This is broken.
 function StripeCustomerCreate (accToken, accId, user){
 
   client.createStripeToken(accToken, accId, function (err, res) {
