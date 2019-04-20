@@ -30,6 +30,21 @@ function pseries(list) {
   }, p);
 }
 
+function StripeCustomerCreate (accToken, accId, user){
+
+  client.createStripeToken(accToken, accId, function (err, res) {
+      let bankAccountToken = res.stripe_bank_account_token;
+      // This is the request_id for each transaction
+      let request_id = res.request_id;
+
+      let stripeCustomer = stripe.customers.create({
+        "source": bankAccountToken,
+      }).then(result => {return result});
+
+  }).then(result => {return result})
+ 
+}
+
 async function accountCreator(res, accessToken, identity){
 
   let arr = [];
@@ -57,6 +72,8 @@ async function accountCreator(res, accessToken, identity){
   return arr;
 
     }
+
+
 
 
 // MONGOOSE
@@ -203,7 +220,15 @@ app.post('/get_access_token', function (request, response, next) {
             )
           })
 
-          let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel]
+          let StripeIntegrator = (res => {
+            return Promise.resolve(
+              StripeCustomerCreate(accessToken, ACCOUNT_ID, res )
+            )
+          })
+
+          let consoleLogger = (res => console.log(res));
+
+          let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, StripeIntegrator, consoleLogger]
 
           pseries(arr).catch(err => console.log(err));
 
