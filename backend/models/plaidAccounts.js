@@ -30,7 +30,7 @@ let plaidUserAccSchema = new Schema({
     // Users available balance to validate if user has enough in account to continue saving.
     availableBalance: {
         type: Number,
-        required: true
+        required: false
     },
     // Last 4-Digits of a User's Item(Account)
     mask: {

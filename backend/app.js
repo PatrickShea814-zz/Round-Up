@@ -23,6 +23,41 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 app.use(helmet());
 
+function pseries(list) {  
+  var p = Promise.resolve();
+  return list.reduce(function(pacc, fn) {
+    return pacc = pacc.then(fn);
+  }, p);
+}
+
+async function accountCreator(res, accessToken, identity){
+
+  let arr = [];
+
+  for (let i= 0; i < identity.accounts.length; i++){
+     
+    if (identity.accounts[i].subtype === 'checking'){
+        // console.log('Hello World!')
+        let accounts = await db.PlaidUserAccounts.create({
+          userID: res._id,
+          accessToken: accessToken,
+          account_id: identity.accounts[i].account_id,
+          accountName: identity.accounts[i].name,
+          official_name: identity.accounts[i].official_name,
+          availableBalance: identity.accounts[i].balances.available,
+          mask: identity.accounts[i].mask,
+          type: identity.accounts[i].type,
+          subtype: identity.accounts[i].subtype,
+
+          })
+          arr.push(accounts);
+        }
+      }
+      
+  return arr;
+
+    }
+
 
 // MONGOOSE
 const mongoose = require('mongoose');
@@ -129,18 +164,54 @@ app.post('/get_access_token', function (request, response, next) {
         else {
 
           // Creates the user in our database.
+          let NewUserCreator = () => {
+              return Promise.resolve(db.User.create({
+              name: identityResponse.identity.names[0],
+              password: TonyDang.password,
+              email: TonyDang.email,
+              phoneNum: identityResponse.identity.phone_numbers[0].data
+            })
+          )}
 
-          db.User.create({
-            name: identityResponse.identity.names[0],
-            password: TonyDang.password,
-            email: TonyDang.email,
-            phoneNum: identityResponse.identity.phone_numbers[0].data
+          let NewUserPlaidItemCreator = (res =>{
+            return Promise.resolve(db.PlaidItems.create({
+              userID: res._id,
+              institutionID: identityResponse.item.institution_id,
+              accessToken: accessToken,
+              itemID: identityResponse.item.institution_id
+            }))
           })
 
-          .catch(err => console.log(err))
+          let PlaidItemIntoUserModel = (res =>{
+            console.log('This is our plaid Item', res)
+            return Promise.resolve(
+              db.User.findOneAndUpdate({ _id: res.userID}, {$push: { plaidItems: res }})
+            )
+          })
+
+
+          let PlaidAccountsCreator = ((res) =>{
+           console.log('Access Token is:', accessToken)
+            return Promise.resolve(
+              accountCreator(res, accessToken, identityResponse)
+            )
+            })
+          
+          let PlaidAccountsIntoUserModel = (res =>{
+            console.log(res);
+          
+          })
+
+          let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel]
+
+          pseries(arr).catch(err => console.log(err));
+
+        }
+
+          // .catch(err => console.log(err))
 
           // Creates the list of plaid items for our user.
-
+/*
           .then(response => {
 
               console.log(response)
@@ -189,63 +260,63 @@ app.post('/get_access_token', function (request, response, next) {
             .catch(err => console.log(err))
 
           }
-
-        }
+*/
+        // }
         
-      })
+      // })
 
-    }
+    // }
 
   })
       
-      // Generate a stripe token for the user
-      client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
-        let bankAccountToken = res.stripe_bank_account_token;
-        // This is the request_id for each transaction
-        let request_id = res.request_id;
+      // // Generate a stripe token for the user
+      // client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
+      //   let bankAccountToken = res.stripe_bank_account_token;
+      //   // This is the request_id for each transaction
+      //   let request_id = res.request_id;
 
-        stripe.customers.create({
-          "source": bankAccountToken,
-        })
-          .catch(err => console.log)
-          .then(stripe => {
+      //   stripe.customers.create({
+      //     "source": bankAccountToken,
+      //   })
+      //     .catch(err => console.log)
+      //     .then(stripe => {
             
-            db.User.findOne({ email: TonyDang.email })
-              .then(response => {
+      //       db.User.findOne({ email: TonyDang.email })
+      //         .then(response => {
                
-                  db.StripeCustomer.create({
-                    userId: response._id,
-                    stripeID: stripe.id,
-                    created: stripe.created,
-                    default_source: stripe.default_source,
-                    sourceURL: stripe.sources.url,
-                    subscriptionsURL: stripe.subscriptions.url
-                  })
+      //             db.StripeCustomer.create({
+      //               userId: response._id,
+      //               stripeID: stripe.id,
+      //               created: stripe.created,
+      //               default_source: stripe.default_source,
+      //               sourceURL: stripe.sources.url,
+      //               subscriptionsURL: stripe.subscriptions.url
+      //             })
 
-                .catch(err => console.log (err))
+      //           .catch(err => console.log (err))
 
-                .then(stripeCreated => {
+      //           .then(stripeCreated => {
 
-                  console.log("User stripe information:", stripeCreated)
-                  // Adds the stripe information to our userprofile
-                  db.User.findOneAndUpdate(
-                    {_id: stripeCreated.userId},
-                    {$set: {stripeCustomer: stripeCreated}}
-                    )
-                    .catch(err => console.log(err))
-                    .then(updateStripeUser => console.log('Here is our user with Stripe integration:', updateStripeUser))
-                })
+      //             console.log("User stripe information:", stripeCreated)
+      //             // Adds the stripe information to our userprofile
+      //             db.User.findOneAndUpdate(
+      //               {_id: stripeCreated.userId},
+      //               {$set: {stripeCustomer: stripeCreated}}
+      //               )
+      //               .catch(err => console.log(err))
+      //               .then(updateStripeUser => console.log('Here is our user with Stripe integration:', updateStripeUser))
+      //           })
                 
-              })
-              .catch(err => console.log(err))
-          })
+      //         })
+      //         .catch(err => console.log(err))
+      //     })
 
-      });
+      // });
 
     };
 
   })
-  response.send('User created!');
+  response.redirect('User created!');
 })
 
 app.get('/userIntegration', function(request, response, next){
