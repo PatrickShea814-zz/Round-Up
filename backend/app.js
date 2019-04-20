@@ -198,8 +198,9 @@ app.post('/get_access_token', function (request, response, next) {
             })
           
           let PlaidAccountsIntoUserModel = (res =>{
-            console.log(res);
-          
+            return Promise.resolve(
+            db.User.findOneAndUpdate({ _id: res[0].userID}, {$push : { plaidAccounts: res[0] }})
+            )
           })
 
           let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel]
