@@ -30,21 +30,24 @@ function pseries(list) {
   }, p);
 }
 
-// This is broken.
-function StripeCustomerCreate (accToken, accId, user){
+// const createStripeToken = async (accToken, accId)=>{
+//   client.createStripeToken(accToken, accId, function (err, res) {
+    
+//     let bankAccountToken = res.stripe_bank_account_token;
+//     // This is the request_id for each transaction
+//     // let request_id = res.request_id;
 
-  client.createStripeToken(accToken, accId, function (err, res) {
-      let bankAccountToken = res.stripe_bank_account_token;
-      // This is the request_id for each transaction
-      let request_id = res.request_id;
+//     let stripeCustomer = stripe.customers.create({
+//       "source": bankAccountToken,
+//     })
+//     .then(stripeCustomer => {return stripeCustomer})
 
-      let stripeCustomer = stripe.customers.create({
-        "source": bankAccountToken,
-      }).then(result => {return result});
+// })
 
-  }).then(result => {return result})
- 
-}
+//   .then(stripeCustomer => console.log(stripeCustomer))
+
+// }
+
 
 async function accountCreator(res, accessToken, identity){
 
@@ -221,19 +224,15 @@ app.post('/get_access_token', function (request, response, next) {
             )
           })
 
-          let StripeIntegrator = (res => {
-            return Promise.resolve(
-              StripeCustomerCreate(accessToken, ACCOUNT_ID, res )
-            )
-          })
+          let consoleLogger = res  => console.log('This is my Plaid Customer', res);
 
-          let consoleLogger = (res => console.log(res));
-
-          let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, StripeIntegrator, consoleLogger]
+          let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, consoleLogger]
 
           pseries(arr).catch(err => console.log(err));
 
         }
+      
+      })
 
           // .catch(err => console.log(err))
 
@@ -294,7 +293,7 @@ app.post('/get_access_token', function (request, response, next) {
 
     // }
 
-  })
+  }
       
       // // Generate a stripe token for the user
       // client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
@@ -340,11 +339,9 @@ app.post('/get_access_token', function (request, response, next) {
 
       // });
 
-    };
+    })
 
   })
-  response.redirect('User created!');
-})
 
 app.get('/userIntegration', function(request, response, next){
 
