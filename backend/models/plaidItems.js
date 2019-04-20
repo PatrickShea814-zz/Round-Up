@@ -10,9 +10,6 @@ let plaidItemsSchema = new Schema({
     institutionID: {
         type: String
     },
-    institutionName: {
-        type: String,
-    },
     accessToken: {
         type: String,
         required: true,
