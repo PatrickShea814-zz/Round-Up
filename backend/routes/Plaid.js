@@ -1,7 +1,66 @@
-let db = require('../models');
+// REQUIRING OUR MODELS
+var db = require("../models");
 
 module.exports = function (app) {
+    // PLAID USE STRICT
+    'use strict';
 
+    var util = require('util');
+    // PLAID REQUIRED DEPENDENCIES
+    var envvar = require('envvar');
+    var bodyParser = require('body-parser');
+    var moment = require('moment');
+    var plaid = require('plaid');
+
+    var APP_PORT = envvar.number('APP_PORT', 8034);
+    var PLAID_CLIENT_ID = envvar.string('PLAID_CLIENT_ID', process.env.PLAID_CLIENT_ID);
+    var PLAID_SECRET = envvar.string('PLAID_SECRET', process.env.PLAID_SECRET);
+    var PLAID_PUBLIC_KEY = envvar.string('PLAID_PUBLIC_KEY', process.env.PLAID_PUBLIC_KEY);
+    var PLAID_ENV = envvar.string('PLAID_ENV', 'sandbox');
+    // STRIPE REQUIRED DEPENDENCIES
+    const stripe = require('stripe')(STRIPE_ENV);
+    var STRIPE_ENV = process.env.STRIPE_KEY;
+
+
+    // PLAID_PRODUCTS is a comma-separated list of products to use when initializing
+    // Link. Note that this list must contain 'assets' in order for the app to be
+    // able to create and retrieve asset reports.
+    var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', 'transactions');
+
+    // We store the access_token in memory - in production, store it in a secure
+    // persistent data store
+    var ACCESS_TOKEN = 'access-sandbox-5fde0079-29a3-40ac-b254-1814eb75a629';
+    var PUBLIC_TOKEN = null;
+    var ITEM_ID = null;
+
+    // Initialize the Plaid client
+    // Find your API keys in the Dashboard (https://dashboard.plaid.com/account/keys)
+    var client = new plaid.Client(
+        PLAID_CLIENT_ID,
+        PLAID_SECRET,
+        PLAID_PUBLIC_KEY,
+        plaid.environments[PLAID_ENV],
+        { version: '2018-05-22' }
+    );
+
+    let TonyDang = {
+        email: 'TonyDang@gmail.com',
+        password: 'Password',
+        _id: 'AeR5A1#@ed'
+    }
+
+    var app = express();
+    app.use(express.static('public'));
+    app.set('view engine', 'ejs');
+    app.use(bodyParser.urlencoded({
+        extended: false
+    }));
+    app.use(bodyParser.json());
+
+
+    // Exchange token flow - exchange a Link public_token for
+    // an API access_token
+    // https://plaid.com/docs/#exchange-token-flow
     function pseries(list) {
         var p = Promise.resolve();
         return list.reduce(function (pacc, fn) {
@@ -25,7 +84,6 @@ module.exports = function (app) {
                     mask: identity.accounts[i].mask,
                     type: identity.accounts[i].type,
                     subtype: identity.accounts[i].subtype,
-
                 })
                 arr.push(accounts);
             }
@@ -34,7 +92,8 @@ module.exports = function (app) {
     }
 
     app.get('/', function (request, response, next) {
-        response.render('index.ejs', {
+        // TEST HOME FRONT END PLAID LINK BUTTON FILE
+        response.sendFile(path.join(__dirname, 'index.html'), {
             PLAID_PUBLIC_KEY: PLAID_PUBLIC_KEY,
             PLAID_ENV: PLAID_ENV,
             PLAID_PRODUCTS: PLAID_PRODUCTS,
@@ -239,9 +298,6 @@ module.exports = function (app) {
         });
     });
 
-    var server = app.listen(APP_PORT, function () {
-        console.log('plaid-quickstart server listening on port ' + APP_PORT);
-    });
 
     var prettyPrintResponse = response => {
         console.log(util.inspect(response, { colors: true, depth: 4 }));
@@ -302,18 +358,8 @@ module.exports = function (app) {
         );
     };
 
-    // 1. Update User Name, Phone - Identity
-    // 2. Create Plaid Item(s)
-    // 3. Create Plaid Accounts(s)
-    // 4. Create Item
-    // 5. Update Item with Institution ID
-
     app.get('/updateUser', function (request, response, next) {
-        // Get Identity Object
-        // Name & Phone Number - Update
-        // Create Item(s)
-        // Accounts Loop - Create
-        // Push Items & Accounts into User Profile
+
         client.getIdentity(ACCESS_TOKEN, function (error, identityResponse) {
             if (error != null) {
                 prettyPrintResponse(error);
@@ -321,57 +367,58 @@ module.exports = function (app) {
                     error: error,
                 });
             }
-            client.getInstitutionById(identityResponse, function (err, instRes) {
-                if (err != null) {
-                    var msg = 'Unable to pull institution information from the Plaid API.';
-                    console.log(msg + '\n' + JSON.stringify(error));
-                    return response.json({
-                        error: msg
-                    });
-                }
-                // Creates the user in our database.
-                let NewUserCreator = () => {
-                    return Promise.resolve(db.User.create({
-                        name: identityResponse.identity.names[0],
-                        password: TonyDang.password,
-                        email: TonyDang.email,
-                        phoneNum: identityResponse.identity.phone_numbers[0].data
-                    })
-                    )
-                }
-
-                let NewUserPlaidItemCreator = (res => {
-                    return Promise.resolve(db.PlaidItems.create({
-                        userID: res._id,
-                        institutionID: identityResponse.item.institution_id,
-                        institutionName: instRes.institution.name,
-                        accessToken: ACCESS_TOKEN,
-                        itemID: identityResponse.item.institution_id
-                    }))
+            console.log(identityResponse);
+            // client.getInstitutionById(itemResponse, function (err, instRes) {
+            //   if (err != null) {
+            //     var msg = 'Unable to pull institution information from the Plaid API.';
+            //     console.log(msg + '\n' + JSON.stringify(error));
+            //     return response.json({
+            //       error: msg
+            //     });
+            //   }
+            // Creates the user in our database.
+            let NewUserCreator = () => {
+                return Promise.resolve(db.User.create({
+                    name: identityResponse.identity.names[0],
+                    password: TonyDang.password,
+                    email: TonyDang.email,
+                    phoneNum: identityResponse.identity.phone_numbers[0].data
                 })
+                )
+            }
 
-                let PlaidItemIntoUserModel = (res => {
-                    console.log('This is our plaid Item', res)
-                    return Promise.resolve(
-                        db.User.findOneAndUpdate({ _id: res.userID }, { $push: { plaidItems: res } })
-                    )
-                })
-
-                let PlaidAccountsCreator = ((res) => {
-                    console.log('Access Token is:', ACCESS_TOKEN)
-                    return Promise.resolve(
-                        accountCreator(res, ACCESS_TOKEN, identityResponse)
-                    )
-                })
-
-                let PlaidAccountsIntoUserModel = (res => {
-                    console.log(res);
-                })
-
-                let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel]
-
-                pseries(arr).catch(err => console.log(err));
+            let NewUserPlaidItemCreator = (res => {
+                return Promise.resolve(db.PlaidItems.create({
+                    userID: res._id,
+                    institutionID: identityResponse.item.institution_id,
+                    accessToken: ACCESS_TOKEN,
+                    itemID: identityResponse.item.institution_id
+                }))
             })
+
+            let PlaidItemIntoUserModel = (res => {
+                console.log('This is our plaid Item', res)
+                return Promise.resolve(
+                    db.User.findOneAndUpdate({ _id: res.userID }, { $push: { plaidItems: res } })
+                )
+            })
+
+            let PlaidAccountsCreator = ((res) => {
+                console.log('Access Token is:', ACCESS_TOKEN)
+                return Promise.resolve(
+                    accountCreator(res, ACCESS_TOKEN, identityResponse)
+                )
+            })
+
+            let PlaidAccountsIntoUserModel = (res => {
+                return Promise.resolve(
+                    db.User.findOneAndUpdate({ _id: res[0].userID }, { $push: { plaidAccounts: res[0] } })
+                )
+            })
+
+            let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel]
+
+            pseries(arr).catch(err => console.log(err));
         })
     });
 

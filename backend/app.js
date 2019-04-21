@@ -1,50 +1,74 @@
-// REQUIRE OUR DEPENDENCIES
+// *****************************************************************************
+// App.js - This file is the initial starting point for the Backend Node/Express server.
+//
+// ******************************************************************************
+// *** DEPENDENCIES
+// =============================================================
 var createError = require('http-errors');
 var express = require('express');
+const mongoose = require('mongoose');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-require('dotenv').config();
+var dotenv = require('dotenv').config();
 var indexRouter = require('./routes/index');
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 const helmet = require('helmet');
+const routes = require("./routes");
 
+
+// REQUIRING OUR MODELS
+const db = require("./models");
+
+
+// SETS UP AND INITIALIZES THE EXPRESS APP 
+// =============================================================
 var app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
+// CONFIGURE OUR MIDDLEWARE
+// Use morgan logger for logging requests
 app.use(logger('dev'));
-app.use(express.json());
+// Sets ups the Express App to handle Data Parsing
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+// Make Public our Static Directory
+app.use(express.static("public"));
 app.use(cookieParser());
+// Make Public our Static Directory
 app.use(express.static(path.join(__dirname, 'public')));
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 app.use(helmet());
 
-// MONGOOSE
-const mongoose = require('mongoose');
 
-const db = require("./models");
+// ADD ROUTES
+app.use(routes);
 
-const userId = 'IggKjOZ4znfGIB2hKgxZ';
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  next(createError(404));
+});
 
-// This is our roundup function
-const minus = (minuend, subtrahend) => {
-  let difference = minuend - subtrahend;
-  return difference.toFixed(2)
-};
-//connect to mongoose database
-//old mongoose connect code
-// mongoose.connect("mongodb://localhost/roundup_db", { useNewUrlParser: true });
+// error handler
+app.use(function (err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-//use this code to work on heroku
+  // render the error page
+  res.status(err.status || 500);
+  res.json({ "error": "error" });
+});
 
+
+// CONFIGURE & CONNECT TO MONGODB/MONGOOSE DATABASE
 var MONGODB_URI = "mongodb://localhost/roundUpDB";
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 mongoose.set('useCreateIndex', true);
+// Test UserId for Transactions Route
+const userId = 'IggKjOZ4znfGIB2hKgxZ';
 
+// PLAID USE STRICT
 'use strict';
 
 var util = require('util');
@@ -92,12 +116,12 @@ let TonyDang = {
 
 var app = express();
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(bodyParser.json());
 
-app.get('/', function (request, response, next) {
-  response.sendFile(path.join(__dirname, 'index.html'))
-});
 
 // Exchange token flow - exchange a Link public_token for
 // an API access_token
@@ -125,7 +149,6 @@ async function accountCreator(res, accessToken, identity) {
         mask: identity.accounts[i].mask,
         type: identity.accounts[i].type,
         subtype: identity.accounts[i].subtype,
-
       })
       arr.push(accounts);
     }
@@ -134,7 +157,8 @@ async function accountCreator(res, accessToken, identity) {
 }
 
 app.get('/', function (request, response, next) {
-  response.render('index.ejs', {
+  // TEST HOME FRONT END PLAID LINK BUTTON FILE
+  response.sendFile(path.join(__dirname, 'index.html'), {
     PLAID_PUBLIC_KEY: PLAID_PUBLIC_KEY,
     PLAID_ENV: PLAID_ENV,
     PLAID_PRODUCTS: PLAID_PRODUCTS,
@@ -304,7 +328,7 @@ app.get('/assets', function (request, response, next) {
 
       var assetReportToken = assetReportCreateResponse.asset_report_token;
       respondWithAssetReport(20, assetReportToken, client, response);
-    },
+    }
   );
 });
 
@@ -339,9 +363,6 @@ app.get('/item', function (request, response, next) {
   });
 });
 
-var server = app.listen(APP_PORT, function () {
-  console.log('plaid-quickstart server listening on port ' + APP_PORT);
-});
 
 var prettyPrintResponse = response => {
   console.log(util.inspect(response, { colors: true, depth: 4 }));
@@ -402,18 +423,8 @@ var respondWithAssetReport = (
   );
 };
 
-// 1. Update User Name, Phone - Identity
-// 2. Create Plaid Item(s)
-// 3. Create Plaid Accounts(s)
-// 4. Create Item
-// 5. Update Item with Institution ID
-
 app.get('/updateUser', function (request, response, next) {
-  // Get Identity Object
-  // Name & Phone Number - Update
-  // Create Item(s)
-  // Accounts Loop - Create
-  // Push Items & Accounts into User Profile
+
   client.getIdentity(ACCESS_TOKEN, function (error, identityResponse) {
     if (error != null) {
       prettyPrintResponse(error);
@@ -457,7 +468,6 @@ app.get('/updateUser', function (request, response, next) {
       )
     })
 
-
     let PlaidAccountsCreator = ((res) => {
       console.log('Access Token is:', ACCESS_TOKEN)
       return Promise.resolve(
@@ -472,7 +482,6 @@ app.get('/updateUser', function (request, response, next) {
     })
 
     let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel]
-
     pseries(arr).catch(err => console.log(err));
   })
 });
@@ -490,23 +499,7 @@ app.post('/set_access_token', function (request, response, next) {
 // REMEMBER TO ADD AN .OPEN WITHIN A ROUTE HIT BY THE USER SO THAT THEY CAN ACCESS THEIR ACCOUNT SELECTION PROCESS AGAIN, BOTH
 // DELETING THEIR CURRENT CONNECTED ACCOUNTS AND ADDING NEW ONES IN ONE FELL SWOOP!
 
-// ROUTES
-app.use('/', indexRouter);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
+app.listen(APP_PORT, function () {
+  console.log(`PennyWise Server is now listening Port: ${APP_PORT}`);
 });
-
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.json({ "error": "error" });
-});
-
-module.exports = app;
