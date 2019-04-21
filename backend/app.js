@@ -1,86 +1,74 @@
-// REQUIRE OUR DEPENDENCIES
+// *****************************************************************************
+// App.js - This file is the initial starting point for the Backend Node/Express server.
+//
+// ******************************************************************************
+// *** DEPENDENCIES
+// =============================================================
 var createError = require('http-errors');
 var express = require('express');
+const mongoose = require('mongoose');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-require('dotenv').config();
+var dotenv = require('dotenv').config();
 var indexRouter = require('./routes/index');
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 const helmet = require('helmet');
+const routes = require("./routes");
 
+
+// REQUIRING OUR MODELS
+const db = require("./models");
+
+
+// SETS UP AND INITIALIZES THE EXPRESS APP 
+// =============================================================
 var app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
+// CONFIGURE OUR MIDDLEWARE
+// Use morgan logger for logging requests
 app.use(logger('dev'));
-app.use(express.json());
+// Sets ups the Express App to handle Data Parsing
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+// Make Public our Static Directory
+app.use(express.static("public"));
 app.use(cookieParser());
+// Make Public our Static Directory
 app.use(express.static(path.join(__dirname, 'public')));
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 app.use(helmet());
 
-function pseries(list) {  
-  var p = Promise.resolve();
-  return list.reduce(function(pacc, fn) {
-    return pacc = pacc.then(fn);
-  }, p);
-}
 
-async function accountCreator(res, accessToken, identity){
+// ADD ROUTES
+app.use(routes);
 
-  let arr = [];
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  next(createError(404));
+});
 
-  for (let i= 0; i < identity.accounts.length; i++){
-     
-    if (identity.accounts[i].subtype === 'checking'){
-        // console.log('Hello World!')
-        let accounts = await db.PlaidUserAccounts.create({
-          userID: res._id,
-          accessToken: accessToken,
-          account_id: identity.accounts[i].account_id,
-          accountName: identity.accounts[i].name,
-          official_name: identity.accounts[i].official_name,
-          availableBalance: identity.accounts[i].balances.available,
-          mask: identity.accounts[i].mask,
-          type: identity.accounts[i].type,
-          subtype: identity.accounts[i].subtype,
+// error handler
+app.use(function (err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-          })
-          arr.push(accounts);
-        }
-      }
-      
-  return arr;
-
-    }
+  // render the error page
+  res.status(err.status || 500);
+  res.json({ "error": "error" });
+});
 
 
-// MONGOOSE
-const mongoose = require('mongoose');
-
-const db = require("./models");
-
-const userId = 'IggKjOZ4znfGIB2hKgxZ';
-
-// This is our roundup function
-const minus = (minuend, subtrahend) => {
-  let difference = minuend - subtrahend;
-  return difference.toFixed(2)
-};
-//connect to mongoose database
-//old mongoose connect code
-// mongoose.connect("mongodb://localhost/roundup_db", { useNewUrlParser: true });
-
-//use this code to work on heroku
-
+// CONFIGURE & CONNECT TO MONGODB/MONGOOSE DATABASE
 var MONGODB_URI = "mongodb://localhost/roundUpDB";
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 mongoose.set('useCreateIndex', true);
+// Test UserId for Transactions Route
+const userId = 'IggKjOZ4znfGIB2hKgxZ';
 
+// PLAID USE STRICT
 'use strict';
 
 var util = require('util');
@@ -128,213 +116,78 @@ let TonyDang = {
 
 var app = express();
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(bodyParser.json());
 
+
+// Exchange token flow - exchange a Link public_token for
+// an API access_token
+// https://plaid.com/docs/#exchange-token-flow
+function pseries(list) {
+  var p = Promise.resolve();
+  return list.reduce(function (pacc, fn) {
+    return pacc = pacc.then(fn);
+  }, p);
+}
+
+async function accountCreator(res, accessToken, identity) {
+  let arr = [];
+  for (let i = 0; i < identity.accounts.length; i++) {
+
+    if (identity.accounts[i].subtype === 'checking') {
+      // console.log('Hello World!')
+      let accounts = await db.PlaidUserAccounts.create({
+        userID: res._id,
+        accessToken: accessToken,
+        account_id: identity.accounts[i].account_id,
+        accountName: identity.accounts[i].name,
+        official_name: identity.accounts[i].official_name,
+        availableBalance: identity.accounts[i].balances.available,
+        mask: identity.accounts[i].mask,
+        type: identity.accounts[i].type,
+        subtype: identity.accounts[i].subtype,
+      })
+      arr.push(accounts);
+    }
+  }
+  return arr;
+}
+
 app.get('/', function (request, response, next) {
-  response.sendFile(path.join(__dirname, 'index.html'))
+  // TEST HOME FRONT END PLAID LINK BUTTON FILE
+  response.sendFile(path.join(__dirname, 'index.html'), {
+    PLAID_PUBLIC_KEY: PLAID_PUBLIC_KEY,
+    PLAID_ENV: PLAID_ENV,
+    PLAID_PRODUCTS: PLAID_PRODUCTS,
+  });
 });
 
 // Exchange token flow - exchange a Link public_token for
 // an API access_token
 // https://plaid.com/docs/#exchange-token-flow
 app.post('/get_access_token', function (request, response, next) {
-  // This is the initial user signup route for plaid.
-  // Once the user signs up, the integration between plaid and stripe occurs.
-  
   PUBLIC_TOKEN = request.body.public_token;
-  ACCOUNT_ID = request.body.account_id;
-
-  // console.log(ACCOUNT_ID);
-  
   client.exchangePublicToken(PUBLIC_TOKEN, function (error, tokenResponse) {
     if (error != null) {
       prettyPrintResponse(error);
       return response.json({
         error: error,
       });
-    } else {
-      // console.log(tokenResponse);
-      var accessToken = tokenResponse.access_token;
-      
-      client.getIdentity(accessToken, function (error, identityResponse) {
-        if(error){
-          console.log(error)
-        }
-        else {
-
-          // Creates the user in our database.
-          let NewUserCreator = () => {
-              return Promise.resolve(db.User.create({
-              name: identityResponse.identity.names[0],
-              password: TonyDang.password,
-              email: TonyDang.email,
-              phoneNum: identityResponse.identity.phone_numbers[0].data
-            })
-          )}
-
-          let NewUserPlaidItemCreator = (res =>{
-            return Promise.resolve(db.PlaidItems.create({
-              userID: res._id,
-              institutionID: identityResponse.item.institution_id,
-              accessToken: accessToken,
-              itemID: identityResponse.item.institution_id
-            }))
-          })
-
-          let PlaidItemIntoUserModel = (res =>{
-            console.log('This is our plaid Item', res)
-            return Promise.resolve(
-              db.User.findOneAndUpdate({ _id: res.userID}, {$push: { plaidItems: res }})
-            )
-          })
-
-
-          let PlaidAccountsCreator = ((res) =>{
-           console.log('Access Token is:', accessToken)
-            return Promise.resolve(
-              accountCreator(res, accessToken, identityResponse)
-            )
-            })
-          
-          let PlaidAccountsIntoUserModel = (res =>{
-            console.log(res);
-          
-          })
-
-          let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel]
-
-          pseries(arr).catch(err => console.log(err));
-
-        }
-
-          // .catch(err => console.log(err))
-
-          // Creates the list of plaid items for our user.
-/*
-          .then(response => {
-
-              console.log(response)
-
-              db.PlaidItems.create({
-                userID: response._id,
-                institutionID: identityResponse.item.institution_id,
-                accessToken: accessToken,
-                itemID: identityResponse.item.institution_id
-              })
-
-              .catch(err => console.log(err))
-
-              // Pushes this list into our user model.
-              .then(PlaidItem =>{
-
-                console.log("This is the user's PlaidItem:", PlaidItem);
-
-                  db.User.findOneAndUpdate({ _id: PlaidItem.userID}, {$push: { plaidItems: PlaidItem }})
-
-                  .catch(err => console.log(err))
-  
-              })
-
-          .catch (err => console.log(err))
-          
-          for (let i = 0; i < identityResponse.accounts.length; i++){
-
-            if (identityResponse.accounts[i].subtype === 'checking'){
-              
-                db.PlaidUserAccounts.create({
-                  userID: response._id,
-                  accessToken: accessToken,
-                  account_id: identityResponse.accounts[i].account_id,
-                  accountName: identityResponse.accounts[i].name,
-                  official_name: identityResponse.accounts[i].official_name,
-                  availableBalance: identityResponse.accounts[i].balances.available,
-                  mask: identityResponse.accounts[i].mask,
-                  type: identityResponse.accounts[i].type,
-                  subtype: identityResponse.accounts[i].subtype,
-
-                  })
-
-            .catch(err => console.log(err))
-            .then (accounts => console.log('These are the connected accounts:', accounts))
-            .catch(err => console.log(err))
-
-          }
-*/
-        // }
-        
-      // })
-
-    // }
-
-  })
-      
-      // // Generate a stripe token for the user
-      // client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
-      //   let bankAccountToken = res.stripe_bank_account_token;
-      //   // This is the request_id for each transaction
-      //   let request_id = res.request_id;
-
-      //   stripe.customers.create({
-      //     "source": bankAccountToken,
-      //   })
-      //     .catch(err => console.log)
-      //     .then(stripe => {
-            
-      //       db.User.findOne({ email: TonyDang.email })
-      //         .then(response => {
-               
-      //             db.StripeCustomer.create({
-      //               userId: response._id,
-      //               stripeID: stripe.id,
-      //               created: stripe.created,
-      //               default_source: stripe.default_source,
-      //               sourceURL: stripe.sources.url,
-      //               subscriptionsURL: stripe.subscriptions.url
-      //             })
-
-      //           .catch(err => console.log (err))
-
-      //           .then(stripeCreated => {
-
-      //             console.log("User stripe information:", stripeCreated)
-      //             // Adds the stripe information to our userprofile
-      //             db.User.findOneAndUpdate(
-      //               {_id: stripeCreated.userId},
-      //               {$set: {stripeCustomer: stripeCreated}}
-      //               )
-      //               .catch(err => console.log(err))
-      //               .then(updateStripeUser => console.log('Here is our user with Stripe integration:', updateStripeUser))
-      //           })
-                
-      //         })
-      //         .catch(err => console.log(err))
-      //     })
-
-      // });
-
-    };
-
-  })
-  response.redirect('User created!');
-})
-
-app.get('/userIntegration', function(request, response, next){
-
-  // db.User.findOne({ email: TonyDang.email})
-  //   .catch(err => console.log(err))
-  //   .then(user => {
-  //     console.log('Looking to integrate PlaidItems:', user)
-  //     db.PlaidItems.findOne({ userID: user._id})
-  //     .catch(err => console.log(err))
-  //     .then(response => console.log('Here is the PlaidItem we found:', response))
-  //     db.User.findByIdAndUpdate({ _id: user._id}, {$set: { plaidItems: response}})
-  //     .catch(err => console.log(err))
-  //     .then(updatedUser => console.log('Here is our updated user:', updatedUser))
-  //   })
-    
+    }
+    ACCESS_TOKEN = tokenResponse.access_token;
+    ITEM_ID = tokenResponse.item_id;
+    prettyPrintResponse(tokenResponse);
+    response.json({
+      access_token: ACCESS_TOKEN,
+      item_id: ITEM_ID,
+      error: null,
     });
-    
+  });
+});
+
 
 // Retrieve Transactions for an Item
 // https://plaid.com/docs/#transactions
@@ -372,9 +225,7 @@ app.get('/transactions', function (request, response, next) {
       prettyPrintResponse(transactionsResponse);
       response.json({ error: null, transactions: transactionsResponse.transactions });
     }
-
   });
-
 });
 
 // Retrieve Identity for an Item
@@ -416,28 +267,9 @@ app.get('/accounts', function (request, response, next) {
       return response.json({
         error: error,
       });
-    } else {
-      for (let i = 0; i < accountsResponse.accounts.length; i++) {
-        if (accountsResponse.accounts[i].subtype === 'checking') {
-          // ADJUST QUERY TO UPDATE EXISTING USER
-          db.PlaidUserAccounts.create({
-            userID: 'IggKjOZ4znfGIB2hKgxZ',
-            accessToken: ACCESS_TOKEN,
-            account_id: accountsResponse.accounts[i].account_id,
-            accountName: accountsResponse.accounts[i].name,
-            official_name: accountsResponse.accounts[i].official_name,
-            availableBalance: accountsResponse.accounts[i].balances.available,
-            mask: accountsResponse.accounts[i].mask,
-            type: accountsResponse.accounts[i].type,
-            subtype: accountsResponse.accounts[i].subtype
-          })
-            .then(response => console.log(response))
-            .catch(err => console.log(err));
-        }
-      }
     }
     prettyPrintResponse(accountsResponse);
-    response.json({ error: null, accounts: accountsResponse.accounts });
+    response.json({ error: null, accounts: accountsResponse });
   });
 });
 
@@ -451,23 +283,8 @@ app.get('/auth', function (request, response, next) {
         error: error,
       });
     }
-    // Handle err
-    var accountData = authResponse.numbers;
-    if (accountData.ach.length > 0) {
-      // Handle ACH numbers (US accounts)
-      var achNumbers = accountData.ach;
-      prettyPrintResponse(accountData);
-      response.json({ error: null, auth: accountData });
-      return achNumbers;
-      // QUERY FOR MATCHING TO PLAIDUSERACC IF/ELSE STATEMENT
-    } else if (accountData.eft.length > 0) {
-      // Handle EFT numbers (Canadian accounts)
-      var eftNumbers = accountData.eft;
-      prettyPrintResponse(accountData);
-      response.json({ error: null, auth: accountData });
-      return eftNumbers;
-      // QUERY FOR MATCHING TO PLAIDUSERACC IF/ELSE STATEMENT
-    }
+    prettyPrintResponse(authResponse);
+    response.json({ error: null, auth: authResponse });
   });
 });
 
@@ -497,7 +314,7 @@ app.get('/assets', function (request, response, next) {
     },
   };
   client.createAssetReport(
-    ["access-sandbox-f590f4d0-1c00-4907-95b8-96faf2e81018"],
+    [ACCESS_TOKEN],
     daysRequested,
     options,
     function (error, assetReportCreateResponse) {
@@ -511,7 +328,7 @@ app.get('/assets', function (request, response, next) {
 
       var assetReportToken = assetReportCreateResponse.asset_report_token;
       respondWithAssetReport(20, assetReportToken, client, response);
-    },
+    }
   );
 });
 
@@ -520,7 +337,7 @@ app.get('/assets', function (request, response, next) {
 app.get('/item', function (request, response, next) {
   // Pull the Item - this includes information about available products,
   // billed products, webhook information, and more.
-  client.getItem("access-sandbox-f590f4d0-1c00-4907-95b8-96faf2e81018", function (error, itemResponse) {
+  client.getItem(ACCESS_TOKEN, function (error, itemResponse) {
     if (error != null) {
       prettyPrintResponse(error);
       return response.json({
@@ -546,9 +363,6 @@ app.get('/item', function (request, response, next) {
   });
 });
 
-var server = app.listen(APP_PORT, function () {
-  console.log('plaid-quickstart server listening on port ' + APP_PORT);
-});
 
 var prettyPrintResponse = response => {
   console.log(util.inspect(response, { colors: true, depth: 4 }));
@@ -609,6 +423,69 @@ var respondWithAssetReport = (
   );
 };
 
+app.get('/updateUser', function (request, response, next) {
+
+  client.getIdentity(ACCESS_TOKEN, function (error, identityResponse) {
+    if (error != null) {
+      prettyPrintResponse(error);
+      return response.json({
+        error: error,
+      });
+    }
+    console.log(identityResponse);
+    // client.getInstitutionById(itemResponse, function (err, instRes) {
+    //   if (err != null) {
+    //     var msg = 'Unable to pull institution information from the Plaid API.';
+    //     console.log(msg + '\n' + JSON.stringify(error));
+    //     return response.json({
+    //       error: msg
+    //     });
+    //   }
+    // Creates the user in our database.
+    let NewUserCreator = () => {
+      return Promise.resolve(db.User.create({
+        name: identityResponse.identity.names[0],
+        password: TonyDang.password,
+        email: TonyDang.email,
+        phoneNum: identityResponse.identity.phone_numbers[0].data
+      })
+      )
+    }
+
+    let NewUserPlaidItemCreator = (res => {
+      return Promise.resolve(db.PlaidItems.create({
+        userID: res._id,
+        institutionID: identityResponse.item.institution_id,
+        accessToken: ACCESS_TOKEN,
+        itemID: identityResponse.item.institution_id
+      }))
+    })
+
+    let PlaidItemIntoUserModel = (res => {
+      console.log('This is our plaid Item', res)
+      return Promise.resolve(
+        db.User.findOneAndUpdate({ _id: res.userID }, { $push: { plaidItems: res } })
+      )
+    })
+
+    let PlaidAccountsCreator = ((res) => {
+      console.log('Access Token is:', ACCESS_TOKEN)
+      return Promise.resolve(
+        accountCreator(res, ACCESS_TOKEN, identityResponse)
+      )
+    })
+
+    let PlaidAccountsIntoUserModel = (res => {
+      return Promise.resolve(
+        db.User.findOneAndUpdate({ _id: res[0].userID }, { $push: { plaidAccounts: res[0] } })
+      )
+    })
+
+    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel]
+    pseries(arr).catch(err => console.log(err));
+  })
+});
+
 app.post('/set_access_token', function (request, response, next) {
   ACCESS_TOKEN = request.body.access_token;
   client.getItem(ACCESS_TOKEN, function (error, itemResponse) {
@@ -617,29 +494,12 @@ app.post('/set_access_token', function (request, response, next) {
       error: false,
     });
   });
-  console.log(access_token)
 });
 
 // REMEMBER TO ADD AN .OPEN WITHIN A ROUTE HIT BY THE USER SO THAT THEY CAN ACCESS THEIR ACCOUNT SELECTION PROCESS AGAIN, BOTH
 // DELETING THEIR CURRENT CONNECTED ACCOUNTS AND ADDING NEW ONES IN ONE FELL SWOOP!
 
-// ROUTES
-app.use('/', indexRouter);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
+app.listen(APP_PORT, function () {
+  console.log(`PennyWise Server is now listening Port: ${APP_PORT}`);
 });
-
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.json({ "error": "error" });
-});
-
-module.exports = app;
