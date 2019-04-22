@@ -30,7 +30,7 @@ var app = express();
 // Use morgan logger for logging requests
 app.use(logger('dev'));
 // Sets ups the Express App to handle Data Parsing
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // Make Public our Static Directory
 app.use(express.static("public"));
@@ -118,7 +118,7 @@ var app = express();
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
-  extended: false
+  extended: true
 }));
 app.use(bodyParser.json());
 
@@ -169,7 +169,9 @@ app.get('/', function (request, response, next) {
 // an API access_token
 // https://plaid.com/docs/#exchange-token-flow
 app.post('/get_access_token', function (request, response, next) {
+  console.log(request.body);
   PUBLIC_TOKEN = request.body.public_token;
+  ACCOUNTS = request.body.ACCOUNTS;
   client.exchangePublicToken(PUBLIC_TOKEN, function (error, tokenResponse) {
     if (error != null) {
       prettyPrintResponse(error);
