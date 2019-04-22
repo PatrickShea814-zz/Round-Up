@@ -3,14 +3,26 @@ var db = require("../models");
 
 module.exports = function (app) {
 
-    app.post('/createCustomer', function (request, response, next) {
-        client.createStripeToken(accessToken, ACCOUNT_ID, function (err, res) {
+    app.post('/createStripeToken', function (request, response, next) {
+        let ACCESS_TOKEN = ;
+        let ACCOUNT_ID = ;
+
+        client.createStripeToken(ACCESS_TOKEN, ACCOUNT_ID, function (err, res) {
             let bankAccountToken = res.stripe_bank_account_token;
-            stripe.customers.create({
-                "source": bankAccountToken,
-            })
         });
     });
+
+
+    app.post('/createCustomer', function (request, response, next) {
+
+        stripe.customers.create({
+            "source": bankAccountToken,
+            "description": 'Customer for jenny.rosen@example.com'
+        }, function (err, customer) {
+            // asynchronously called
+        });
+    });
+
 
     app.get('/getCustomer', function (request, response, next) {
         stripe.customers.retrieve(

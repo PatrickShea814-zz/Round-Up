@@ -4,29 +4,24 @@ let Schema = mongoose.Schema;
 let stripeCustomerSchema = new Schema({
     // User_ID from userProfile that is automatically generated.
     userId: {
-        type: String,
-        required: true
+        type: String
     },
     // stripeID = id in createCustomer
     stripeID: {
-        type: String,
-        required: true
+        type: String
     },
     created: {
-        type: Number,
-        required: true
+        type: Number
     },
-    default_source: {
-        type: String,
-        required: true
+    // bankAccountTokens
+    sources: {
+        type: Array
     },
-    sourceURL: {
-        type: String,
-        required: true
+    sources_url: {
+        type: String
     },
-    subscriptionsURL: {
-        type: String,
-        required: true
+    subscriptions_url: {
+        type: String
     }
 });
 

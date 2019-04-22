@@ -134,11 +134,13 @@ function pseries(list) {
 }
 
 async function accountCreator(res, accessToken, identity) {
-  let arr = [];
-  for (let i = 0; i < identity.accounts.length; i++) {
 
+  let arr = [];
+
+  for (let i = 0; i < identity.accounts.length; i++) {
     if (identity.accounts[i].subtype === 'checking') {
-      // console.log('Hello World!')
+      console.log('Just Checking ;)');
+
       let accounts = await db.PlaidUserAccounts.create({
         userID: res._id,
         accessToken: accessToken,
@@ -149,9 +151,29 @@ async function accountCreator(res, accessToken, identity) {
         mask: identity.accounts[i].mask,
         type: identity.accounts[i].type,
         subtype: identity.accounts[i].subtype,
-      })
+      });
       arr.push(accounts);
     }
+  }
+  return arr;
+}
+
+function stripeTokenCreator(res, accessToken, identity) {
+
+  let arr = [];
+
+  for (let i = 0; i < identity.accounts.length; i++) {
+    let accountID = identity.accounts[i].account_id;
+
+    client.createStripeToken(accessToken, accountID, function (err, res) {
+      console.log('HEY', accessToken);
+      console.log('YO', accountID);
+      console.log("STRIPE", res)
+      var bankAccountToken = res.stripe_bank_account_token;
+      console.log(bankAccountToken);
+      arr.push(bankAccountToken);
+    });
+
   }
   return arr;
 }
@@ -432,7 +454,7 @@ app.get('/updateUser', function (request, response, next) {
         error: error,
       });
     }
-    console.log(identityResponse);
+
     // client.getInstitutionById(itemResponse, function (err, instRes) {
     //   if (err != null) {
     //     var msg = 'Unable to pull institution information from the Plaid API.';
@@ -449,7 +471,7 @@ app.get('/updateUser', function (request, response, next) {
         email: TonyDang.email,
         phoneNum: identityResponse.identity.phone_numbers[0].data
       })
-      )
+      );
     }
 
     let NewUserPlaidItemCreator = (res => {
@@ -458,30 +480,57 @@ app.get('/updateUser', function (request, response, next) {
         institutionID: identityResponse.item.institution_id,
         accessToken: ACCESS_TOKEN,
         itemID: identityResponse.item.institution_id
-      }))
+      }));
     })
 
     let PlaidItemIntoUserModel = (res => {
       console.log('This is our plaid Item', res)
       return Promise.resolve(
         db.User.findOneAndUpdate({ _id: res.userID }, { $push: { plaidItems: res } })
-      )
+      );
     })
 
-    let PlaidAccountsCreator = ((res) => {
+    let PlaidAccountsCreator = (res => {
       console.log('Access Token is:', ACCESS_TOKEN)
       return Promise.resolve(
         accountCreator(res, ACCESS_TOKEN, identityResponse)
-      )
+      );
     })
 
     let PlaidAccountsIntoUserModel = (res => {
       return Promise.resolve(
         db.User.findOneAndUpdate({ _id: res[0].userID }, { $push: { plaidAccounts: res[0] } })
-      )
+      );
     })
 
-    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel]
+
+    let CreateStripeTokens = (res => {
+      console.log('ARRGGHH', res)
+      return Promise.resolve(
+        stripeTokenCreator(res, ACCESS_TOKEN, identityResponse)
+      );
+    })
+
+    // let CreateStripeCustomer = (res => {
+    //   return Promise.resolve(
+    //     stripe.customers.create({
+    //       description: `Stripe Account for ${identityResponse.identity.names} ${ACCESS_TOKEN}`,
+    //       sources: res.arr
+    //     }, function (err, customer) {
+    //       db.StripeCustomer.create({
+    //         userId: res._id,
+    //         name: customer.name,
+    //         stripeID: customer.id,
+    //         created: customer.created,
+    //         sources: customer.sources,
+    //         sources_url: customer.sources.url,
+    //         subscriptions_url: customer.subscriptions.url
+    //       })
+    //     })
+    //   )
+    // })
+
+    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, CreateStripeTokens]
     pseries(arr).catch(err => console.log(err));
   })
 });
