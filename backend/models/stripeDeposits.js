@@ -10,18 +10,35 @@ let StripeDeposSchema = new Schema({
         required: true,
         trim: true
     },
+    // Account_id associated to the account the transaction came from.
+    account_id: {
+        type: String,
+        required: true
+    },
     // name of the original transaction that was rounded up.
     transactionName: {
         type: String,
         required: true
     },
+    // the original transaction amount.
+    originalAmount: {
+        type: Number,
+        required: true
+    },
+    // The currency code for reference.
+    currencyCode: {
+        type: String,
+        required: true
+    },
+    // Category of transaction.
+    // For future use for User Savings Preferences & Settings.
+    category: {
+        type: Array,
+        required: true
+    },
     // amount deposited into Stripe from User Account from ACH.
     amountDeposited: {
         type: Number,
-        trim: true
-    },
-    depositDate: {
-        type: Date,
         trim: true
     },
     // The transaction_id associated to the completed posted ACH in Transaction History
@@ -36,6 +53,10 @@ let StripeDeposSchema = new Schema({
         type: Number,
         trim: true,
         unique: true,
+        required: true
+    },
+    originalTransactionDate: {
+        type: Date,
         required: true
     },
     // Date that Stripe receives the rounded up amount.
