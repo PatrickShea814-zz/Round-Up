@@ -158,25 +158,10 @@ async function accountCreator(res, accessToken, identity) {
 }
 
 async function StripeTokenCreator (accToken, accId){
-    let TokenCreator = client.createStripeToken(accToken, accId, function (err, res) {
-      console.log(accToken);
-      console.log(accId);
-      console.log(res);
-      let bankAccountToken = res.stripe_bank_account_token;
-      // This is the request_id for each transaction
-      // let request_id = res.request_id;
-  
-      let stripeToken = stripe.customers.create({
-        "source": bankAccountToken,
-      })
-      .then(Token => {return Token})
-  
-      return stripeToken
 
-    })
+    let asyncStripe = await client.createStripeToken(accToken, accId)
 
-    return Promise.resolve(TokenCreator);
-  
+    return asyncStripe
   }
   
 
@@ -485,14 +470,14 @@ app.get('/updateUser', function (request, response, next) {
     })
 
     let PlaidItemIntoUserModel = (res => {
-      console.log('This is our plaid Item', res)
+     
       return Promise.resolve(
         db.User.findOneAndUpdate({ _id: res.userID }, { $push: { plaidItems: res } })
       )
     })
 
     let PlaidAccountsCreator = ((res) => {
-      console.log('Access Token is:', ACCESS_TOKEN)
+      
       return Promise.resolve(
         accountCreator(res, ACCESS_TOKEN, identityResponse)
       )
@@ -504,21 +489,61 @@ app.get('/updateUser', function (request, response, next) {
       )
     });
 
-    let TokenCreator = (res => {
-        console.log('This is for Stripe', res);
-        let Tkn = Promise.resolve(
-          StripeTokenCreator(ACCESS_TOKEN, ACCOUNT_ID)
-          )
+    async function TokenCreator(res) {
 
+        let Tkn = await StripeTokenCreator(ACCESS_TOKEN, ACCOUNT_ID)
+        
           return [res, Tkn]
-        });
+
+        };
     
-    let StripeAccountCreator = (res => {
-      db.StripeCustomer.create({ userID})
+    async function StripeAccountCreator (res) {
+
+      let USER = res[0];
+      let strTok = res[1];
+
+      let StripeCustomer = await stripe.customers.create({
+          
+          "source": strTok.stripe_bank_account_token
+
+        })
+      
+      return [USER, StripeCustomer]
+      /*
+      return StripeCustomer //should be Promise
+      */
+    }
+    /*
+    let StripeAccount = StripeAccountCreator(res)
+
+    StripeAcount.then((StripeCustomer) => {
+      console.log(StripeCustomer)
     })
+    */
+
+    async function StripeDataCreator(res){
+      let USER = res[0];
+      
+      let StrCust = res[1];
+
+      let Customer = await db.StripeCustomer.create({
+        userId: USER._id,
+        stripeID: StrCust.id,
+        created: StrCust.created,
+        default_source: StrCust.default_source,
+        sourceURL: StrCust.sources.url,
+        subscriptionsURL: StrCust.subscriptions.url
+      })
+
+      USER = await USER.update({$push: {stripeCustomer: Customer}})
+
+      return [USER, Customer]
+    }
+
     
     let consoleLogger = (res => console.log('This is the result', res));
-    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, TokenCreator, consoleLogger]
+
+    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, TokenCreator, StripeAccountCreator, StripeDataCreator, consoleLogger]
     pseries(arr).catch(err => console.log(err));
   })
 
