@@ -1,6 +1,7 @@
 import auth0 from 'auth0-js';
 import { AUTH_CONFIG } from './auth0-variables';
 import history from '../history';
+import axios from "axios"
 
 export default class Auth {
   accessToken;
@@ -88,6 +89,16 @@ export default class Auth {
     this.auth0.client.userInfo(this.accessToken, (err, profile) => {
       if (profile) {
         this.userProfile = profile;
+        var user_id = profile.sub
+
+        //axios request sends user id to backend needed to call
+        // auth0 management API to get user information such as email
+        axios.request({
+          method: "POST",
+          url: "/authAPI",
+          data: {user_id}
+        }).then( (res) => {console.log("userID post success", res.data)
+        }).catch( (err) => {console.log("userID post failed", err)})
       }
       cb(err, profile);
     });
