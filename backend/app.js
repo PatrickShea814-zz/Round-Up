@@ -42,7 +42,7 @@ app.use(helmet());
 
 
 // ADD ROUTES
-app.use(routes);
+// app.use(routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -192,7 +192,6 @@ app.post('/get_access_token', function (request, response, next) {
     ACCESS_TOKEN = tokenResponse.access_token;
     ITEM_ID = tokenResponse.item_id;
     prettyPrintResponse(tokenResponse);
-    response.redirect('/updateUser')
   });
 });
 
@@ -441,14 +440,6 @@ app.get('/updateUser', function (request, response, next) {
       });
     }
   
-    // client.getInstitutionById(itemResponse, function (err, instRes) {
-    //   if (err != null) {
-    //     var msg = 'Unable to pull institution information from the Plaid API.';
-    //     console.log(msg + '\n' + JSON.stringify(error));
-    //     return response.json({
-    //       error: msg
-    //     });
-    //   }
     // Creates the user in our database.
     let NewUserCreator = () => {
       return Promise.resolve(db.User.create({
