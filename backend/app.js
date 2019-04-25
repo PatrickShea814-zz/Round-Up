@@ -15,7 +15,7 @@ var indexRouter = require('./routes/index');
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 const helmet = require('helmet');
 const routes = require("./routes");
-
+const  cors = require('cors');
 
 // REQUIRING OUR MODELS
 const db = require("./models");
@@ -24,7 +24,8 @@ const db = require("./models");
 // SETS UP AND INITIALIZES THE EXPRESS APP 
 // =============================================================
 var app = express();
-
+// ADD CORS acceptance
+app.use(cors())
 
 // CONFIGURE OUR MIDDLEWARE
 // Use morgan logger for logging requests
@@ -554,6 +555,9 @@ app.post('/set_access_token', function (request, response, next) {
 // REMEMBER TO ADD AN .OPEN WITHIN A ROUTE HIT BY THE USER SO THAT THEY CAN ACCESS THEIR ACCOUNT SELECTION PROCESS AGAIN, BOTH
 // DELETING THEIR CURRENT CONNECTED ACCOUNTS AND ADDING NEW ONES IN ONE FELL SWOOP!
 
+//route to auth0 to
+//1. obtain user id
+require("./routes/Auth0")(app)
 
 app.listen(APP_PORT, function () {
   console.log(`PennyWise Server is now listening Port: ${APP_PORT}`);
