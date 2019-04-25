@@ -5,11 +5,11 @@ module.exports = function (app) {
     app.post("/authAPI", (req, res) => {
 
         user_id = req.body
-        // console.log(user_id)       
+        console.log(user_id)       
         // console.log('6', acctMgmt)
         // let APIcall = acctMgmt.AuthAPICall(token)
         // acctMgmt.AuthAPICall(authToken)
-        res.send(`user id obtained, ${user_id}`)
+        res.send(`user id obtained, ${user_id.user_id}`)
     });
 
 }

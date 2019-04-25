@@ -58,5 +58,5 @@ var AUTH0_API_CLIENT_SECRET = process.env.AUTH0_API_CLIENT_SECRET
             console.log("email: ", body.email);
         });
     }
-    getAuth0Token(AuthAPICall)
+    // getAuth0Token(AuthAPICall)
     module.exports = {}
