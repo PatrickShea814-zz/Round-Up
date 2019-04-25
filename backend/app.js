@@ -30,7 +30,7 @@ var app = express();
 // Use morgan logger for logging requests
 app.use(logger('dev'));
 // Sets ups the Express App to handle Data Parsing
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // Make Public our Static Directory
 app.use(express.static("public"));
@@ -97,6 +97,7 @@ var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', 'transactions');
 var ACCESS_TOKEN = 'access-sandbox-5fde0079-29a3-40ac-b254-1814eb75a629';
 var PUBLIC_TOKEN = null;
 var ITEM_ID = null;
+var ACCOUNT_ID;
 
 // Initialize the Plaid client
 // Find your API keys in the Dashboard (https://dashboard.plaid.com/account/keys)
@@ -118,7 +119,7 @@ var app = express();
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
-  extended: false
+  extended: true
 }));
 app.use(bodyParser.json());
 
@@ -156,6 +157,14 @@ async function accountCreator(res, accessToken, identity) {
   return arr;
 }
 
+async function StripeTokenCreator (accToken, accId){
+
+    let asyncStripe = await client.createStripeToken(accToken, accId)
+
+    return asyncStripe
+  }
+  
+
 app.get('/', function (request, response, next) {
   // TEST HOME FRONT END PLAID LINK BUTTON FILE
   response.sendFile(path.join(__dirname, 'index.html'), {
@@ -169,7 +178,10 @@ app.get('/', function (request, response, next) {
 // an API access_token
 // https://plaid.com/docs/#exchange-token-flow
 app.post('/get_access_token', function (request, response, next) {
+  
   PUBLIC_TOKEN = request.body.public_token;
+  ACCOUNTS = request.body.ACCOUNTS;
+  ACCOUNT_ID = request.body.account_id;
   client.exchangePublicToken(PUBLIC_TOKEN, function (error, tokenResponse) {
     if (error != null) {
       prettyPrintResponse(error);
@@ -180,11 +192,7 @@ app.post('/get_access_token', function (request, response, next) {
     ACCESS_TOKEN = tokenResponse.access_token;
     ITEM_ID = tokenResponse.item_id;
     prettyPrintResponse(tokenResponse);
-    response.json({
-      access_token: ACCESS_TOKEN,
-      item_id: ITEM_ID,
-      error: null,
-    });
+    response.redirect('/updateUser')
   });
 });
 
@@ -207,7 +215,7 @@ app.get('/transactions', function (request, response, next) {
     } else {
       for (let i = 0; i < transactionsResponse.transactions.length; i++) {
         let toBeRounded = Math.ceil(transactionsResponse.transactions[i].amount);
-        console.log(toBeRounded);
+        
         db.RoundedTrans.create({
           userID: 'IggKjOZ4znfGIB2hKgxZ',
           account_id: transactionsResponse.transactions[i].account_id,
@@ -432,7 +440,7 @@ app.get('/updateUser', function (request, response, next) {
         error: error,
       });
     }
-    console.log(identityResponse);
+  
     // client.getInstitutionById(itemResponse, function (err, instRes) {
     //   if (err != null) {
     //     var msg = 'Unable to pull institution information from the Plaid API.';
@@ -462,14 +470,14 @@ app.get('/updateUser', function (request, response, next) {
     })
 
     let PlaidItemIntoUserModel = (res => {
-      console.log('This is our plaid Item', res)
+     
       return Promise.resolve(
         db.User.findOneAndUpdate({ _id: res.userID }, { $push: { plaidItems: res } })
       )
     })
 
     let PlaidAccountsCreator = ((res) => {
-      console.log('Access Token is:', ACCESS_TOKEN)
+      
       return Promise.resolve(
         accountCreator(res, ACCESS_TOKEN, identityResponse)
       )
@@ -479,12 +487,68 @@ app.get('/updateUser', function (request, response, next) {
       return Promise.resolve(
         db.User.findOneAndUpdate({ _id: res[0].userID }, { $push: { plaidAccounts: res[0] } })
       )
-    })
+    });
 
-    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel]
+    async function TokenCreator(res) {
+
+        let Tkn = await StripeTokenCreator(ACCESS_TOKEN, ACCOUNT_ID)
+        
+          return [res, Tkn]
+
+        };
+    
+    async function StripeAccountCreator (res) {
+
+      let USER = res[0];
+      let strTok = res[1];
+
+      let StripeCustomer = await stripe.customers.create({
+          
+          "source": strTok.stripe_bank_account_token
+
+        })
+      
+      return [USER, StripeCustomer]
+      /*
+      return StripeCustomer //should be Promise
+      */
+    }
+    /*
+    let StripeAccount = StripeAccountCreator(res)
+
+    StripeAcount.then((StripeCustomer) => {
+      console.log(StripeCustomer)
+    })
+    */
+
+    async function StripeDataCreator(res){
+      let USER = res[0];
+      
+      let StrCust = res[1];
+
+      let Customer = await db.StripeCustomer.create({
+        userId: USER._id,
+        stripeID: StrCust.id,
+        created: StrCust.created,
+        default_source: StrCust.default_source,
+        sourceURL: StrCust.sources.url,
+        subscriptionsURL: StrCust.subscriptions.url
+      })
+
+      USER = await USER.update({$push: {stripeCustomer: Customer}})
+
+      return [USER, Customer]
+    }
+
+    
+    let consoleLogger = (res => console.log('This is the result', res));
+
+    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, TokenCreator, StripeAccountCreator, StripeDataCreator, consoleLogger]
     pseries(arr).catch(err => console.log(err));
   })
-});
+
+})
+
 
 app.post('/set_access_token', function (request, response, next) {
   ACCESS_TOKEN = request.body.access_token;
