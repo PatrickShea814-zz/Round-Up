@@ -100,7 +100,7 @@ var ACCESS_TOKEN = 'access-sandbox-5fde0079-29a3-40ac-b254-1814eb75a629';
 var PUBLIC_TOKEN = null;
 var ITEM_ID = null;
 var ACCOUNT_ID;
-var USER_ID;
+var AUTH0_ID;
 var ACCOUNTS;
 
 // Initialize the Plaid client
@@ -443,18 +443,19 @@ var respondWithAssetReport = (
 //Route Sign in user for new or returning user
 // require("./routes/Auth0")(app)
 app.post("/authAPI", (req, res) => {
-  USER_ID = req.body.USER_ID  
+  AUTH0_ID = req.body.user_id  
+  
   db.User.find({
-    userID: USER_ID
+    auth0_ID: AUTH0_ID
   }).then(function(dbData){
     console.log(`dbData!${dbData}- here`)
-    if (dbData == USER_ID) {
+    if (dbData == AUTH0_ID) {
       console.log("existing user")
       res.send("existing user")
     } else {
       db.User.create({
-        userID: USER_ID
-      });
+        auth0_ID: AUTH0_ID
+      }).then(user => console.log('This is our new user:', user))
       console.log("im a new user")
       res.send("im a new user")
     }
@@ -486,16 +487,14 @@ app.get('/updateUser', function (request, response, next) {
   
     // Creates the user in our database.
     let NewUserCreator = () => {
-      return Promise.resolve(db.User.create({
-        name: identityResponse.identity.names[0],
-        password: TonyDang.password,
-        email: TonyDang.email,
-        phoneNum: identityResponse.identity.phone_numbers[0].data
+      return Promise.resolve(db.User.findOne({
+        auth0_ID: AUTH0_ID
       })
       )
     }
 
     let NewUserPlaidItemCreator = (res => {
+      console.log('This is the user we found', res);
       return Promise.resolve(db.PlaidItems.create({
         userID: res._id,
         institutionID: identityResponse.item.institution_id,

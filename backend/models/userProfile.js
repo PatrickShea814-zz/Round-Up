@@ -29,7 +29,7 @@ let userSchema = new Schema({
         unique: true,
         required: false
     },
-    userID: {
+    auth0_ID: {
         type: String,
         unique: true,
         require: true
