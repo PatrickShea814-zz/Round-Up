@@ -7,19 +7,12 @@ let stripeCustomerSchema = new Schema({
         type: String,
         required: true
     },
-    // stripeID = id in createCustomer
-    stripeID: {
-        type: String,
-        required: true
-    },
+
     created: {
         type: Number,
         required: true
     },
-    default_source: {
-        type: String,
-        required: true
-    },
+    
     sourceURL: {
         type: String,
         required: true
