@@ -443,6 +443,7 @@ var respondWithAssetReport = (
 //Route Sign in user for new or returning user
 // require("./routes/Auth0")(app)
 app.post("/authAPI", (req, res) => {
+  
   AUTH0_ID = req.body.user_id  
   
   db.User.find({
@@ -451,13 +452,13 @@ app.post("/authAPI", (req, res) => {
     console.log(`dbData!${dbData}- here`)
     if (dbData == AUTH0_ID) {
       console.log("existing user")
-      res.send("existing user")
+      res.json({"new_user": false})
     } else {
       db.User.create({
         auth0_ID: AUTH0_ID
       }).then(user => console.log('This is our new user:', user))
       console.log("im a new user")
-      res.send("im a new user")
+      res.json({"new_user": true})
     }
   }).catch(function(err){
     console.log(`authAPI route err, ${err}`)
