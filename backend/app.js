@@ -98,6 +98,7 @@ var ACCESS_TOKEN = 'access-sandbox-5fde0079-29a3-40ac-b254-1814eb75a629';
 var PUBLIC_TOKEN = null;
 var ITEM_ID = null;
 var ACCOUNT_ID;
+var ACCOUNTS;
 
 // Initialize the Plaid client
 // Find your API keys in the Dashboard (https://dashboard.plaid.com/account/keys)
@@ -135,21 +136,25 @@ function pseries(list) {
 }
 
 async function accountCreator(res, accessToken, identity) {
-  let arr = [];
-  for (let i = 0; i < identity.accounts.length; i++) {
 
-    if (identity.accounts[i].subtype === 'checking') {
-      // console.log('Hello World!')
+  let arr = [];
+
+  console.log('ACCOUNT ID', ACCOUNT_ID);
+  console.log('ACCOUNTS', ACCOUNTS);
+
+  for (let i = 0; i < ACCOUNTS.length; i++) {
+
+    if (ACCOUNTS[i].subtype === 'checking') {
+      
       let accounts = await db.PlaidUserAccounts.create({
         userID: res._id,
         accessToken: accessToken,
-        account_id: identity.accounts[i].account_id,
-        accountName: identity.accounts[i].name,
-        official_name: identity.accounts[i].official_name,
-        availableBalance: identity.accounts[i].balances.available,
-        mask: identity.accounts[i].mask,
-        type: identity.accounts[i].type,
-        subtype: identity.accounts[i].subtype,
+        account_id: ACCOUNTS[i].id,
+        stripeToken: await client.createStripeToken(ACCESS_TOKEN, ACCOUNTS[i].id).then(res => {return res.stripe_bank_account_token}),
+        accountName: ACCOUNTS[i].name,
+        mask: ACCOUNTS[i].mask,
+        type: ACCOUNTS[i].type,
+        subtype: ACCOUNTS[i].subtype,
       })
       arr.push(accounts);
     }
@@ -180,8 +185,10 @@ app.get('/', function (request, response, next) {
 app.post('/get_access_token', function (request, response, next) {
   
   PUBLIC_TOKEN = request.body.public_token;
-  ACCOUNTS = request.body.ACCOUNTS;
+  ACCOUNTS = request.body.accounts;
+
   ACCOUNT_ID = request.body.account_id;
+
   client.exchangePublicToken(PUBLIC_TOKEN, function (error, tokenResponse) {
     if (error != null) {
       prettyPrintResponse(error);
@@ -431,7 +438,18 @@ var respondWithAssetReport = (
 };
 
 app.get('/updateUser', function (request, response, next) {
+  let arr = []
 
+  for (let i = 0; i < ACCOUNTS.length; i++){
+    if (ACCOUNTS[i].subtype !== 'checking'){
+      arr.push(ACCOUNTS[i])
+    }
+  }
+
+  if (arr.length > 0){
+    return response.json(arr)
+  }
+  
   client.getIdentity(ACCESS_TOKEN, function (error, identityResponse) {
     if (error != null) {
       prettyPrintResponse(error);
@@ -482,7 +500,7 @@ app.get('/updateUser', function (request, response, next) {
 
     async function TokenCreator(res) {
 
-        let Tkn = await StripeTokenCreator(ACCESS_TOKEN, ACCOUNT_ID)
+        let Tkn = await db.PlaidUserAccounts.find({ userID: res._id })
         
           return [res, Tkn]
 
@@ -490,12 +508,14 @@ app.get('/updateUser', function (request, response, next) {
     
     async function StripeAccountCreator (res) {
 
+      console.log(res);
       let USER = res[0];
-      let strTok = res[1];
+      let strTok = res[1].stripeToken;
+
 
       let StripeCustomer = await stripe.customers.create({
           
-          "source": strTok.stripe_bank_account_token
+          "source": strTok,
 
         })
       
@@ -517,11 +537,12 @@ app.get('/updateUser', function (request, response, next) {
       
       let StrCust = res[1];
 
+      console.log('This is our stripe Customer', StrCust)
+
       let Customer = await db.StripeCustomer.create({
         userId: USER._id,
         stripeID: StrCust.id,
         created: StrCust.created,
-        default_source: StrCust.default_source,
         sourceURL: StrCust.sources.url,
         subscriptionsURL: StrCust.subscriptions.url
       })

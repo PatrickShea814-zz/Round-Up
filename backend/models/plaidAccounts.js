@@ -18,19 +18,15 @@ let plaidUserAccSchema = new Schema({
         required: true,
         unique: true
     },
+
+    stripeToken: {
+        type: String,
+        unique: true
+    },
     // Access: accounts.name
     accountName: {
         type: String,
         required: true
-    },
-    official_name: {
-        type: String,
-        required: true
-    },
-    // Users available balance to validate if user has enough in account to continue saving.
-    availableBalance: {
-        type: Number,
-        required: false
     },
     // Last 4-Digits of a User's Item(Account)
     mask: {
