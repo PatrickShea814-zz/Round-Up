@@ -17,6 +17,7 @@ const helmet = require('helmet');
 const routes = require("./routes");
 const  cors = require('cors');
 
+
 // REQUIRING OUR MODELS
 const db = require("./models");
 
@@ -99,6 +100,7 @@ var ACCESS_TOKEN = 'access-sandbox-5fde0079-29a3-40ac-b254-1814eb75a629';
 var PUBLIC_TOKEN = null;
 var ITEM_ID = null;
 var ACCOUNT_ID;
+var USER_ID;
 
 // Initialize the Plaid client
 // Find your API keys in the Dashboard (https://dashboard.plaid.com/account/keys)
@@ -431,6 +433,29 @@ var respondWithAssetReport = (
   );
 };
 
+//Route Sign in user for new or returning user
+// require("./routes/Auth0")(app)
+app.post("/authAPI", (req, res) => {
+  USER_ID = req.body.USER_ID  
+  db.User.find({
+    userID: USER_ID
+  }).then(function(dbData){
+    console.log(`dbData!${dbData}- here`)
+    if (dbData == USER_ID) {
+      console.log("existing user")
+      res.send("existing user")
+    } else {
+      db.User.create({
+        userID: USER_ID
+      });
+      console.log("im a new user")
+      res.send("im a new user")
+    }
+  }).catch(function(err){
+    console.log(`authAPI route err, ${err}`)
+  });
+});
+
 app.get('/updateUser', function (request, response, next) {
 
   client.getIdentity(ACCESS_TOKEN, function (error, identityResponse) {
@@ -557,7 +582,7 @@ app.post('/set_access_token', function (request, response, next) {
 
 //route to auth0 to
 //1. obtain user id
-require("./routes/Auth0")(app)
+
 
 app.listen(APP_PORT, function () {
   console.log(`PennyWise Server is now listening Port: ${APP_PORT}`);

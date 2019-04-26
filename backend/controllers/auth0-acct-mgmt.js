@@ -1,11 +1,10 @@
 var request = require("request");
 var axios = require('axios')
+var path = require('path')
 require('dotenv').config({ path: '../.env' })
 
 var AUTH0_API_CLIENT_ID = process.env.AUTH0_API_CLIENT_ID
 var AUTH0_API_CLIENT_SECRET = process.env.AUTH0_API_CLIENT_SECRET
-
-
 
     function getAuth0Token(AuthAPICall) {
         var options = {
@@ -21,6 +20,7 @@ var AUTH0_API_CLIENT_SECRET = process.env.AUTH0_API_CLIENT_SECRET
             },
             json: true
         };
+        
         //attempting to change the auth0 given code to get the authToken to axios
         // so I can have these functions 
         request(options, function (error, response, body) {

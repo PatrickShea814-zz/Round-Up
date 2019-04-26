@@ -15,19 +15,24 @@ let userSchema = new Schema({
     name: {
         type: String,
         trim: true,
-        required: true
+        required: false
     },
     // This is the password stored that comes from Auth0
     password: {
         type: String,
         trim: true,
-        required: true
+        required: false
     },
     // This is the email stored that comes from Auth0
     email: {
         type: String,
         unique: true,
-        required: true
+        required: false
+    },
+    userID: {
+        type: String,
+        unique: true,
+        require: true
     },
     phoneNum: {
         type: String
