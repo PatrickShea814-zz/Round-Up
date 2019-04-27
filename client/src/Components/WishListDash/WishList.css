@@ -1,0 +1,66 @@
+.masonry-container {
+    width: 80%;
+    margin: auto;
+    margin-top: 10px;
+    border: 1px solid rgba(0, 0, 0, .1);
+    p {
+        text-align: center;
+        padding: 4px;
+        font-family: monospace;
+        background: #222;
+        color: #efefef;
+    }
+}
+
+.masonry {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: stretch;
+    width: 100%;
+    margin: auto;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-content: stretch;
+    flex-grow: 1;
+}
+
+.tile {
+    margin: 4px;
+    img {
+        box-shadow: 0 1px 1px 2px rgba(0, 0, 0, .15);
+        border-radius: 10px;
+        width: 100%;
+    }
+}
+
+.card {
+    margin-bottom: 50px;
+    text-align: center;
+    border: 1px solid #d9d9d9;
+    padding-bottom: 10px;
+    box-shadow: 0px 0px 12px 8px #e6e6e6;
+    transition: .2s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 4px 0px 12px 10px #d9d9d9;
+    border: 1px solid #d9d9d9;
+}
+
+.purchaseButton {
+    padding-top: 20px;
+    box-shadow: 1px 0px 8px 4px #d9d9d9;
+}
+
+.content:last-of-type {
+    margin-top: 15px;
+}
+
+.content ul li:last-of-type {
+    margin-top: 10px;
+}
