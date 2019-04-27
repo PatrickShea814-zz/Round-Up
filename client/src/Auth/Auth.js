@@ -4,6 +4,11 @@ import history from '../history';
 import axios from "axios"
 
 export default class Auth {
+
+  state = {
+    "newUser": true
+  }
+
   accessToken;
   idToken;
   expiresAt;
@@ -17,8 +22,10 @@ export default class Auth {
     redirectUri: AUTH_CONFIG.callbackUrl,
     audience: AUTH_CONFIG.apiUrl,
     responseType: 'token id_token',
-    scope: this.requestedScopes
+    scope: this.requestedScopes,
+    avatar: null
   });
+
 
   constructor() {
     this.login = this.login.bind(this);
@@ -98,6 +105,13 @@ export default class Auth {
           url: "/authAPI",
           data: {user_id}
         }).then( (res) => {console.log("userID post success", res.data)
+          if(res.data.existingUser === true){
+            console.log('This user should already be registered with Plaid')
+          }
+          else {
+            console.log('This user must first register with Plaid')
+            history.replace('/plaid')
+          }
         }).catch( (err) => {console.log("userID post failed", err)})
       }
       cb(err, profile);

@@ -11,6 +11,7 @@ import history from "./history";
 import Vault from "./Components/Vault/Vault";
 import CheckoutForm from "./Components/CheckoutForm";
 import Signup from "./Components/SignUp/index";
+import Plaid from "./Components/Plaid/index";
 
 const auth = new Auth();
 
@@ -32,8 +33,8 @@ export const makeMainRoutes = () => {
             !auth.isAuthenticated() ? (
               <Redirect to="/home" />
             ) : (
-              <Profile auth={auth} {...props} />
-            )
+                <Profile auth={auth} {...props} />
+              )
           }
         />
         <Route
@@ -42,8 +43,8 @@ export const makeMainRoutes = () => {
             !auth.isAuthenticated() ? (
               <Redirect to="/home" />
             ) : (
-              <Ping auth={auth} {...props} />
-            )
+                <Ping auth={auth} {...props} />
+              )
           }
         />
         <Route
@@ -52,8 +53,8 @@ export const makeMainRoutes = () => {
             !auth.isAuthenticated() ? (
               <Redirect to="/home" />
             ) : (
-              <Vault auth={auth} {...props} />
-            )
+                <Vault auth={auth} {...props} />
+              )
           }
         />
         <Route
@@ -62,29 +63,39 @@ export const makeMainRoutes = () => {
             auth.isAuthenticated() ? (
               <Redirect to="/vault" />
             ) : (
-              <CheckoutForm auth={auth} {...props} />
-            )
+                <CheckoutForm auth={auth} {...props} />
+              )
           }
         />
         <Route
-        path="/signup"
-        render={props =>
-          !auth.isAuthenticated() ? (
-            <Redirect to="/Vault" />
-          ) : (
-            <Signup auth={auth} {...props} />
-          )
-        }
-      />
+          path="/plaid"
+          render={props =>
+            !auth.isAuthenticated() ? (
+              <Redirect to="/home" />
+            ) : (
+                <Plaid auth={auth} {...props} />
+              )
+          }
+        />
+        <Route
+          path="/signup"
+          render={props =>
+            !auth.isAuthenticated() ? (
+              <Redirect to="/Vault" />
+            ) : (
+                <Signup auth={auth} {...props} />
+              )
+          }
+        />
         <Route
           path="/admin"
           render={props =>
             !auth.isAuthenticated() ||
-            !auth.userHasScopes(["write:messages"]) ? (
-              <Redirect to="/home" />
-            ) : (
-              <Admin auth={auth} {...props} />
-            )
+              !auth.userHasScopes(["write:messages"]) ? (
+                <Redirect to="/home" />
+              ) : (
+                <Admin auth={auth} {...props} />
+              )
           }
         />
         <Route

@@ -82,6 +82,15 @@ class App extends Component {
               <Button
                 bsStyle="primary"
                 className="btn-margin"
+                onClick={this.goTo.bind(this, "plaid")}
+              >
+                Plaid
+              </Button>
+            )}
+            {isAuthenticated() && (
+              <Button
+                bsStyle="primary"
+                className="btn-margin"
                 onClick={this.goTo.bind(this, "signup")}
               >
                 Sign Up
