@@ -3,9 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "cd backend && node app.js",
+    "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
     "client": "cd client && npm start",
     "server": "cd backend && nodemon app.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "prod": "npm run server"
+  },
+  "dependencies": {
+    "if-env": "^1.0.4"
   }
 }
