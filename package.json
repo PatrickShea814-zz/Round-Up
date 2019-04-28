@@ -6,8 +6,8 @@
     "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
     "client": "cd client && npm start",
     "server": "cd backend && nodemon app.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "prod": "concurrently \"npm run server\" \"npm run client\""
+    "start:dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start:prod": "concurrently \"npm run server\" \"npm run client\""
   },
   "dependencies": {
     "if-env": "^1.0.4"
