@@ -443,7 +443,7 @@ var respondWithAssetReport = (
 //Route Sign in user for new or returning user
 // require("./routes/Auth0")(app)
 app.post("/authAPI", (req, res) => {
-  USER_ID = req.body.USER_ID  
+  USER_ID = req.body.user_id
   db.User.find({
     userID: USER_ID
   }).then(function(dbData){

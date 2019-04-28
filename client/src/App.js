@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Navbar, Button } from "react-bootstrap";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { FontAwesomeIcon } from '@fontawesome/react-fontawesome'
 import NavLogo from './Images/navlogo.png'
 import Masonry from './Components/WishListDash/Masonry'
 import "./App.css";
@@ -72,7 +72,8 @@ class App extends Component {
                 className="btn logSign"
                 onClick={this.login.bind(this)}
               >
-                Log In / Sign Up! <FontAwesomeIcon icon="chevron-right" />
+                Log In / Sign Up! 
+                {/* <FontAwesomeIcon icon="chevron-right" /> */}
               </Button>
             )}
             {isAuthenticated() && (
