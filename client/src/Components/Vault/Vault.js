@@ -5,8 +5,6 @@ import ItemCard from "../Items/ItemCard";
 import items from "../../items.json";
 import Title from "../Title/index";
 import "./Vault.css";
-import { stringify } from "querystring";
-
 
 
 class Vault extends Component {
@@ -37,10 +35,10 @@ class Vault extends Component {
 
   getUser = () => {
     // let { nickname } = this.state;
-    this.setState({test: 'test'}, console.log(this.state.test))
-    let currentComponent = this; 
-    this.props.auth.getProfile(function(err, getProfile){
-      if(err){
+    this.setState({ test: 'test' }, console.log(this.state.test))
+    let currentComponent = this;
+    this.props.auth.getProfile(function (err, getProfile) {
+      if (err) {
         console.log(err);
       }
       else {
@@ -49,7 +47,7 @@ class Vault extends Component {
         var username = getProfile.nickname;
         username = username.charAt(0).toUpperCase() + username.slice(1);
 
-        currentComponent.setState({currentUser: username}, () => {
+        currentComponent.setState({ currentUser: username }, () => {
           console.log(currentComponent.state.currentUser)
         })
         // return username;
