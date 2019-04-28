@@ -7,7 +7,7 @@
     "client": "cd client && npm start",
     "server": "cd backend && nodemon app.js",
     "start:dev": "concurrently \"npm run server\" \"npm run client\"",
-    "start:prod": "concurrently \"npm run server\" \"npm run client\""
+    "start:prod": "cd backend && node app.js"
   },
   "dependencies": {
     "concurrently": "^4.1.0",
