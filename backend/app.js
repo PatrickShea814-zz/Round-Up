@@ -10,7 +10,8 @@ const mongoose = require('mongoose');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var dotenv = require('dotenv').config();
+// var dotenv = require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') var dotenv = require('dotenv').config()
 var indexRouter = require('./routes/index');
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 const helmet = require('helmet');

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
+import { Button } from "react-bootstrap";
 import WishList from "./WishList";
-import ItemInfo from './ItemInfo';
-import './WishList.css';
+import "./WishList.css";
 
 class Masonry extends Component {
     render() {
@@ -21,12 +21,24 @@ class Masonry extends Component {
     }
 }
 
-const Tile = ({ src }) => {
+const Tile = ({ src }, props) => {
     return (
-        <div className="tile">
-            <img src={src} alt="Masonry Images" />
+        <div className="card" id="itemCard">
+            <div className="tile">
+                <img src={src} alt="Masonry Images" />
+            </div>
+            <div class="card-body" id="itemContent">
+                <h5 class="card-title">Item Name:</h5> {props.item}
+                <p class="card-text" id="itemText">Price:</p> {props.price}
+                <Button
+                    bsStyle="primary"
+                    className="btn logSign">
+                    View Item
+            </Button>
+            </div>
         </div>
     );
 };
+
 
 export default Masonry;
