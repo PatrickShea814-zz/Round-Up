@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import NavLogo from './Images/navlogo.png'
 import Masonry from './Components/WishListDash/Masonry'
 import "./App.css";
+import "./Components/WishListDash/WishList.css";
 
 let brakePoints = [350, 500, 750];
 let images = [];

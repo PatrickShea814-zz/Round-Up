@@ -1,15 +1,7 @@
 .masonry-container {
-    width: 80%;
+    width: 100%;
     margin: auto;
     margin-top: 10px;
-    border: 1px solid rgba(0, 0, 0, .1);
-    p {
-        text-align: center;
-        padding: 4px;
-        font-family: monospace;
-        background: #222;
-        color: #efefef;
-    }
 }
 
 .masonry {
@@ -21,6 +13,14 @@
     margin: auto;
 }
 
+#itemContent {
+    margin: 0px;
+}
+
+#itemText {
+    margin: 0px;
+}
+
 .column {
     display: flex;
     flex-direction: column;
@@ -29,38 +29,21 @@
     flex-grow: 1;
 }
 
-.tile {
-    margin: 4px;
-    img {
-        box-shadow: 0 1px 1px 2px rgba(0, 0, 0, .15);
-        border-radius: 10px;
-        width: 100%;
-    }
+.tile img {
+    border-radius: 10px;
+    width: 100%;
 }
 
-.card {
-    margin-bottom: 50px;
-    text-align: center;
-    border: 1px solid #d9d9d9;
-    padding-bottom: 10px;
-    box-shadow: 0px 0px 12px 8px #e6e6e6;
+#itemCard {
+    border: none;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 0px 0px 5px 0px;
     transition: .2s ease-in-out;
 }
 
-.card:hover {
+#itemCard:hover {
     box-shadow: 4px 0px 12px 10px #d9d9d9;
-    border: 1px solid #d9d9d9;
-}
-
-.purchaseButton {
-    padding-top: 20px;
-    box-shadow: 1px 0px 8px 4px #d9d9d9;
-}
-
-.content:last-of-type {
-    margin-top: 15px;
-}
-
-.content ul li:last-of-type {
-    margin-top: 10px;
+    transform: scale(1.01);
+    /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
