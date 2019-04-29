@@ -72,7 +72,7 @@ class App extends Component {
                 className="btn logSign"
                 onClick={this.login.bind(this)}
               >
-                <span>Log In / Sign Up!</span>
+                Log In / Sign Up! 
               </Button>
             )}
             {isAuthenticated() && (

@@ -10,7 +10,8 @@ const mongoose = require('mongoose');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var dotenv = require('dotenv').config();
+// var dotenv = require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') { var dotenv = require('dotenv').config() }
 var indexRouter = require('./routes/index');
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 const helmet = require('helmet');
@@ -42,6 +43,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 app.use(helmet());
 
+// needed for heroku build deployment
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("../client/build"));
+}
 
 // ADD ROUTES
 // app.use(routes);
@@ -443,7 +448,7 @@ var respondWithAssetReport = (
 //Route Sign in user for new or returning user
 // require("./routes/Auth0")(app)
 app.post("/authAPI", (req, res) => {
-  USER_ID = req.body.USER_ID  
+  USER_ID = req.body.user_id
   db.User.find({
     userID: USER_ID
   }).then(function(dbData){
@@ -596,6 +601,10 @@ app.post('/set_access_token', function (request, response, next) {
       error: false,
     });
   });
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/public/index.html"));
 });
 
 // REMEMBER TO ADD AN .OPEN WITHIN A ROUTE HIT BY THE USER SO THAT THEY CAN ACCESS THEIR ACCOUNT SELECTION PROCESS AGAIN, BOTH
