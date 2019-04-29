@@ -32,9 +32,16 @@ const Tile = ({ src }, props) => {
                 <p class="card-text" id="itemText">Price:</p> {props.price}
                 <Button
                     bsStyle="primary"
-                    className="btn logSign">
-                    View Item
-            </Button>
+                    id="viewItem"
+                    className="btn">
+                    <span>View Item</span>
+                </Button>
+                <Button
+                    bsStyle="danger"
+                    id="removeItem"
+                    className="btn">
+                    <span>Remove</span>
+                </Button>
             </div>
         </div>
     );
