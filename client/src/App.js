@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Navbar, Button } from "react-bootstrap";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import NavLogo from './Images/navlogo.png'
 import Masonry from './Components/WishListDash/Masonry'
 import "./App.css";
@@ -47,21 +46,21 @@ class App extends Component {
             </Navbar.Brand>
             <Button
               bsStyle="primary"
-              className="navBtn btn-margin"
+              className="navBtn btn"
               onClick={this.goTo.bind(this, "home")}
             >
               Home
             </Button>
             <Button
               bsStyle="primary"
-              className="navBtn btn-margin"
+              className="navBtn btn"
               onClick={this.goTo.bind(this, "home")}
             >
               About Us
             </Button>
             <Button
               bsStyle="primary"
-              className="navBtn btn-margin"
+              className="navBtn btn"
               onClick={this.goTo.bind(this, "home")}
             >
               Contact
@@ -73,13 +72,13 @@ class App extends Component {
                 className="btn logSign"
                 onClick={this.login.bind(this)}
               >
-                Log In / Sign Up! <FontAwesomeIcon icon="chevron-right" />
+                <span>Log In / Sign Up!</span>
               </Button>
             )}
             {isAuthenticated() && (
               <Button
                 bsStyle="primary"
-                className="navBtn btn-margin"
+                className="navBtn btn"
                 onClick={this.goTo.bind(this, "vault")}
               >
                 My Wish List
@@ -88,7 +87,7 @@ class App extends Component {
             {isAuthenticated() && (
               <Button
                 bsStyle="primary"
-                className="navBtn btn-margin"
+                className="navBtn btn"
                 onClick={this.goTo.bind(this, "profile")}
               >
                 Profile & Settings
@@ -97,7 +96,7 @@ class App extends Component {
             {isAuthenticated() && (
               <Button
                 bsStyle="primary"
-                className="navBtn btn-margin"
+                className="navBtn btn"
                 onClick={this.goTo.bind(this, "ping")}
               >
                 Ping
@@ -106,7 +105,7 @@ class App extends Component {
             {isAuthenticated() && (
               <Button
                 bsStyle="primary"
-                className="navBtn btn-margin"
+                className="navBtn btn"
                 onClick={this.goTo.bind(this, "signup")}
               >
                 Sign Up
@@ -115,7 +114,7 @@ class App extends Component {
             {isAuthenticated() && userHasScopes(["write:messages"]) && (
               <Button
                 bsStyle="primary"
-                className="navBtn btn-margin"
+                className="navBtn btn"
                 onClick={this.goTo.bind(this, "admin")}
               >
                 Admin
@@ -125,10 +124,9 @@ class App extends Component {
               <Button
                 id="qsLogoutBtn"
                 bsStyle="primary"
-                className="btn logSign"
+                className="btn logOut"
                 onClick={this.logout.bind(this)}
-              >
-                Log Out
+              ><span>Log Out</span>
               </Button>
             )}
           </Navbar.Header>

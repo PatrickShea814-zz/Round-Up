@@ -2,6 +2,18 @@ body {
   font-family: 'Open Sans', sans-serif;
 }
 
+#navHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+}
+
+.logo {
+  width: 225px;
+  height: 85px;
+}
+
 .container {
   margin-top: 0px;
   margin-bottom: 0xp;
@@ -9,9 +21,50 @@ body {
   padding-bottom: 0px;
 }
 
-.btn-margin {
-  margin: 7px 3px;
+.owlGreenText {
+  color: #0AB1BC !important;
 }
+
+.navbar {
+  margin-bottom: 0px;
+}
+
+/* NAVIGATION BUTTONS */
+
+.navBtn {
+  height: 100%;
+  background-color: #fafafa;
+  color: #00A79D;
+  border: none;
+  margin: 0px;
+  padding: 0px 25px 0px 25px !important;
+}
+
+.navBtn:hover {
+  color: #fafafa;
+  background-color: #7AE0BB;
+  outline: 0;
+  border: none;
+}
+
+.navBtn:focus {
+  color: #fafafa;
+  background-color: #088f99;
+  outline: 0;
+  border: none;
+  transform: scale(.99);
+  /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+
+.navBtn:active {
+  color: #fafafa;
+  background-color: #088f99;
+  outline: 0;
+  border: none;
+  transform: translateY(1px);
+}
+
+/* LOG IN AND SIGN UP BUTTON */
 
 .logSign {
   background-color: #00A79D;
@@ -25,49 +78,100 @@ body {
   border: none;
 }
 
-.navBtn {
-  height: 100%;
-  background-color: #fafafa;
-  color: #00A79D;
+.logSign:active {
+  color: #fafafa;
+  background-color: #088f99;
+  outline: 0;
   border: none;
-  margin: 0px;
-  padding: 0px 25px 0px 25px !important;
+  transform: translateY(1px);
 }
 
-.btn-secondary {
-  padding: 10px 35px !important;
+.logSign:focus {
+  color: #fafafa;
+  background-color: #088f99;
+  outline: 0;
+  border: none;
+  transform: scale(.99);
+  /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
 
-.btn:hover {
+.logSign span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.logSign span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.logSign:hover span {
+  padding-right: 15px;
+}
+
+.logSign:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+/* LOGOUT BUTTON */
+
+.logOut {
+  background-color: #00A79D;
+  border: none;
+}
+
+.logOut:hover {
   color: #fafafa;
   background-color: #7AE0BB;
   outline: 0;
   border: none;
 }
 
-.btn:focus {
+.logOut:active {
   color: #fafafa;
   background-color: #088f99;
   outline: 0;
   border: none;
+  transform: translateY(1px);
 }
 
-.owlGreenText {
-  color: #0AB1BC !important;
+.logOut:focus {
+  color: #fafafa;
+  background-color: #088f99;
+  outline: 0;
+  border: none;
+  transform: scale(.99);
+  /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
 
-.navbar {
-  margin-bottom: 0px;
+.logOut span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
 }
 
-#navHeader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 70px;
+.logOut span:after {
+  content: "\00bb";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: -60px;
+  transition: 0.5s;
 }
 
-.logo {
-  width: 225px;
-  height: 85px;
+.logOut:hover span {
+  padding-left: 15px;
+}
+
+.logOut:hover span:after {
+  opacity: 1;
+  right: 0;
 }
