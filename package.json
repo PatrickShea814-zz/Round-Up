@@ -1,0 +1,18 @@
+{
+  "name": "backend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
+    "client": "cd client && npm start",
+    "server": "cd backend && nodemon app.js",
+    "start:dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start:prod": "cd backend && node app.js"
+  },
+  "dependencies": {
+    "concurrently": "^4.1.0",
+    "express": "^4.16.4",
+    "if-env": "^1.0.4",
+    "nodemon": "^1.18.11"
+  }
+}

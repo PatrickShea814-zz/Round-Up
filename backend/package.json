@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "client": "cd ../client && npm start",
     "server": "nodemon app.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "npm run server",
+    "build": "cd ../client && npm run build",
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "bootstrap": "^4.3.1",
+    "concurrently": "^4.1.0",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
@@ -23,6 +26,7 @@
     "mongoose": "^5.4.20",
     "morgan": "~1.9.0",
     "plaid": "^3.1.0",
+    "react-bootstrap": "^1.0.0-beta.8",
     "stripe": "^6.28.0"
   }
 }

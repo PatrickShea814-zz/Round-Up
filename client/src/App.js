@@ -1,6 +1,17 @@
 import React, { Component } from "react";
 import { Navbar, Button } from "react-bootstrap";
+import NavLogo from './Images/navlogo.png'
+import Masonry from './Components/WishListDash/Masonry'
 import "./App.css";
+import "./Components/WishListDash/WishList.css";
+
+let brakePoints = [350, 500, 750];
+let images = [];
+const imgId = [1011, 883, 1074, 823, 64, 65, 839, 314, 256, 316, 92, 643];
+for (let i = 0; i < imgId.length; i++) {
+  const ih = 200 + Math.floor(Math.random() * 10) * 15;
+  images.push("https://unsplash.it/250/" + ih + "?image=" + imgId[i]);
+}
 
 class App extends Component {
 
@@ -32,39 +43,61 @@ class App extends Component {
         <Navbar container-fluid>
           <Navbar.Header id="navHeader">
             <Navbar.Brand>
-              {/* <img className="logo" src="https://ps.w.org/simple-owl-carousel/assets/icon-256x256.png?rev=1839276"/> */}
-              <a className="owlGreenText" href="#">PennyWise</a>
+              {<img className="logo" src={NavLogo} alt="PennyWise Logo" />}
             </Navbar.Brand>
             <Button
               bsStyle="primary"
-              className="btn-margin"
+              className="navBtn btn"
               onClick={this.goTo.bind(this, "home")}
             >
               Home
+            </Button>
+            <Button
+              bsStyle="primary"
+              className="navBtn btn"
+              onClick={this.goTo.bind(this, "home")}
+            >
+              About Us
+            </Button>
+            <Button
+              bsStyle="primary"
+              className="navBtn btn"
+              onClick={this.goTo.bind(this, "home")}
+            >
+              Contact
             </Button>
             {!isAuthenticated() && (
               <Button
                 id="qsLoginBtn"
                 bsStyle="primary"
-                className="btn-margin"
+                className="btn logSign"
                 onClick={this.login.bind(this)}
               >
-                Log In
+                Log In / Sign Up! 
               </Button>
             )}
             {isAuthenticated() && (
               <Button
                 bsStyle="primary"
-                className="btn-margin"
+                className="navBtn btn"
+                onClick={this.goTo.bind(this, "vault")}
+              >
+                My Wish List
+              </Button>
+            )}
+            {isAuthenticated() && (
+              <Button
+                bsStyle="primary"
+                className="navBtn btn"
                 onClick={this.goTo.bind(this, "profile")}
               >
-                Profile
+                Profile & Settings
               </Button>
             )}
             {isAuthenticated() && (
               <Button
                 bsStyle="primary"
-                className="btn-margin"
+                className="navBtn btn"
                 onClick={this.goTo.bind(this, "ping")}
               >
                 Ping
@@ -73,34 +106,16 @@ class App extends Component {
             {isAuthenticated() && (
               <Button
                 bsStyle="primary"
-                className="btn-margin"
-                onClick={this.goTo.bind(this, "vault")}
-              >
-                Vault
-              </Button>
-            )}
-            {isAuthenticated() && (
-              <Button
-                bsStyle="primary"
-                className="btn-margin"
+                className="navBtn btn"
                 onClick={this.goTo.bind(this, "plaid")}
               >
                 Plaid
               </Button>
             )}
-            {isAuthenticated() && (
-              <Button
-                bsStyle="primary"
-                className="btn-margin"
-                onClick={this.goTo.bind(this, "signup")}
-              >
-                Sign Up
-              </Button>
-            )}
             {isAuthenticated() && userHasScopes(["write:messages"]) && (
               <Button
                 bsStyle="primary"
-                className="btn-margin"
+                className="navBtn btn"
                 onClick={this.goTo.bind(this, "admin")}
               >
                 Admin
@@ -110,14 +125,16 @@ class App extends Component {
               <Button
                 id="qsLogoutBtn"
                 bsStyle="primary"
-                className="btn-margin"
+                className="btn logOut"
                 onClick={this.logout.bind(this)}
-              >
-                Log Out
+              ><span>Log Out</span>
               </Button>
             )}
           </Navbar.Header>
         </Navbar>
+        {isAuthenticated() && (
+          <Masonry images={images} brakePoints={brakePoints} />
+        )}
       </div>
     );
   }

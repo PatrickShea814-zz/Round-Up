@@ -7,23 +7,24 @@ class Home extends Component {
       <div className="container">
         {
           isAuthenticated() && (
-              <h4>
-                You are logged in!
+            <h4>
+              You are logged in!
               </h4>
-            )
+          )
         }
         {
           !isAuthenticated() && (
-              <h4>
-                You are not logged in! Please{' '}
-                <a style={{cursor:'pointer'}}
-                  onClick={login.bind(this)}
-                >
-                  Log In
+            <h4>
+              You are not logged in! Please{' '}
+              <a style={{ cursor: 'pointer' }}
+                onClick={login.bind(this)}
+                href="/"
+              >
+                Log In
                 </a>
-                {' '}to continue.
+              {' '}to continue.
               </h4>
-            )
+          )
         }
       </div>
     );
