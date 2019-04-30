@@ -14,6 +14,7 @@ for (let i = 0; i < imgId.length; i++) {
 }
 
 class App extends Component {
+
   goTo(route) {
     this.props.history.replace(`/${route}`);
   }
@@ -106,9 +107,9 @@ class App extends Component {
               <Button
                 bsStyle="primary"
                 className="navBtn btn"
-                onClick={this.goTo.bind(this, "signup")}
+                onClick={this.goTo.bind(this, "plaid")}
               >
-                Sign Up
+                Plaid
               </Button>
             )}
             {isAuthenticated() && userHasScopes(["write:messages"]) && (

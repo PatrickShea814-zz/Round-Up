@@ -16,7 +16,7 @@ var indexRouter = require('./routes/index');
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 const helmet = require('helmet');
 const routes = require("./routes");
-const  cors = require('cors');
+const cors = require('cors');
 
 
 // REQUIRING OUR MODELS
@@ -102,10 +102,10 @@ var PLAID_PRODUCTS = envvar.string('PLAID_PRODUCTS', 'transactions');
 // We store the access_token in memory - in production, store it in a secure
 // persistent data store
 var ACCESS_TOKEN = 'access-sandbox-5fde0079-29a3-40ac-b254-1814eb75a629';
-var PUBLIC_TOKEN = null;
-var ITEM_ID = null;
+var PUBLIC_TOKEN;
+var ITEM_ID;
 var ACCOUNT_ID;
-var USER_ID;
+var AUTH0_ID;
 var ACCOUNTS;
 
 // Initialize the Plaid client
@@ -143,26 +143,23 @@ function pseries(list) {
   }, p);
 }
 
-async function accountCreator(res, accessToken, identity) {
+async function accountCreator(res, accessToken, accts) {
 
   let arr = [];
+  console.log("ACCOUNTS = ", accts);
+  for (let i = 0; i < accts.length; i++) {
 
-  console.log('ACCOUNT ID', ACCOUNT_ID);
-  console.log('ACCOUNTS', ACCOUNTS);
-
-  for (let i = 0; i < ACCOUNTS.length; i++) {
-
-    if (ACCOUNTS[i].subtype === 'checking') {
+    if (accts[i].subtype === 'checking') { 
       
       let accounts = await db.PlaidUserAccounts.create({
         userID: res._id,
         accessToken: accessToken,
-        account_id: ACCOUNTS[i].id,
-        stripeToken: await client.createStripeToken(ACCESS_TOKEN, ACCOUNTS[i].id).then(res => {return res.stripe_bank_account_token}),
-        accountName: ACCOUNTS[i].name,
-        mask: ACCOUNTS[i].mask,
-        type: ACCOUNTS[i].type,
-        subtype: ACCOUNTS[i].subtype,
+        account_id: accts[i].id,
+        stripeToken: await client.createStripeToken(ACCESS_TOKEN, accts[i].id).then(res => {return res.stripe_bank_account_token}),
+        accountName: accts[i].name,
+        mask: accts[i].mask,
+        type: accts[i].type,
+        subtype: accts[i].subtype,
       })
       arr.push(accounts);
     }
@@ -187,14 +184,18 @@ app.get('/', function (request, response, next) {
   });
 });
 
+app.get('/api/getPublicKey', function(request, response, next){
+  response.json({"PLAID_PUBLIC_KEY": PLAID_PUBLIC_KEY})
+});
+
 // Exchange token flow - exchange a Link public_token for
 // an API access_token
 // https://plaid.com/docs/#exchange-token-flow
-app.post('/get_access_token', function (request, response, next) {
-  
+app.post('/api/get_access_token', function (request, response, next) {
+  console.log("Req.body = ", request.body);
   PUBLIC_TOKEN = request.body.public_token;
   ACCOUNTS = request.body.accounts;
-
+  console.log('ACCOUNTS = ', ACCOUNTS);
   ACCOUNT_ID = request.body.account_id;
 
   client.exchangePublicToken(PUBLIC_TOKEN, function (error, tokenResponse) {
@@ -207,6 +208,8 @@ app.post('/get_access_token', function (request, response, next) {
     ACCESS_TOKEN = tokenResponse.access_token;
     ITEM_ID = tokenResponse.item_id;
     prettyPrintResponse(tokenResponse);
+    console.log("Token response = ", tokenResponse);
+    return response.json(tokenResponse);
   });
 });
 
@@ -309,6 +312,7 @@ app.get('/auth', function (request, response, next) {
     response.json({ error: null, auth: authResponse });
   });
 });
+
 
 // Create and then retrieve an Asset Report for one or more Items. Note that an
 // Asset Report can contain up to 100 items, but for simplicity we're only
@@ -448,39 +452,43 @@ var respondWithAssetReport = (
 //Route Sign in user for new or returning user
 // require("./routes/Auth0")(app)
 app.post("/authAPI", (req, res) => {
-  USER_ID = req.body.user_id
+  AUTH0_ID = req.body.user_id  
   db.User.find({
-    userID: USER_ID
+    auth0_ID: AUTH0_ID
   }).then(function(dbData){
     console.log(`dbData!${dbData}- here`)
-    if (dbData == USER_ID) {
-      console.log("existing user")
-      res.send("existing user")
+    if (dbData == AUTH0_ID) {
+      console.log("i'm an existing user")
+      res.send({
+        'existingUser': false
+      })
     } else {
       db.User.create({
-        userID: USER_ID
-      });
+        auth0_ID: AUTH0_ID
+      }).then(user => console.log('This is our new user:', user))
       console.log("im a new user")
-      res.send("im a new user")
+      res.send({
+        'existingUser': false
+      })
+      // res.send("im a new user")
     }
   }).catch(function(err){
     console.log(`authAPI route err, ${err}`)
   });
+
 });
 
-app.get('/updateUser', function (request, response, next) {
-  let arr = []
-
+app.get('/api/updateUser', function (request, response, next) {
+  let arr = [];
+  console.log("ACCOUNTS = ", ACCOUNTS);
   for (let i = 0; i < ACCOUNTS.length; i++){
     if (ACCOUNTS[i].subtype !== 'checking'){
       arr.push(ACCOUNTS[i])
     }
   }
-
   if (arr.length > 0){
     return response.json(arr)
   }
-  
   client.getIdentity(ACCESS_TOKEN, function (error, identityResponse) {
     if (error != null) {
       prettyPrintResponse(error);
@@ -488,26 +496,26 @@ app.get('/updateUser', function (request, response, next) {
         error: error,
       });
     }
-  
     // Creates the user in our database.
     let NewUserCreator = () => {
-      return Promise.resolve(db.User.create({
-        name: identityResponse.identity.names[0],
-        password: TonyDang.password,
-        email: TonyDang.email,
-        phoneNum: identityResponse.identity.phone_numbers[0].data
+      return Promise.resolve(db.User.findOne({
+        auth0_ID: AUTH0_ID
       })
       )
     }
+    async function NewUserPlaidItemCreator(res){
 
-    let NewUserPlaidItemCreator = (res => {
+      console.log('Access Token', ACCESS_TOKEN);
       return Promise.resolve(db.PlaidItems.create({
         userID: res._id,
         institutionID: identityResponse.item.institution_id,
         accessToken: ACCESS_TOKEN,
         itemID: identityResponse.item.institution_id
       }))
-    })
+
+    }
+
+      
 
     let PlaidItemIntoUserModel = (res => {
      
@@ -519,7 +527,7 @@ app.get('/updateUser', function (request, response, next) {
     let PlaidAccountsCreator = ((res) => {
       
       return Promise.resolve(
-        accountCreator(res, ACCESS_TOKEN, identityResponse)
+        accountCreator(res, ACCESS_TOKEN, ACCOUNTS)
       )
     })
 
