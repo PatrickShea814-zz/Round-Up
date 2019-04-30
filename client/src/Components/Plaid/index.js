@@ -78,9 +78,7 @@ class App extends Component {
         Open Link and connect a bank account to Plaid
       </PlaidLink>
     )
-  
-}
-
+  }
 }
 
 export default App;
