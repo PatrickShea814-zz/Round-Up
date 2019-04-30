@@ -40,9 +40,9 @@ class Signup extends Component {
         return (
             <div id="container" className="container">
                 <div className="modal-content">
-                <div className="formLogo">
-                    <img id="formLogoID" src="https://ps.w.org/simple-owl-carousel/assets/icon-256x256.png?rev=1839276" />
-                </div>
+                    <div className="formLogo">
+                        <img id="formLogoID" src="https://ps.w.org/simple-owl-carousel/assets/icon-256x256.png?rev=1839276" alt="Owl Carousel" />
+                    </div>
                     <form id="signupForm" className="form" onSubmit={this.handleSubmit} method="POST">
                         <div className="header">
                             <h2>Step 2 of 2</h2>

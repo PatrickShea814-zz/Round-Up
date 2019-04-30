@@ -1,0 +1,161 @@
+.masonry-container {
+    width: 100%;
+    margin: auto;
+    margin-top: 10px;
+}
+
+.masonry {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: stretch;
+    width: 100%;
+    margin: auto;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-content: stretch;
+    flex-grow: 1;
+}
+
+#itemCard {
+    border: none;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 0px 0px 5px 0px;
+    transition: .2s ease-in-out;
+}
+
+#itemCard:hover {
+    box-shadow: 4px 0px 12px 10px #d9d9d9;
+    transform: scale(1.01);
+    /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+
+.tile img {
+    border-radius: 10px;
+    width: 100%;
+}
+
+#itemContent {
+    margin: 0px;
+}
+
+#itemText {
+    margin: 0px;
+}
+
+/* VIEW WISH LIST ITEM BUTTON */
+
+#viewItem {
+    margin: 2px;
+    background-color: #00A79D;
+    border: none;
+}
+
+#viewItem:hover {
+    color: #fafafa;
+    background-color: #7AE0BB;
+    outline: 0;
+    border: none;
+}
+
+#viewItem:active {
+    color: #fafafa;
+    background-color: #088f99;
+    outline: 0;
+    border: none;
+    transform: translateY(1px);
+}
+
+#viewItem:focus {
+    color: #fafafa;
+    background-color: #088f99;
+    outline: 0;
+    border: none;
+    transform: scale(.99);
+    /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+
+#viewItem span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+#viewItem span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+}
+
+#viewItem:hover span {
+    padding-right: 15px;
+}
+
+#viewItem:hover span:after {
+    opacity: 1;
+    right: 0;
+}
+
+/* REMOVE WISH LIST ITEM BUTTON */
+
+#removeItem {
+    margin: 2px;
+}
+
+#removeItem:hover {
+    color: #fafafa;
+    background-color: #dc6460;
+    outline: 0;
+    border: none;
+}
+
+#removeItem:active {
+    color: #fafafa;
+    background-color: #c34a47;
+    outline: 0;
+    border: none;
+    transform: translateY(1px);
+}
+
+#removeItemfocus {
+    color: #fafafa;
+    background-color: #c34a47;
+    outline: 0;
+    border: none;
+    transform: scale(.99);
+    /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+
+#removeItem span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+#removeItem span:after {
+    content: "\00d7";
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+}
+
+#removeItem:hover span {
+    padding-right: 15px;
+}
+
+#removeItem:hover span:after {
+    opacity: 1;
+    right: 0;
+}

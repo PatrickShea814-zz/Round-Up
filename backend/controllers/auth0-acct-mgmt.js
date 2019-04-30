@@ -1,7 +1,7 @@
 var request = require("request");
 var axios = require('axios')
 var path = require('path')
-require('dotenv').config({ path: '../.env' })
+if (process.env.NODE_ENV !== 'production') { require('dotenv').config({ path: '../.env' }) }
 
 var AUTH0_API_CLIENT_ID = process.env.AUTH0_API_CLIENT_ID
 var AUTH0_API_CLIENT_SECRET = process.env.AUTH0_API_CLIENT_SECRET
