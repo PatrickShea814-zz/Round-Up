@@ -96,7 +96,7 @@ export default class Auth {
     this.auth0.client.userInfo(this.accessToken, (err, profile) => {
       if (profile) {
         this.userProfile = profile;
-        var user_id = profile.sub
+        var user_id = profile.sub;
 
         //axios request sends user id to backend needed to call
         // auth0 management API to get user information such as email

@@ -5,6 +5,29 @@ import history from "../../history";
 
 class App extends Component {
 
+ state = {
+
+   publicKey: ''
+
+ }
+
+  getPublicKey = async function(){
+    
+    return await axios.get('/api/getPublicKey')
+    
+  }
+
+ componentDidMount(){
+   this.getPublicKey()
+    .then(res => {
+      console.log('HELLO', res.data)
+      this.setState({ 
+      publicKey: res.data.PLAID_PUBLIC_KEY
+      })
+    })
+  }
+ 
+
   handleOnSuccess(token, metadata) {
     // send token to client server
     console.log("Client token = ", token);
@@ -35,18 +58,14 @@ class App extends Component {
     }).catch(err => { console.log("updateUser Route error", err) })
   }
 
-  // handleOnExit() {
-  //   // handle the case when your user exits Link
-  // }
-
   render() {
+    console.log('THIS IS OUR PUBLIC KEY', this.state.publicKey)
     return (
       <PlaidLink
         clientName="PennyWise"
         env="sandbox"
         institution={null}
-        // PublicKey SHOULD NOT BE HARDCODED 
-        publicKey='8db95b7611b5cab8773417a96c9021'
+        publicKey= {this.state.publicKey}
         product={['auth', 'transactions']}
         apiVersion={'v2'}
         token={null}
@@ -59,6 +78,9 @@ class App extends Component {
         Open Link and connect a bank account to Plaid
       </PlaidLink>
     )
-  }
+  
 }
-export default App
+
+}
+
+export default App;

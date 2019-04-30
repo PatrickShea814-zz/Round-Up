@@ -3,6 +3,7 @@ import { Navbar, Button } from "react-bootstrap";
 import "./App.css";
 
 class App extends Component {
+
   goTo(route) {
     this.props.history.replace(`/${route}`);
   }
