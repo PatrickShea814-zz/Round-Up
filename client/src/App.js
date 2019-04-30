@@ -26,8 +26,9 @@ class App extends Component {
 
   render() {
     const { isAuthenticated, userHasScopes } = this.props.auth;
-
+    console.log("Hello World");
     return (
+      
       <div>
         <Navbar container-fluid>
           <Navbar.Header id="navHeader">
