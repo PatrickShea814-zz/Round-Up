@@ -4,15 +4,29 @@
   "private": true,
   "scripts": {
     "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
-    "client": "cd client && npm start",
-    "server": "cd backend && nodemon app.js",
-    "start:dev": "concurrently \"npm run server\" \"npm run client\"",
-    "start:prod": "cd backend && node app.js"
+    "start:dev": "concurrently \"nodemon app.js\" \"cd client && npm start\"",
+    "start:prod": "node app.js"
   },
   "dependencies": {
     "concurrently": "^4.1.0",
     "express": "^4.16.4",
     "if-env": "^1.0.4",
-    "nodemon": "^1.18.11"
+    "nodemon": "^1.18.11",
+    "axios": "^0.18.0",
+    "bootstrap": "^4.3.1",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "dotenv": "^7.0.0",
+    "envvar": "^2.0.0",
+    "helmet": "^3.16.0",
+    "http-errors": "~1.6.2",
+    "jade": "~1.11.0",
+    "moment": "^2.24.0",
+    "mongoose": "^5.4.20",
+    "morgan": "~1.9.0",
+    "plaid": "^3.1.0",
+    "react-bootstrap": "^1.0.0-beta.8",
+    "stripe": "^6.28.0"
   }
 }
