@@ -38,6 +38,13 @@ class WishList extends Component {
         }, col);
     }
 
+    // selectItem(e){
+    //     let target = e.target;
+    //     console.log("selectItem() function ran...");
+    //     // console.log("Event = ", e)
+    //     // console.log("Target = ", target)
+    // }
+
     render() {
         return (
             <div className="masonry" ref="Masonry">

@@ -12,6 +12,8 @@ import Vault from "./Components/Vault/Vault";
 import CheckoutForm from "./Components/CheckoutForm";
 import Signup from "./Components/SignUp/index";
 import Plaid from "./Components/Plaid/index";
+import Masonry from "./Components/WishListDash/Masonry";
+import WishList from "./Components/WishListDash/WishList";
 
 const auth = new Auth();
 
@@ -24,7 +26,9 @@ const handleAuthentication = ({ location }) => {
 export const makeMainRoutes = () => {
   return (
     <Router history={history}>
+      
       <div>
+      {console.log(auth.isAuthenticated())}
         <Route path="/" render={props => <App auth={auth} {...props} />} />
         <Route path="/home" render={props => <Home auth={auth} {...props} />} />
         <Route
@@ -47,7 +51,7 @@ export const makeMainRoutes = () => {
               )
           }
         />
-        <Route
+        {/*{<Route
           path="/vault"
           render={props =>
             !auth.isAuthenticated() ? (
@@ -56,6 +60,16 @@ export const makeMainRoutes = () => {
                 <Vault auth={auth} {...props} />
               )
           }
+        />*/}
+        <Route
+        path="/masonry"
+        render={props =>
+          !auth.isAuthenticated() ? (
+            <Redirect to="/home" />
+          ) : (
+              <Masonry auth={auth} {...props} />
+            )
+        }
         />
         <Route
           path="/payment"

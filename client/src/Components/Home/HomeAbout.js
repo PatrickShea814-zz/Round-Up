@@ -2,7 +2,7 @@ import React from "react";
 
 function HomeAbout() {
     return (
-        <div class="col col-lg-6">
+        <div className="col col-lg-6">
             <h4>What is PennyWise?</h4>
             <span className="homeAbout">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi sed vel consequatur ad architecto

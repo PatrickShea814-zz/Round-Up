@@ -5,17 +5,17 @@ import './AccountSettings.css';
 
 class MyAccounts extends Component {
     render() {
-        return <div class="item-data-row">
-            <div class="item-data-row__center">
-                <div class="item-data-row__nicename">My Connected Accounts</div>
-                <div class="item-data-row__description">View all of your accounts currently connected to PennyWise.
+        return <div className="item-data-row">
+            <div className="item-data-row__center">
+                <div className="item-data-row__nicename">My Connected Accounts</div>
+                <div className="item-data-row__description">View all of your accounts currently connected to PennyWise.
                 </div>
             </div>
-            <div class="item-data-row__right">
+            <div className="item-data-row__right">
                 <button id="get-accounts-btn"
-                    class="button button--is-small button--is-default button--is-full-width">View Accounts</button>
+                className="button button--is-small button--is-default button--is-full-width">View Accounts</button>
             </div>
-            <div class="item-data-row__response">
+            <div className="item-data-row__response">
                 <table>
                     <tbody id="get-accounts-data"></tbody>
                 </table>

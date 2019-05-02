@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import { Navbar, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import NavLogo from '../../Images/navlogo.png';
+import Masonry from "../WishListDash/Masonry";
 import "./MainNav.css";
 
 class MainNav extends Component {
+
     goTo(route) {
         this.props.history.replace(`/${route}`);
     }
@@ -40,21 +42,21 @@ class MainNav extends Component {
                         onClick={this.goTo.bind(this, "home")}
                     >
                         Home
-            </Button>
+                        </Button>
                     <Button
                         bsStyle="primary"
                         className="navBtn btn-margin"
                         onClick={this.goTo.bind(this, "home")}
                     >
                         About Us
-            </Button>
+                        </Button>
                     <Button
                         bsStyle="primary"
                         className="navBtn btn-margin"
                         onClick={this.goTo.bind(this, "home")}
                     >
                         Contact
-            </Button>
+                        </Button>
                     {!isAuthenticated() && (
                         <Button
                             id="qsLoginBtn"
@@ -72,7 +74,7 @@ class MainNav extends Component {
                             onClick={this.goTo.bind(this, "vault")}
                         >
                             My Wish List
-              </Button>
+                        </Button>
                     )}
                     {isAuthenticated() && (
                         <Button
@@ -81,7 +83,7 @@ class MainNav extends Component {
                             onClick={this.goTo.bind(this, "profile")}
                         >
                             Profile & Settings
-              </Button>
+                        </Button>
                     )}
                     {isAuthenticated() && (
                         <Button
@@ -90,7 +92,7 @@ class MainNav extends Component {
                             onClick={this.goTo.bind(this, "ping")}
                         >
                             Ping
-              </Button>
+                        </Button>
                     )}
                     {isAuthenticated() && (
                         <Button
@@ -99,7 +101,7 @@ class MainNav extends Component {
                             onClick={this.goTo.bind(this, "signup")}
                         >
                             Sign Up
-              </Button>
+                        </Button>
                     )}
                     {isAuthenticated() && userHasScopes(["write:messages"]) && (
                         <Button
@@ -108,7 +110,7 @@ class MainNav extends Component {
                             onClick={this.goTo.bind(this, "admin")}
                         >
                             Admin
-              </Button>
+                        </Button>
                     )}
                     {isAuthenticated() && (
                         <Button
@@ -118,7 +120,7 @@ class MainNav extends Component {
                             onClick={this.logout.bind(this)}
                         >
                             Log Out
-              </Button>
+                        </Button>
                     )}
                 </Navbar.Header>
             </Navbar>

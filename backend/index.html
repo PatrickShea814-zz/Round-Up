@@ -130,7 +130,7 @@
         $.get('/identity', function (data) {
           $('#get-identity-data').slideUp(function () {
             var identityData = data.identity.identity;
-            var html = '<tr class="response-row response-row--is-identity"><td><strong>Names</strong></td><td><strong>Emails</strong></td><td><strong>Phone numbers</strong></td><td><strong>Addresses</strong></td></tr><tr class="response-row response-row--is-identity">';
+            var html = '<tr className="response-row response-row--is-identity"><td><strong>Names</strong></td><td><strong>Emails</strong></td><td><strong>Phone numbers</strong></td><td><strong>Addresses</strong></td></tr><tr className="response-row response-row--is-identity">';
             html += '<td>';
             identityData.names.forEach(function (name, idx) {
               html += name + '<br />';
@@ -176,13 +176,13 @@
         $.get('/transactions', function (data) {
           if (data.error != null && data.error.error_code != null) {
             // Format the error
-            var errorHtml = '<div class="inner"><p>' +
+            var errorHtml = '<div className="inner"><p>' +
               '<strong>' + data.error.error_code + ':</strong> ' +
               (data.error.display_message == null ? data.error.error_message : data.error.display_message) + '</p></div>';
 
             if (data.error.error_code === 'PRODUCT_NOT_READY') {
               // Add additional context for `PRODUCT_NOT_READY` errors
-              errorHtml += '<div class="inner"><p>Note: The PRODUCT_NOT_READY ' +
+              errorHtml += '<div className="inner"><p>Note: The PRODUCT_NOT_READY ' +
                 'error is returned when a request to retrieve Transaction data ' +
                 'is made before Plaid finishes the <a href="https://plaid.com/' +
                 'docs/quickstart/#transaction-data-with-webhooks">initial ' +

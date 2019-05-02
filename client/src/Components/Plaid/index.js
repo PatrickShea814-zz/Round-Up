@@ -62,6 +62,7 @@ class App extends Component {
     console.log('THIS IS OUR PUBLIC KEY', this.state.publicKey)
     return (
       <PlaidLink
+        key={null}
         clientName="PennyWise"
         env="sandbox"
         institution={null}

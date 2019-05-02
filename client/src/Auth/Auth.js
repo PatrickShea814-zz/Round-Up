@@ -77,7 +77,7 @@ export default class Auth {
     this.scopes = authResult.scope || this.requestedScopes || '';
 
     // navigate to the home route
-    history.replace('/vault');
+    history.replace('/masonry');
   }
 
   renewSession() {
@@ -105,7 +105,7 @@ export default class Auth {
           url: "/authAPI",
           data: {user_id}
         }).then( (res) => {console.log("userID post success", res.data)
-          if(res.data.existingUser === true){
+          if(res.data.existingUser === false){
             console.log('This user should already be registered with Plaid')
           }
           else {
