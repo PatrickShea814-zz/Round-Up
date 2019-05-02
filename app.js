@@ -39,9 +39,10 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(cookieParser());
 // Make Public our Static Directory
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 app.use(helmet());
+app.use(express.static(path.join(__dirname, "client", "build")))
 
 // needed for heroku build deployment
 if (process.env.NODE_ENV === "production") {
@@ -125,7 +126,7 @@ let TonyDang = {
 }
 
 var app = express();
-app.use(express.static('public'));
+// app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
   extended: true
