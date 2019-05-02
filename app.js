@@ -69,7 +69,7 @@ app.use(function (err, req, res, next) {
 
 
 // CONFIGURE & CONNECT TO MONGODB/MONGOOSE DATABASE
-var MONGODB_URI = "mongodb://localhost/roundUpDB";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/roundUpDB";
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 mongoose.set('useCreateIndex', true);
 // Test UserId for Transactions Route
