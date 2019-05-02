@@ -36,7 +36,7 @@ app.use(logger('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // Make Public our Static Directory
-app.use(express.static("public"));
+// app.use(express.static("public"));
 app.use(cookieParser());
 // Make Public our Static Directory
 // app.use(express.static(path.join(__dirname, 'public')));
