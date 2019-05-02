@@ -43,11 +43,10 @@ app.use(cookieParser());
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 app.use(helmet());
 // app.use(express.static(path.join(__dirname, "client", "build")))
-
 // needed for heroku build deployment
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static("./client/build"));
-}
+// if (process.env.NODE_ENV === "production") {
+//   app.use(express.static("./client/build"));
+// }
 
 // ADD ROUTES
 // app.use(routes);
@@ -175,16 +174,18 @@ async function StripeTokenCreator (accToken, accId){
     return asyncStripe
   }
   
-
-app.get('/', function (request, response, next) {
-  // TEST HOME FRONT END PLAID LINK BUTTON FILE
-  response.sendFile(path.join(__dirname, 'index.html'), {
-    PLAID_PUBLIC_KEY: PLAID_PUBLIC_KEY,
-    PLAID_ENV: PLAID_ENV,
-    PLAID_PRODUCTS: PLAID_PRODUCTS,
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("./client/build"));
+} else {
+  app.get('/', function (request, response, next) {
+    // TEST HOME FRONT END PLAID LINK BUTTON FILE
+    response.sendFile(path.join(__dirname, 'index.html'), {
+      PLAID_PUBLIC_KEY: PLAID_PUBLIC_KEY,
+      PLAID_ENV: PLAID_ENV,
+      PLAID_PRODUCTS: PLAID_PRODUCTS,
+    });
   });
-});
-
+}
 app.get('/api/getPublicKey', function(request, response, next){
   response.json({"PLAID_PUBLIC_KEY": PLAID_PUBLIC_KEY})
 });
