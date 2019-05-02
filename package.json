@@ -6,7 +6,9 @@
     "start": "node app.js",
     "start:dev": "concurrently \"nodemon app.js\" \"cd client && npm start\"",
     "start:prod": "node app.js",
-    "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
+    "install": "cd client && npm install",
+    "build": "cd client && npm run build",
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "axios": "^0.18.0",
