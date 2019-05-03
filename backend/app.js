@@ -293,10 +293,13 @@ app.get('/transactions', function (request, response, next) {
         let stripeCus = await db.StripeCustomer.findOne({userId: id}).then(strCust => {return strCust});
       
         let chargesArray = [];
+        let chargeNamesArray = [];
         let sum = 0;
 
         for (let i = 0; i < transactions.length; i++){
           sum += parseInt(transactions[i].roundedAmount)
+          chargesArray.push(transactions[i].transaction_id)
+          chargeNamesArray.push(transactions[i].transactionName)
         }
 
           let charges = await stripe.charges.create({
@@ -307,14 +310,27 @@ app.get('/transactions', function (request, response, next) {
             console.log('THIS IS OUR CHARGE:', charge);
             return charge
           })
-
-          chargesArray.push(charges)
-
-        console.log("THESE ARE THE NEW CHARGES", chargesArray);
-        return chargesArray
+        
+        return [res[0], id, chargesArray, chargeNamesArray, charges]
       }
 
-      pseries([USER, TransactionFunction, StripeCharger])
+      async function DepoLogger(res){
+        let user = res[0];
+        let Depos =  await db.StripeDepos.create({
+          userID: res[1],
+          transactionNames: res[2],
+          amountDeposited: res[4].amount,
+          depositDate: res[4].created,
+          TransactionId: res[4].id,
+          originalTransIds: res[2],
+        }).then(res => {return res})
+
+        user.update({$push:{deposits: Depos}}).then(res => console.log(res));
+        
+    }
+
+
+      pseries([USER, TransactionFunction, StripeCharger, DepoLogger,])
       
     }
       
@@ -652,11 +668,11 @@ app.get('/api/updateUser', function (request, response, next) {
         created: StrCust.created,
         sourceURL: StrCust.sources.url,
         subscriptionsURL: StrCust.subscriptions.url
-      }).then(res => console.log('MOTHERFUCKER:', res))
+      }).then(res => {return res})
 
-      USER = await USER.update({$push: {stripeCustomer: Customer}})
+      await USER.update({$push: {stripeCustomer: Customer}}).then(res => {return res})
 
-      return [USER, Customer]
+      return [USER]
     }
 
     
