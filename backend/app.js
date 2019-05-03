@@ -10,7 +10,8 @@ const mongoose = require('mongoose');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var dotenv = require('dotenv').config();
+// var dotenv = require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') { var dotenv = require('dotenv').config() }
 var indexRouter = require('./routes/index');
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 const helmet = require('helmet');
@@ -42,6 +43,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Helmet helps you secure your Express apps by setting various HTTP headers.
 app.use(helmet());
 
+// needed for heroku build deployment
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("../client/build"));
+}
 
 // ADD ROUTES
 // app.use(routes);
@@ -168,7 +173,45 @@ async function StripeTokenCreator (accToken, accId){
 
     return asyncStripe
   }
+
+async function TransactionFinder (user, trns){
   
+  const transactionsArray = [];
+
+  for (let i = 0; i < trns.transactions.length; i++) {
+
+    let toBeRounded = Math.ceil(trns.transactions[i].amount) - trns.transactions[i].amount;
+
+    if (toBeRounded === 0){
+      toBeRounded = 100;
+    }
+    
+    let getTransactions = await db.RoundedTrans.create({
+      userID: user._id,
+      account_id: trns.transactions[i].account_id,
+      transactionName: trns.transactions[i].name,
+      originalAmount: trns.transactions[i].amount,
+      currencyCode: trns.transactions[i].iso_currency_code,
+      category: trns.transactions[i].category,
+      roundedAmount: toBeRounded,
+      transaction_id: trns.transactions[i].transaction_id,
+      transactionDate: trns.transactions[i].date
+    })
+    
+    transactionsArray.push(getTransactions)
+  }
+
+  console.log('These are the newly logged transactions', transactionsArray);
+
+  return transactionsArray
+}
+
+async function StripeCharger (customer, charges, accounts){
+
+  for (let i = 0; i < charges.length; i++){
+    
+  }
+}
 
 app.get('/', function (request, response, next) {
   // TEST HOME FRONT END PLAID LINK BUTTON FILE
@@ -225,28 +268,60 @@ app.get('/transactions', function (request, response, next) {
         error: error
       });
     } else {
-      for (let i = 0; i < transactionsResponse.transactions.length; i++) {
-        let toBeRounded = Math.ceil(transactionsResponse.transactions[i].amount);
-        
-        db.RoundedTrans.create({
-          userID: 'IggKjOZ4znfGIB2hKgxZ',
-          account_id: transactionsResponse.transactions[i].account_id,
-          transactionName: transactionsResponse.transactions[i].name,
-          originalAmount: transactionsResponse.transactions[i].amount,
-          currencyCode: transactionsResponse.transactions[i].iso_currency_code,
-          category: transactionsResponse.transactions[i].category,
-          roundedAmount: transactionsResponse.transactions[i].roundedAmount,
-          transaction_id: transactionsResponse.transactions[i].transaction_id,
-          transactionDate: transactionsResponse.transactions[i].date
-        })
-          .then(response => console.log(response))
-          .catch(err => console.log(err));
+     
+      let USER = () => {
+        return Promise.resolve(db.User.findOne({auth0_ID: AUTH0_ID})
+          .then(res => {
+            if (res){return res}
+            else return "NO USER FOUND";
+          }))
       }
-      prettyPrintResponse(transactionsResponse);
-      response.json({ error: null, transactions: transactionsResponse.transactions });
+
+      async function TransactionFunction(user) {
+
+        let transactions = await TransactionFinder(user, transactionsResponse);
+
+        return [user, transactions]
+      }
+
+      async function StripeCharger(res){
+       
+        let id = await res[0]._id;
+        
+        let transactions = await res[1];
+
+        let stripeCus = await db.StripeCustomer.findOne({userId: id}).then(strCust => {return strCust});
+      
+        let chargesArray = [];
+        let sum = 0;
+
+        for (let i = 0; i < transactions.length; i++){
+          sum += parseInt(transactions[i].roundedAmount)
+        }
+
+          let charges = await stripe.charges.create({
+            amount: 100,
+            currency: 'usd',
+            customer: stripeCus.stripeID
+          }).then(charge => {
+            console.log('THIS IS OUR CHARGE:', charge);
+            return charge
+          })
+
+          chargesArray.push(charges)
+
+        console.log("THESE ARE THE NEW CHARGES", chargesArray);
+        return chargesArray
+      }
+
+      pseries([USER, TransactionFunction, StripeCharger])
+      
     }
-  });
-});
+      
+    })
+
+  })
+  
 
 // Retrieve Identity for an Item
 // https://plaid.com/docs/#identity
@@ -447,9 +522,7 @@ var respondWithAssetReport = (
 //Route Sign in user for new or returning user
 // require("./routes/Auth0")(app)
 app.post("/authAPI", (req, res) => {
-
   AUTH0_ID = req.body.user_id  
-  console.log("Hello World");
   db.User.find({
     auth0_ID: AUTH0_ID
   }).then(function(dbData){
@@ -512,8 +585,6 @@ app.get('/api/updateUser', function (request, response, next) {
 
     }
 
-      
-
     let PlaidItemIntoUserModel = (res => {
      
       return Promise.resolve(
@@ -547,11 +618,11 @@ app.get('/api/updateUser', function (request, response, next) {
       console.log(res);
       let USER = res[0];
       let strTok = res[1].stripeToken;
-
-
+      console.log
+      
       let StripeCustomer = await stripe.customers.create({
           
-          "source": strTok,
+          "source": 'btok_us_verified',
 
         })
       
@@ -581,7 +652,7 @@ app.get('/api/updateUser', function (request, response, next) {
         created: StrCust.created,
         sourceURL: StrCust.sources.url,
         subscriptionsURL: StrCust.subscriptions.url
-      })
+      }).then(res => console.log('MOTHERFUCKER:', res))
 
       USER = await USER.update({$push: {stripeCustomer: Customer}})
 
@@ -606,6 +677,10 @@ app.post('/set_access_token', function (request, response, next) {
       error: false,
     });
   });
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/public/index.html"));
 });
 
 // REMEMBER TO ADD AN .OPEN WITHIN A ROUTE HIT BY THE USER SO THAT THEY CAN ACCESS THEIR ACCOUNT SELECTION PROCESS AGAIN, BOTH
