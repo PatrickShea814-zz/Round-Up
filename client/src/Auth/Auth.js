@@ -105,7 +105,8 @@ export default class Auth {
           method: "POST",
           url: "/authAPI",
           data: {user_id}
-        }).then( (res) => {console.log("userID post success", res.data)
+        }).then( (res) => {
+          console.log("userID post success", res.data)
           if(res.data.existingUser === true){
             console.log('This user should already be registered with Plaid')
           }
