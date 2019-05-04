@@ -613,11 +613,11 @@ app.post('/set_access_token', function (request, response, next) {
   });
 });
 app.get("/callback", () => {
-  console.log('hit')
+  res.redirect("/");
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/public/index.html"));
+  res.redirect("/");
 });
 
 
