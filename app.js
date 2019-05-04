@@ -173,19 +173,55 @@ async function StripeTokenCreator (accToken, accId){
 
     return asyncStripe
   }
+
+async function TransactionFinder (user, trns){
   
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static("./client/build"));
-} else {
-  app.get('/', function (request, response, next) {
-    // TEST HOME FRONT END PLAID LINK BUTTON FILE
-    response.sendFile(path.join(__dirname, 'index.html'), {
-      PLAID_PUBLIC_KEY: PLAID_PUBLIC_KEY,
-      PLAID_ENV: PLAID_ENV,
-      PLAID_PRODUCTS: PLAID_PRODUCTS,
-    });
-  });
+  const transactionsArray = [];
+
+  for (let i = 0; i < trns.transactions.length; i++) {
+
+    let toBeRounded = Math.ceil(trns.transactions[i].amount) - trns.transactions[i].amount;
+
+    if (toBeRounded === 0){
+      toBeRounded = 100;
+    }
+    
+    let getTransactions = await db.RoundedTrans.create({
+      userID: user._id,
+      account_id: trns.transactions[i].account_id,
+      transactionName: trns.transactions[i].name,
+      originalAmount: trns.transactions[i].amount,
+      currencyCode: trns.transactions[i].iso_currency_code,
+      category: trns.transactions[i].category,
+      roundedAmount: toBeRounded,
+      transaction_id: trns.transactions[i].transaction_id,
+      transactionDate: trns.transactions[i].date
+    })
+    
+    transactionsArray.push(getTransactions)
+  }
+
+  console.log('These are the newly logged transactions', transactionsArray);
+
+  return transactionsArray
 }
+
+async function StripeCharger (customer, charges, accounts){
+
+  for (let i = 0; i < charges.length; i++){
+    
+  }
+}
+
+app.get('/', function (request, response, next) {
+  // TEST HOME FRONT END PLAID LINK BUTTON FILE
+  response.sendFile(path.join(__dirname, 'index.html'), {
+    PLAID_PUBLIC_KEY: PLAID_PUBLIC_KEY,
+    PLAID_ENV: PLAID_ENV,
+    PLAID_PRODUCTS: PLAID_PRODUCTS,
+  });
+});
+
 app.get('/api/getPublicKey', function(request, response, next){
   response.json({"PLAID_PUBLIC_KEY": PLAID_PUBLIC_KEY})
 });
@@ -222,7 +258,7 @@ app.get('/transactions', function (request, response, next) {
   // Pull transactions for the Item for the last 30 days
   var startDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
   var endDate = moment().format('YYYY-MM-DD');
-  client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
+  client.getTransactions('access-sandbox-50a1b97f-71aa-4e07-86ca-b303e76bb0de', startDate, endDate, {
     count: 10,
     offset: 0,
   }, function (error, transactionsResponse) {
@@ -232,28 +268,78 @@ app.get('/transactions', function (request, response, next) {
         error: error
       });
     } else {
-      for (let i = 0; i < transactionsResponse.transactions.length; i++) {
-        let toBeRounded = Math.ceil(transactionsResponse.transactions[i].amount);
-        
-        db.RoundedTrans.create({
-          userID: 'IggKjOZ4znfGIB2hKgxZ',
-          account_id: transactionsResponse.transactions[i].account_id,
-          transactionName: transactionsResponse.transactions[i].name,
-          originalAmount: transactionsResponse.transactions[i].amount,
-          currencyCode: transactionsResponse.transactions[i].iso_currency_code,
-          category: transactionsResponse.transactions[i].category,
-          roundedAmount: transactionsResponse.transactions[i].roundedAmount,
-          transaction_id: transactionsResponse.transactions[i].transaction_id,
-          transactionDate: transactionsResponse.transactions[i].date
-        })
-          .then(response => console.log(response))
-          .catch(err => console.log(err));
+      
+      let USER = () => {
+        return Promise.resolve(db.User.findOne({auth0_ID: AUTH0_ID})
+          .then(res => {
+            if (res){return res}
+            else return "NO USER FOUND";
+          }))
       }
-      prettyPrintResponse(transactionsResponse);
-      response.json({ error: null, transactions: transactionsResponse.transactions });
+
+      async function TransactionFunction(user) {
+
+        let transactions = await TransactionFinder(user, transactionsResponse);
+
+        return [user, transactions]
+      }
+
+      async function StripeCharger(res){
+        
+        let id = await res[0]._id;
+        
+        let transactions = await res[1];
+
+        let stripeCus = await db.StripeCustomer.findOne({userId: id}).then(strCust => {return strCust});
+      
+        let chargesArray = [];
+        let chargeNamesArray = [];
+        let sum = 0;
+
+        for (let i = 0; i < transactions.length; i++){
+          sum += parseInt(transactions[i].roundedAmount)
+          chargesArray.push(transactions[i].transaction_id)
+          chargeNamesArray.push(transactions[i].transactionName)
+        }
+
+        console.log('STRIPE CUSTOMER', stripeCus)
+
+          let charges = await stripe.charges.create({
+            amount: 100,
+            currency: 'usd',
+            customer: stripeCus.stripeID
+          }).then(charge => {
+            console.log('THIS IS OUR CHARGE:', charge);
+            return charge
+          })
+        
+        return [res[0], id, chargesArray, chargeNamesArray, charges]
+      }
+
+      async function DepoLogger(res){
+        let user = res[0];
+        let Depos =  await db.StripeDepos.create({
+          userID: res[1],
+          transactionNames: res[2],
+          amountDeposited: res[4].amount,
+          depositDate: res[4].created,
+          TransactionId: res[4].id,
+          originalTransIds: res[2],
+        }).then(res => {return res})
+
+        user.update({$push:{deposits: Depos}}).then(res => console.log(res));
+        
     }
-  });
-});
+
+
+      pseries([USER, TransactionFunction, StripeCharger, DepoLogger,])
+      
+    }
+      
+    })
+
+  })
+  
 
 // Retrieve Identity for an Item
 // https://plaid.com/docs/#identity
@@ -517,8 +603,6 @@ app.get('/api/updateUser', function (request, response, next) {
 
     }
 
-      
-
     let PlaidItemIntoUserModel = (res => {
      
       return Promise.resolve(
@@ -552,11 +636,11 @@ app.get('/api/updateUser', function (request, response, next) {
       console.log(res);
       let USER = res[0];
       let strTok = res[1].stripeToken;
-
-
+      console.log
+      
       let StripeCustomer = await stripe.customers.create({
           
-          "source": strTok,
+          "source": 'btok_us_verified',
 
         })
       
@@ -567,7 +651,6 @@ app.get('/api/updateUser', function (request, response, next) {
     }
     /*
     let StripeAccount = StripeAccountCreator(res)
-
     StripeAcount.then((StripeCustomer) => {
       console.log(StripeCustomer)
     })
@@ -578,19 +661,17 @@ app.get('/api/updateUser', function (request, response, next) {
       
       let StrCust = res[1];
 
-      console.log('This is our stripe Customer', StrCust)
-
       let Customer = await db.StripeCustomer.create({
         userId: USER._id,
         stripeID: StrCust.id,
         created: StrCust.created,
         sourceURL: StrCust.sources.url,
         subscriptionsURL: StrCust.subscriptions.url
-      })
+      }).then(res => {return res})
 
-      USER = await USER.update({$push: {stripeCustomer: Customer}})
+      await USER.update({$push: {stripeCustomer: Customer}}).then(res => {return res})
 
-      return [USER, Customer]
+      return [USER]
     }
 
     
