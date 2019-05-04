@@ -6,3 +6,4 @@ export const AUTH_CONFIG = {
   callbackUrl: "https://wish-penny-wise.herokuapp.com/callback"
 
   // apiUrl: 'http://roundup.auth0.com/callback'
+}
