@@ -1,0 +1,22 @@
+body {
+    background-color: rgb(238, 238, 238);
+}
+
+.logo-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    height: 50px;
+    width: 50px;
+    background-image: url('512.png');
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
