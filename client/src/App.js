@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Navbar, Button } from "react-bootstrap";
-import NavLogo from './Images/navlogo.png'
-import Masonry from './Components/WishListDash/Masonry'
+import NavLogo from './Images/navlogo.png';
+import Masonry from './Components/WishListDash/Masonry';
+import Plaid from './Components/Plaid/index'
 import "./App.css";
 import "./Components/WishListDash/WishList.css";
 
@@ -14,6 +15,11 @@ for (let i = 0; i < imgId.length; i++) {
 }
 
 class App extends Component {
+
+  state = {
+    existingUser: 'false',
+    publicKey: ''
+  }
 
   goTo(route) {
     this.props.history.replace(`/${route}`);
@@ -33,6 +39,34 @@ class App extends Component {
     if (localStorage.getItem("isLoggedIn") === "true") {
       renewSession();
     }
+
+    axios.request({
+      method: "POST",
+      url: "/api/get_access_token",
+      data: {
+        public_token: token,
+        account_id: metadata.account_id,
+        accounts: metadata.accounts
+      }
+    }).then((res) => {
+      console.log("Plaid post success", res.data)
+      if (res.data.existingUser === true) {
+        console.log('Plaid user = true');
+        this.setState({existingUser: true});
+        history.replace('/home')
+      }
+      else {
+        console.log('Plaid user = false');
+        history.replace('/plaid');
+      }
+    }).catch((err) => { console.log("userID post failed", err) });
+
+    axios.request({
+      method:"GET",
+      url:"/api/updateUser"
+    }).then(res => {
+      console.log("updateUser Route Success = ", res.data)
+    }).catch(err => { console.log("updateUser Route error", err) })
   }
 
   render() {

@@ -7,7 +7,8 @@ class App extends Component {
 
  state = {
 
-   publicKey: ''
+   publicKey: '',
+   existingUser: false
 
  }
 

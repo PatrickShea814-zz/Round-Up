@@ -586,16 +586,18 @@ app.get('/api/updateUser', function (request, response, next) {
         subscriptionsURL: StrCust.subscriptions.url
       })
 
-      USER = await USER.update({$push: {stripeCustomer: Customer}})
+      await USER.update({$push: {stripeCustomer: Customer}})
 
-      return [USER, Customer]
+      let newUser = await db.User.findOne({_id: USER._id}).then(res => {return res});
+
+      return [newUser, Customer]
     }
 
-    
-    let consoleLogger = (res => console.log('This is the result', res));
 
-    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, TokenCreator, StripeAccountCreator, StripeDataCreator, consoleLogger]
-    pseries(arr).catch(err => console.log(err));
+    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, TokenCreator, StripeAccountCreator, StripeDataCreator];
+    pseries(arr)
+    .then(res => response.json(res))
+    .catch(err => response.json(err));
   })
 
 })
