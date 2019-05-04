@@ -8,6 +8,10 @@ let stripeCustomerSchema = new Schema({
         required: true
     },
 
+    stripeID: {
+        type: String
+    },
+
     created: {
         type: Number,
         required: true

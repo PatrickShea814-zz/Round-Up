@@ -18,11 +18,7 @@ let roundedTransSchema = new Schema({
         type: String,
         required: true
     },
-    // the original transaction amount.
-    originalAmount: {
-        type: Number,
-        required: true
-    },
+    
     // The currency code for reference.
     currencyCode: {
         type: String,
@@ -44,10 +40,6 @@ let roundedTransSchema = new Schema({
         type: String,
         required: true,
         unique: true
-    },
-    transactionDate: {
-        type: Date,
-        required: true
     }
 });
 

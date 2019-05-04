@@ -1,3 +1,4 @@
+    
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
@@ -11,8 +12,8 @@ let StripeDeposSchema = new Schema({
         trim: true
     },
     // name of the original transaction that was rounded up.
-    transactionName: {
-        type: String,
+    transactionNames: {
+        type: Array,
         required: true
     },
     // amount deposited into Stripe from User Account from ACH.
@@ -25,22 +26,17 @@ let StripeDeposSchema = new Schema({
         trim: true
     },
     // The transaction_id associated to the completed posted ACH in Transaction History
-    newTransactionId: {
-        type: Number,
+    TransactionId: {
+        type: String,
         trim: true,
         unique: true,
         required: true
     },
-    // The original transaction_id associated to the transaction that was rounded up.
-    originalTransId: {
-        type: Number,
+    // The original\ transaction_id associated to the transaction that was rounded up.
+    originalTransIds: {
+        type: Array,
         trim: true,
         unique: true,
-        required: true
-    },
-    // Date that Stripe receives the rounded up amount.
-    dateCompleted: {
-        type: Date,
         required: true
     }
 });
