@@ -3,6 +3,6 @@ export const AUTH_CONFIG = {
   clientId: 'pHFR9v0qziCHxDLrBdxr0ba7KSgAXl0T',
   // callbackUrl
   // callbackUrl: 'http://localhost:3000/callback'
-  callbackUrl: "https://wish-penny-wise.herokuapp.com/callback"
+  callbackUrl: "http://wish-penny-wise.herokuapp.com/callback"
   // apiUrl: 'http://roundup.auth0.com/callback'
 }
