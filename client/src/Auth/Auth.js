@@ -16,6 +16,7 @@ export default class Auth {
   scopes;
   requestedScopes = 'openid profile read:messages write:messages';
 
+
   auth0 = new auth0.WebAuth({
     domain: AUTH_CONFIG.domain,
     clientID: AUTH_CONFIG.clientId,
