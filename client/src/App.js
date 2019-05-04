@@ -39,10 +39,9 @@ class App extends Component {
           <Navbar.Header id="navHeader">
             <Navbar.Brand>
             </Navbar.Brand>
-            <MainNav auth={this.props.auth} />
+            <MainNav auth={this.props.auth} history={this.props.history} />
           </Navbar.Header>
         </Navbar>
-        <Masonry />
       </div>
     );
   }

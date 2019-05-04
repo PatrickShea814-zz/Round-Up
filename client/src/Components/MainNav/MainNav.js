@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Navbar, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import NavLogo from '../../Images/navlogo.png';
-import Masonry from "../WishListDash/Masonry";
 import "./MainNav.css";
 
 class MainNav extends Component {
@@ -34,7 +33,7 @@ class MainNav extends Component {
             <Navbar container-fluid>
                 <Navbar.Header id="navHeader">
                     <Navbar.Brand>
-                        {<img className="logo" src={NavLogo} alt="PennyWise Logo" />}
+                        {<img id="logo" className="logo" src={NavLogo} alt="PennyWise Logo" />}
                     </Navbar.Brand>
                     <Button
                         bsStyle="primary"
@@ -71,7 +70,7 @@ class MainNav extends Component {
                         <Button
                             bsStyle="primary"
                             className="navBtn btn-margin"
-                            onClick={this.goTo.bind(this, "vault")}
+                            onClick={this.goTo.bind(this, "masonry")}
                         >
                             My Wish List
                         </Button>
@@ -83,24 +82,6 @@ class MainNav extends Component {
                             onClick={this.goTo.bind(this, "profile")}
                         >
                             Profile & Settings
-                        </Button>
-                    )}
-                    {isAuthenticated() && (
-                        <Button
-                            bsStyle="primary"
-                            className="navBtn btn-margin"
-                            onClick={this.goTo.bind(this, "ping")}
-                        >
-                            Ping
-                        </Button>
-                    )}
-                    {isAuthenticated() && (
-                        <Button
-                            bsStyle="primary"
-                            className="navBtn btn-margin"
-                            onClick={this.goTo.bind(this, "signup")}
-                        >
-                            Sign Up
                         </Button>
                     )}
                     {isAuthenticated() && userHasScopes(["write:messages"]) && (
