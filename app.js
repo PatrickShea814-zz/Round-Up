@@ -614,7 +614,7 @@ app.post('/set_access_token', function (request, response, next) {
 });
 
 app.get("/callback", (req, res) => {
-  res.redirect("/plaid");
+  res.redirect("/callback");
 });
 
 // app.get("*", (req, res) => {
