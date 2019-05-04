@@ -618,9 +618,9 @@ app.post('/set_access_token', function (request, response, next) {
 //   res.redirect("/");
 // });
 
-app.get("*", (req, res) => {
-  res.redirect("/");
-});
+// app.get("*", (req, res) => {
+//   res.redirect("/");
+// });
 
 
 
