@@ -47,6 +47,7 @@ class App extends Component {
       url:"/api/updateUser"
     }).then(res => {
       console.log("updateUser Route Success = ", res.data)
+      history.replace('/vault')
     }).catch(err => { console.log("updateUser Route error", err) })
   }
 

@@ -8,27 +8,6 @@ import Footer from './Components/Landing/Footer/Footer';
 
 class App extends Component {
   
-  state = {
-    existingUser: 'false',
-    publicKey: ''
-  }
-
-  goTo(route) {
-    History.replace(`/${route}`);
-  }
-
-  login() {
-    Auth.login();
-  }
-
-  logout() {
-    Auth.logout();
-  }
-
-  getProfile(){
-    Auth.getProfile()
-  }
-  
 render(){
   
   return (

@@ -81,7 +81,7 @@ class HomeNav extends Component {
                 <a href={"/"} className="logo">
                     <img src={pennywiselogo} alt="PennyWise Logo" />
                 </a>
-                <SignInButton onClick={()=>login()} right>Sign In</SignInButton>
+                <SignInButton right onClick={()=>login()}>Sign In</SignInButton>
                 <NavButton right>Contact Us</NavButton>
                 <NavButton right>About Us</NavButton>
                 <CurrentUser/>
