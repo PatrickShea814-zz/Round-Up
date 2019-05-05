@@ -46,7 +46,7 @@ class App extends Component {
       method:"GET",
       url:"/api/updateUser"
     }).then(res => {
-      console.log("updateUser Route Success = ", res)
+      console.log("updateUser Route Success = ", res.data)
     }).catch(err => { console.log("updateUser Route error", err) })
   }
 
