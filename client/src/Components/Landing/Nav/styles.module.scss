@@ -1,0 +1,20 @@
+@import "./../../scss/variables";
+
+// Main Navbar SCSS
+
+nav {
+    height: 90px;
+    font-family: $font-stack;
+    // Our Netflix logo
+    img {
+        width: 210px;
+        height : 60px;
+        vertical-align: middle;
+    }
+    .logo {
+        display: inline-block;
+        line-height: 90px;
+        margin: 0 0 0 3%;
+    }
+}
+
