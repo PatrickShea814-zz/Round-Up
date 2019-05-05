@@ -7,12 +7,12 @@ import LogOut from './LogOut';
 import DarkModeToggle from '../DarkMode/DarkModeToggle';
 
 const MenuList = styled.a`
-font-size: 16px;
-letter-spacing: 1.9px;
-font-weight: 100;
-width: 100%;
-color: white;
-cursor: pointer;
+    font-size: 16px;
+    letter-spacing: 1.9px;
+    font-weight: 100;
+    width: 100%;
+    color: white;
+    cursor: pointer;
     text-decoration: one;
     vertical-align: middle;
     font-family: Arial, sans-serif;
