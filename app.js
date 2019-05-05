@@ -604,6 +604,8 @@ app.get('/api/updateUser', function (request, response, next) {
 
     }
 
+      
+
     let PlaidItemIntoUserModel = (res => {
      
       return Promise.resolve(
@@ -637,11 +639,11 @@ app.get('/api/updateUser', function (request, response, next) {
       console.log(res);
       let USER = res[0];
       let strTok = res[1].stripeToken;
-      console.log
-      
+
+
       let StripeCustomer = await stripe.customers.create({
           
-          "source": 'btok_us_verified',
+          "source": strTok,
 
         })
       
@@ -668,21 +670,27 @@ app.get('/api/updateUser', function (request, response, next) {
         created: StrCust.created,
         sourceURL: StrCust.sources.url,
         subscriptionsURL: StrCust.subscriptions.url
-      }).then(res => {return res})
+      })
 
-      await USER.update({$push: {stripeCustomer: Customer}}).then(res => {return res})
+      await USER.update({$push: {stripeCustomer: Customer}})
 
-      return [USER]
+      let newUser = await db.User.findOne({_id: USER._id}).then(res => {return res});
+
+      return [newUser, Customer]
     }
 
-    
-    let consoleLogger = (res => console.log('This is the result', res));
 
-    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, TokenCreator, StripeAccountCreator, StripeDataCreator, consoleLogger]
-    pseries(arr).catch(err => console.log(err));
+    let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, TokenCreator, StripeAccountCreator, StripeDataCreator];
+    pseries(arr)
+    .then(res => {
+      
+      response.json(res)
+    })
+    .catch(err => response.json(err));
   })
 
 })
+
 
 
 app.post('/set_access_token', function (request, response, next) {

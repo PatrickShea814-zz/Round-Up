@@ -5,18 +5,7 @@
   "version": "1.0.1",
   "description": "Allow users to save items to their PennyWise Wish List Dashboard.",
   "page_action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "",
-      "32": "",
-      "48": "",
-      "128": ""
-    }
-  },
-  "icons": {
-    "16": "",
-    "48": "",
-    "128": ""
+    "default_popup": "popup.html"
   },
   "browser_action": {
     "default_popup": "index.html",

@@ -6,7 +6,7 @@
 
 .profileButton {
     float: right;
-    /* FIRST PRIORITY IS FINISHING USER BUTTON & SETTINGS MENU & DASHBOARD BUTTON*/
+    /* FIRST PRIORITY IS FINISHING USER BUTTON & SETTINGS MENU*/
     font-size: 18px;
     cursor: pointer;
     text-decoration: none;
@@ -128,30 +128,6 @@ h1 {
     .demo-buttons {
         max-width: 900px;
         padding: 0 2em;
-    }
-}
-
-.bm-burger-button {
-    position: fixed;
-    left: 36px;
-    top: 36px;
-    font-size: 16px;
-    letter-spacing: 1.9px;
-    font-weight: 100;
-    margin: 18px 3% 0 0;
-    padding: 12px 2em;
-    color: #ffffff;
-    background-color: #00a79d;
-    cursor: pointer;
-    text-decoration: one;
-    vertical-align: middle;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    line-height: normal;
-    border: transparent;
-    &:hover {
-        background-color: #7ae0bb;
-        color: white;
     }
 }
 

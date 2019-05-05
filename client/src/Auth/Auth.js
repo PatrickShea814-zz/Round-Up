@@ -6,7 +6,7 @@ import axios from "axios"
 export default class Auth {
 
   state = {
-    "newUser": true
+    isLoggedIn: false
   }
 
   accessToken;
@@ -29,6 +29,7 @@ export default class Auth {
 
 
   constructor() {
+    this.handler = this.handler.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
     this.handleAuthentication = this.handleAuthentication.bind(this);
@@ -38,6 +39,12 @@ export default class Auth {
     this.getIdToken = this.getIdToken.bind(this);
     this.renewSession = this.renewSession.bind(this);
     this.getProfile = this.getProfile.bind(this);
+  }
+
+  handler(value){
+    this.setState({
+      isLoggedIn: value
+    })
   }
 
   login() {
@@ -66,8 +73,7 @@ export default class Auth {
 
   setSession(authResult) {
     // Set isLoggedIn flag in localStorage
-    localStorage.setItem('isLoggedIn', 'true');
-
+    this.handler(true);
     // Set the time that the access token will expire at
     let expiresAt = (authResult.expiresIn * 1000) + new Date().getTime();
     this.accessToken = authResult.accessToken;
@@ -109,10 +115,11 @@ export default class Auth {
           console.log("userID post success", res.data)
           if(res.data.existingUser === true){
             console.log('This user should already be registered with Plaid')
+            history.replace('/Masonry')
           }
           else {
             console.log('This user must first register with Plaid')
-            history.replace('/plaid')
+            history.replace('/Plaid')
           }
         }).catch( (err) => {console.log("userID post failed", err)})
       }
@@ -133,7 +140,7 @@ export default class Auth {
     this.userProfile = null;
 
     // Remove isLoggedIn flag from localStorage
-    localStorage.removeItem('isLoggedIn');
+    this.handler(false);
 
     // navigate to the home route
     history.replace('/home');

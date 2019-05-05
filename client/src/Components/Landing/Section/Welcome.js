@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import styled from 'styled-components';
 
 const Section = styled.section`
@@ -84,11 +83,12 @@ const ChromeExt = styled.button`
 
 class Welcome extends Component {
     render() {
+        const login = this.props.auth.login
         return (
             <Section>
                 <Title>Wish. Save. Reward.</Title>
                 <Subtitle>Purchase your wish list items with the change saved from rounding up everyday purchases.</Subtitle>
-                <Subtitle>Get Pennywise.<MainJoinButton>Sign Up Today</MainJoinButton></Subtitle>
+                <Subtitle>Get Pennywise.<MainJoinButton onClick={()=>login()}>Sign Up Today</MainJoinButton></Subtitle>
                 <Subtitle>Chrome Extension.<ChromeExt>Download</ChromeExt></Subtitle>
             </Section>
         )
