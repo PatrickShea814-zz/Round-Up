@@ -13,6 +13,7 @@ export default class Auth {
   scopes;
   requestedScopes = 'openid profile read:messages write:messages';
 
+
   auth0 = new auth0.WebAuth({
     domain: AUTH_CONFIG.domain,
     clientID: AUTH_CONFIG.clientId,
@@ -99,7 +100,8 @@ export default class Auth {
           method: "POST",
           url: "/authAPI",
           data: {user_id}
-        }).then( (res) => {console.log("userID post success", res.data)
+        }).then( (res) => {
+          console.log("userID post success", res.data)
           if(res.data.existingUser === true){
             console.log('This user should already be registered with Plaid')
             history.replace('/Masonry')

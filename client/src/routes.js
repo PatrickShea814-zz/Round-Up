@@ -106,6 +106,7 @@ export const makeMainRoutes = () => {
           path="/callback"
           render={props => {
             handleAuthentication(props);
+
             return <Callback {...props} />;
           }}
         />
