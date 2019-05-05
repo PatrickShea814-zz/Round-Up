@@ -44,9 +44,10 @@ app.use(cookieParser());
 app.use(helmet());
 // app.use(express.static(path.join(__dirname, "client", "build")))
 // needed for heroku build deployment
-// if (process.env.NODE_ENV === "production") {
-//   app.use(express.static("./client/build"));
-// }
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("./client/build"));
+}
 
 // ADD ROUTES
 // app.use(routes);
@@ -544,11 +545,10 @@ app.post("/authAPI", (req, res) => {
   db.User.find({
     auth0_ID: AUTH0_ID
   }).then(function(dbData){
-    console.log(`dbData!${dbData}- here`)
-    if (dbData == AUTH0_ID) {
+    if (dbData[0].auth0_ID === AUTH0_ID) {
       console.log("i'm an existing user")
       res.send({
-        'existingUser': false
+        'existingUser': true
       })
     } else {
       db.User.create({
@@ -702,9 +702,15 @@ app.post('/set_access_token', function (request, response, next) {
   });
 });
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/public/index.html"));
-});
+// app.get("/callback", (req, res) => {
+//   res.redirect("/");
+// });
+
+// app.get("*", (req, res) => {
+//   res.redirect("/");
+// });
+
+
 
 // REMEMBER TO ADD AN .OPEN WITHIN A ROUTE HIT BY THE USER SO THAT THEY CAN ACCESS THEIR ACCOUNT SELECTION PROCESS AGAIN, BOTH
 // DELETING THEIR CURRENT CONNECTED ACCOUNTS AND ADDING NEW ONES IN ONE FELL SWOOP!

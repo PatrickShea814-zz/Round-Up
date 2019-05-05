@@ -8,10 +8,13 @@
     "start:prod": "node app.js",
     "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
   },
+  "devDependencies": {
+    "concurrently": "^4.1.0"
+
+  },
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
-    "concurrently": "^4.1.0",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
@@ -25,8 +28,6 @@
     "mongoose": "^5.4.20",
     "morgan": "~1.9.0",
     "plaid": "^3.1.0",
-    "react-bootstrap": "^1.0.0-beta.8",
-    "react-plaid-link": "^1.2.0",
     "stripe": "^6.28.0",
     "styled-components": "^4.2.0"
   }
