@@ -102,7 +102,7 @@ export const makeMainRoutes = () => {
           path="/callback"
           render={props => {
             handleAuthentication(props);
-            <Redirect to="/home" />
+            // <Redirect to="/home" />
             return <Callback {...props} />;
           }}
         />
