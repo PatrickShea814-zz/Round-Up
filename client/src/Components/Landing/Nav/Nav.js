@@ -3,9 +3,10 @@ import React, { Component } from 'react';
 import styled, { css } from 'styled-components';
 import pennywiselogo from './img/whitelogo.png';
 import CurrentUser from '../../User/ProfileButton';
+import MyDashboard from '../../User/MyDashboard';
 
 const Nav = styled.nav`
-    height: 90px;
+    height: 10%;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     /* PennyWise logo */
     img {
@@ -21,13 +22,13 @@ const Nav = styled.nav`
 `;
 
 const NavButton = styled.button`
-font-size: 18px;
-letter-spacing: 1.9px;
-font-weight: 100;
-margin: 18px 3% 0 0;
-padding: 10px 2em 12px 1em;
-color: white;
-background-color: transparent;
+    font-size: 18px;
+    letter-spacing: 1.9px;
+    font-weight: 100;
+    margin: 18px 3% 0 0;
+    padding: 10px 2em 12px 1em;
+    color: white;
+    background-color: transparent;
     cursor: pointer;
     text-decoration: one;
     vertical-align: middle;
@@ -47,13 +48,13 @@ background-color: transparent;
 `;
 
 const SignInButton = styled.button`
-font-size: 18px;
-letter-spacing: 1.9px;
-font-weight: 100;
-margin: 18px 3% 0 0;
-padding: 10px 2em;
-color: #00a79d;
-background-color: #ffffff;
+    font-size: 18px;
+    letter-spacing: 1.9px;
+    font-weight: 100;
+    margin: 18px 3% 0 0;
+    padding: 10px 2em;
+    color: #00a79d;
+    background-color: #ffffff;
     cursor: pointer;
     text-decoration: one;
     vertical-align: middle;
@@ -83,7 +84,8 @@ class HomeNav extends Component {
                 <SignInButton right>Sign In</SignInButton>
                 <NavButton right>Contact Us</NavButton>
                 <NavButton right>About Us</NavButton>
-                <CurrentUser/>
+                <CurrentUser />
+                <MyDashboard />
             </Nav>
         )
     }
