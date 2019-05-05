@@ -16,13 +16,16 @@ import Plaid from "./Components/Plaid/index";
 const auth = new Auth();
 
 const handleAuthentication = ({ location }) => {
+
   if (/access_token|id_token|error/.test(location.hash)) {
-    auth.handleAuthentication();
+    auth.handleAuthentication(location);
   }
 };
 
+const loggedIn = sessionStorage.getItem('isLoggedIn');
+
 export const makeMainRoutes = () => {
-  console.log('HELLO', auth.state.isLoggedIn)
+ loggedIn ? console.log('YOU ARE LOGGED IN') : console.log('YOU ARE NOT LOGGED IN!');
   return (
     <Router history={history}>
       <div>
@@ -31,7 +34,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/profile"
           render={props =>
-            !auth.state.isLoggedIn ? (
+            !loggedIn ? (
               <Redirect to="/home" />
             ) : (
                 <Profile auth={auth} {...props} />
@@ -41,7 +44,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/ping"
           render={props =>
-            !auth.state.isLoggedIn ? (
+            !loggedIn ? (
               <Redirect to="/home" />
             ) : (
                 <Ping auth={auth} {...props} />
@@ -51,7 +54,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/vault"
           render={props =>
-            !auth.state.isLoggedIn ? (
+            !loggedIn ? (
               <Redirect to="/home" />
             ) : (
                 <Vault auth={auth} {...props} />
@@ -61,7 +64,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/payment"
           render={props =>
-            auth.state.isLoggedIn ? (
+            loggedIn ? (
               <Redirect to="/vault" />
             ) : (
                 <CheckoutForm auth={auth} {...props} />
@@ -71,7 +74,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/plaid"
           render={props =>
-            !auth.state.isLoggedIn ? (
+            !loggedIn ? (
               <Redirect to="/home" />
             ) : (
                 <Plaid auth={auth} {...props} />
@@ -81,7 +84,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/signup"
           render={props =>
-            !auth.state.isLoggedIn ? (
+            !loggedIn ? (
               <Redirect to="/Vault" />
             ) : (
                 <Signup auth={auth} {...props} />
@@ -91,7 +94,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/admin"
           render={props =>
-            !auth.state.isLoggedIn ||
+            !loggedIn ||
               !auth.userHasScopes(["write:messages"]) ? (
                 <Redirect to="/home" />
               ) : (

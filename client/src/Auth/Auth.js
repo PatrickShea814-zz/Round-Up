@@ -4,7 +4,7 @@ import history from '../history';
 import axios from "axios"
 import { Component } from 'react';
 
-class Auth extends Component {
+export default class Auth {
 
   accessToken;
   idToken;
@@ -24,10 +24,7 @@ class Auth extends Component {
     avatar: null
   });
 
-
-  constructor(props) {
-    super(props);
-    this.state = { isLoggedIn: false };
+  constructor() {
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
     this.handleAuthentication = this.handleAuthentication.bind(this);
@@ -44,7 +41,6 @@ class Auth extends Component {
   }
 
   handleAuthentication() {
-
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
@@ -66,7 +62,7 @@ class Auth extends Component {
 
   setSession(authResult) {
     // Set isLoggedIn flag in localStorage
-    this.setState({ isLoggedIn: true})
+    sessionStorage.setItem('isLoggedIn', true)
     // Set the time that the access token will expire at
     let expiresAt = (authResult.expiresIn * 1000) + new Date().getTime();
     this.accessToken = authResult.accessToken;
@@ -133,7 +129,7 @@ class Auth extends Component {
     this.userProfile = null;
 
     // Remove isLoggedIn flag from localStorage
-    this.setState({ isLoggedIn: false});
+    // sessionStorage.setItem(isLoggedIn, false)
 
     // navigate to the home route
     history.replace('/home');
@@ -151,5 +147,3 @@ class Auth extends Component {
     return scopes.every(scope => grantedScopes.includes(scope));
   }
 }
-
-export default Auth;
