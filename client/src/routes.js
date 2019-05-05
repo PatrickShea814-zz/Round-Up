@@ -22,7 +22,7 @@ const handleAuthentication = ({ location }) => {
 };
 
 export const makeMainRoutes = () => {
-  
+  console.log('HELLO', auth.state.isLoggedIn)
   return (
     <Router history={history}>
       <div>
@@ -41,7 +41,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/ping"
           render={props =>
-            !auth.state.isLoggedIn() ? (
+            !auth.state.isLoggedIn ? (
               <Redirect to="/home" />
             ) : (
                 <Ping auth={auth} {...props} />
@@ -51,7 +51,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/vault"
           render={props =>
-            !auth.state.isLoggedIn() ? (
+            !auth.state.isLoggedIn ? (
               <Redirect to="/home" />
             ) : (
                 <Vault auth={auth} {...props} />
@@ -61,7 +61,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/payment"
           render={props =>
-            auth.state.isLoggedIn() ? (
+            auth.state.isLoggedIn ? (
               <Redirect to="/vault" />
             ) : (
                 <CheckoutForm auth={auth} {...props} />
@@ -71,7 +71,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/plaid"
           render={props =>
-            !auth.state.isLoggedIn() ? (
+            !auth.state.isLoggedIn ? (
               <Redirect to="/home" />
             ) : (
                 <Plaid auth={auth} {...props} />
@@ -81,7 +81,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/signup"
           render={props =>
-            !auth.state.isLoggedIn() ? (
+            !auth.state.isLoggedIn ? (
               <Redirect to="/Vault" />
             ) : (
                 <Signup auth={auth} {...props} />
@@ -91,7 +91,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/admin"
           render={props =>
-            !auth.state.isLoggedIn() ||
+            !auth.state.isLoggedIn ||
               !auth.userHasScopes(["write:messages"]) ? (
                 <Redirect to="/home" />
               ) : (
