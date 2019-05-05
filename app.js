@@ -44,9 +44,10 @@ app.use(cookieParser());
 app.use(helmet());
 // app.use(express.static(path.join(__dirname, "client", "build")))
 // needed for heroku build deployment
-// if (process.env.NODE_ENV === "production") {
-//   app.use(express.static("./client/build"));
-// }
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("./client/build"));
+}
 
 // ADD ROUTES
 // app.use(routes);
