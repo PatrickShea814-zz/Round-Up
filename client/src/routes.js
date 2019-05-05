@@ -98,13 +98,13 @@ export const makeMainRoutes = () => {
               )
           }
         />
-        {/* <Route
+        <Route
           path="/callback"
           render={props => {
             handleAuthentication(props);
-            return <Callback {...props} />;
+            <Redirect to="/home" />
           }}
-        /> */}
+        />
       </div>
     </Router>
   );
