@@ -16,16 +16,13 @@ import Plaid from "./Components/Plaid/index";
 const auth = new Auth();
 
 const handleAuthentication = ({ location }) => {
-
   if (/access_token|id_token|error/.test(location.hash)) {
-    auth.handleAuthentication(location);
+    auth.handleAuthentication();
   }
 };
 
-const loggedIn = sessionStorage.getItem('isLoggedIn');
-
 export const makeMainRoutes = () => {
- loggedIn ? console.log('YOU ARE LOGGED IN') : console.log('YOU ARE NOT LOGGED IN!');
+  const loggedIn = sessionStorage.getItem('isLoggedIn')
   return (
     <Router history={history}>
       <div>
