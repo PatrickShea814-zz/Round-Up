@@ -103,6 +103,7 @@ export const makeMainRoutes = () => {
           render={props => {
             handleAuthentication(props);
             <Redirect to="/home" />
+            return <Callback {...props} />;
           }}
         />
       </div>
