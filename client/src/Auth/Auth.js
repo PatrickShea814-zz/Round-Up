@@ -2,7 +2,6 @@ import auth0 from 'auth0-js';
 import { AUTH_CONFIG } from './auth0-variables';
 import history from '../history';
 import axios from "axios"
-import { Component } from 'react';
 
 export default class Auth {
 
@@ -22,6 +21,7 @@ export default class Auth {
     scope: this.requestedScopes,
     avatar: null
   });
+
 
   constructor() {
     this.login = this.login.bind(this);
@@ -61,10 +61,12 @@ export default class Auth {
 
   setSession(authResult) {
     // Set isLoggedIn flag in localStorage
-    sessionStorage.setItem('isLoggedIn', true)
+    sessionStorage.setItem('isLoggedIn', 'true');
+
     // Set the time that the access token will expire at
     let expiresAt = (authResult.expiresIn * 1000) + new Date().getTime();
     this.accessToken = authResult.accessToken;
+    sessionStorage.setItem('accessToken', this.accessToken)
     this.idToken = authResult.idToken;
     this.expiresAt = expiresAt;
 
@@ -72,7 +74,7 @@ export default class Auth {
     this.scopes = authResult.scope || this.requestedScopes || '';
 
     // navigate to the home route
-    history.replace('/vault');
+    history.replace('/masonry');
   }
 
   renewSession() {
@@ -88,7 +90,8 @@ export default class Auth {
   }
 
   getProfile(cb) {
-    this.auth0.client.userInfo(this.accessToken, (err, profile) => {
+    const accessToken = sessionStorage.getItem('accessToken');
+    this.auth0.client.userInfo(accessToken, (err, profile) => {
       if (profile) {
         this.userProfile = profile;
         var user_id = profile.sub;
@@ -100,13 +103,12 @@ export default class Auth {
           url: "/authAPI",
           data: {user_id}
         }).then( (res) => {console.log("userID post success", res.data)
-          if(res.data.existingUser === true){
+          if(res.data.existingUser === false){
             console.log('This user should already be registered with Plaid')
-            history.replace('/Masonry')
           }
           else {
             console.log('This user must first register with Plaid')
-            history.replace('/Plaid')
+            history.replace('/plaid')
           }
         }).catch( (err) => {console.log("userID post failed", err)})
       }
@@ -127,7 +129,7 @@ export default class Auth {
     this.userProfile = null;
 
     // Remove isLoggedIn flag from localStorage
-    // sessionStorage.setItem(isLoggedIn, false)
+    sessionStorage.removeItem('IsLoggedIn');
 
     // navigate to the home route
     history.replace('/home');
