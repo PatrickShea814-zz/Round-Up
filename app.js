@@ -545,11 +545,10 @@ app.post("/authAPI", (req, res) => {
   db.User.find({
     auth0_ID: AUTH0_ID
   }).then(function(dbData){
-    console.log(`dbData!${dbData}- here`)
-    if (dbData == AUTH0_ID) {
+    if (dbData[0].auth0_ID === AUTH0_ID) {
       console.log("i'm an existing user")
       res.send({
-        'existingUser': false
+        'existingUser': true
       })
     } else {
       db.User.create({
