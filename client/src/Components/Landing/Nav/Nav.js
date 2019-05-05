@@ -76,12 +76,13 @@ const SignInButton = styled.button`
 
 class HomeNav extends Component {
     render() {
+        const login = this.props.auth.login
         return (
             <Nav>
                 <a href={"/"} className="logo">
                     <img src={pennywiselogo} alt="PennyWise Logo" />
                 </a>
-                <SignInButton right>Sign In</SignInButton>
+                <SignInButton right onClick={()=>login()}>Sign In</SignInButton>
                 <NavButton right>Contact Us</NavButton>
                 <NavButton right>About Us</NavButton>
                 <CurrentUser />

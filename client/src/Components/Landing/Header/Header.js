@@ -5,6 +5,7 @@ import Welcome from './../Section/Welcome';
 import UserDropdown from '../../User/UserDropdown';
 
 import styled from 'styled-components';
+import Auth from '../../../Auth/Auth';
 
 const HomeContainer = styled.header`
 background: 
@@ -40,12 +41,14 @@ animation: AnimationName 30s ease infinite;
 `;
 
 class Header extends Component {
+    
     render() {
+      
         return (
             <HomeContainer>
                 <UserDropdown />
-                <HomeNav />
-                <Welcome />
+                <HomeNav {...this.props}/>
+                <Welcome {...this.props}/>
             </HomeContainer>
         )
     }
