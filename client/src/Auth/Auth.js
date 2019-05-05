@@ -5,10 +5,6 @@ import axios from "axios"
 
 export default class Auth {
 
-  state = {
-    "newUser": true
-  }
-
   accessToken;
   idToken;
   expiresAt;
@@ -107,10 +103,11 @@ export default class Auth {
         }).then( (res) => {console.log("userID post success", res.data)
           if(res.data.existingUser === true){
             console.log('This user should already be registered with Plaid')
+            history.replace('/Masonry')
           }
           else {
             console.log('This user must first register with Plaid')
-            history.replace('/plaid')
+            history.replace('/Plaid')
           }
         }).catch( (err) => {console.log("userID post failed", err)})
       }

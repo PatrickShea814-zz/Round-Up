@@ -27,7 +27,6 @@ class App extends Component {
     })
   }
  
-
   handleOnSuccess(token, metadata) {
     // send token to client server
     console.log("Client token = ", token);
@@ -41,20 +40,13 @@ class App extends Component {
       }
     }).then((res) => {
       console.log("Plaid post success", res.data)
-      if (res.data.existingUser === true) {
-        console.log('Plaid user = true');
-      }
-      else {
-        console.log('Plaid user = false');
-        history.replace('/home');
-      }
     }).catch((err) => { console.log("userID post failed", err) });
 
     axios.request({
       method:"GET",
       url:"/api/updateUser"
     }).then(res => {
-      console.log("updateUser Route Success = ", res.data)
+      console.log("updateUser Route Success = ", res)
     }).catch(err => { console.log("updateUser Route error", err) })
   }
 
