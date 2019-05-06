@@ -16,6 +16,11 @@ let stripeCustomerSchema = new Schema({
         type: Number,
         required: true
     },
+
+    stripeToken: {
+        type: String,
+        required: true
+    },
     
     sourceURL: {
         type: String,
