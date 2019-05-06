@@ -43,6 +43,8 @@ animation: AnimationName 30s ease infinite;
 class Header extends Component {
     
     render() {
+
+        const { isAuthenticated } = this.props.auth;
       
         return (
             <HomeContainer>

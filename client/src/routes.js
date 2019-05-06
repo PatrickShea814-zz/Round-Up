@@ -12,6 +12,8 @@ import Vault from "./Components/Vault/Vault";
 import CheckoutForm from "./Components/CheckoutForm";
 import Signup from "./Components/SignUp/index";
 import Plaid from "./Components/Plaid/index";
+import Masonry from "./Components/WishListDash/Masonry";
+import WishList from "./Components/WishListDash/WishList";
 
 const auth = new Auth();
 
@@ -25,30 +27,22 @@ export const makeMainRoutes = () => {
   const loggedIn = sessionStorage.getItem('isLoggedIn')
   return (
     <Router history={history}>
+      
       <div>
+      {console.log(auth.isAuthenticated())}
         <Route path="/" render={props => <App auth={auth} {...props} />} />
         <Route path="/home" render={props => <Home auth={auth} {...props} />} />
         <Route
           path="/profile"
           render={props =>
-            !loggedIn ? (
+            !auth.isAuthenticated() ? (
               <Redirect to="/home" />
             ) : (
                 <Profile auth={auth} {...props} />
               )
           }
         />
-        <Route
-          path="/ping"
-          render={props =>
-            !loggedIn ? (
-              <Redirect to="/home" />
-            ) : (
-                <Ping auth={auth} {...props} />
-              )
-          }
-        />
-        <Route
+        {/*{<Route
           path="/vault"
           render={props =>
             !loggedIn ? (
@@ -57,11 +51,21 @@ export const makeMainRoutes = () => {
                 <Vault auth={auth} {...props} />
               )
           }
+        />*/}
+        <Route
+        path="/masonry"
+        render={props =>
+          !auth.isAuthenticated() ? (
+            <Redirect to="/home" />
+          ) : (
+              <Masonry auth={auth} {...props} />
+            )
+        }
         />
         <Route
           path="/payment"
           render={props =>
-            loggedIn ? (
+            auth.isAuthenticated() ? (
               <Redirect to="/vault" />
             ) : (
                 <CheckoutForm auth={auth} {...props} />
@@ -71,7 +75,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/plaid"
           render={props =>
-            !loggedIn ? (
+            !auth.isAuthenticated() ? (
               <Redirect to="/home" />
             ) : (
                 <Plaid auth={auth} {...props} />
@@ -81,7 +85,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/signup"
           render={props =>
-            !loggedIn ? (
+            !auth.isAuthenticated() ? (
               <Redirect to="/Vault" />
             ) : (
                 <Signup auth={auth} {...props} />
@@ -91,7 +95,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/admin"
           render={props =>
-            !loggedIn ||
+            !auth.isAuthenticated() ||
               !auth.userHasScopes(["write:messages"]) ? (
                 <Redirect to="/home" />
               ) : (

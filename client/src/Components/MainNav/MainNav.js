@@ -5,6 +5,7 @@ import NavLogo from '../../Images/navlogo.png';
 import "./MainNav.css";
 
 class MainNav extends Component {
+
     goTo(route) {
         this.props.history.replace(`/${route}`);
     }
@@ -32,7 +33,7 @@ class MainNav extends Component {
             <Navbar container-fluid>
                 <Navbar.Header id="navHeader">
                     <Navbar.Brand>
-                        {<img className="logo" src={NavLogo} alt="PennyWise Logo" />}
+                        {<img id="logo" className="logo" src={NavLogo} alt="PennyWise Logo" />}
                     </Navbar.Brand>
                     <Button
                         bsStyle="primary"
@@ -40,21 +41,21 @@ class MainNav extends Component {
                         onClick={this.goTo.bind(this, "home")}
                     >
                         Home
-            </Button>
+                        </Button>
                     <Button
                         bsStyle="primary"
                         className="navBtn btn-margin"
                         onClick={this.goTo.bind(this, "home")}
                     >
                         About Us
-            </Button>
+                        </Button>
                     <Button
                         bsStyle="primary"
                         className="navBtn btn-margin"
                         onClick={this.goTo.bind(this, "home")}
                     >
                         Contact
-            </Button>
+                        </Button>
                     {!isAuthenticated() && (
                         <Button
                             id="qsLoginBtn"
@@ -69,10 +70,10 @@ class MainNav extends Component {
                         <Button
                             bsStyle="primary"
                             className="navBtn btn-margin"
-                            onClick={this.goTo.bind(this, "vault")}
+                            onClick={this.goTo.bind(this, "masonry")}
                         >
                             My Wish List
-              </Button>
+                        </Button>
                     )}
                     {isAuthenticated() && (
                         <Button
@@ -81,25 +82,7 @@ class MainNav extends Component {
                             onClick={this.goTo.bind(this, "profile")}
                         >
                             Profile & Settings
-              </Button>
-                    )}
-                    {isAuthenticated() && (
-                        <Button
-                            bsStyle="primary"
-                            className="navBtn btn-margin"
-                            onClick={this.goTo.bind(this, "ping")}
-                        >
-                            Ping
-              </Button>
-                    )}
-                    {isAuthenticated() && (
-                        <Button
-                            bsStyle="primary"
-                            className="navBtn btn-margin"
-                            onClick={this.goTo.bind(this, "signup")}
-                        >
-                            Sign Up
-              </Button>
+                        </Button>
                     )}
                     {isAuthenticated() && userHasScopes(["write:messages"]) && (
                         <Button
@@ -108,7 +91,7 @@ class MainNav extends Component {
                             onClick={this.goTo.bind(this, "admin")}
                         >
                             Admin
-              </Button>
+                        </Button>
                     )}
                     {isAuthenticated() && (
                         <Button
@@ -118,7 +101,7 @@ class MainNav extends Component {
                             onClick={this.logout.bind(this)}
                         >
                             Log Out
-              </Button>
+                        </Button>
                     )}
                 </Navbar.Header>
             </Navbar>

@@ -1,4 +1,4 @@
-< !DOCTYPE html >
+<!DOCTYPE html>
     <html lang="en">
 
         <head>
@@ -15,38 +15,38 @@
 </head>
 
                                 <body>
-                                    <main class="main">
-                                        <div class="grid">
-                                            <div class="grid__column grid__column--is-twelve-columns">
-                                                <div id="banner" class="everpresent-content">
-                                                    <h1 class="everpresent-content__heading">Plaid Quickstart</h1>
-                                                    <p id="intro" class="everpresent-content__subheading">
+                                    <main className="main">
+                                        <div className="grid">
+                                            <div className="grid__column grid__column--is-twelve-columns">
+                                                <div id="banner" className="everpresent-content">
+                                                    <h1 className="everpresent-content__heading">Plaid Quickstart</h1>
+                                                    <p id="intro" className="everpresent-content__subheading">
                                                         An example application that outlines an end-to-end integration with Plaid
           </p>
-                                                    <p id="steps" class="everpresent-content__subheading">
+                                                    <p id="steps" className="everpresent-content__subheading">
                                                         Success! You just created an Item by linking your account.
           </p>
                                                 </div>
 
-                                                <div id="container" class="initial-view">
-                                                    <p class="initial-view__description">
+                                                <div id="container" className="initial-view">
+                                                    <p className="initial-view__description">
                                                         Click the button below to open a list of Institutions. After you select one, you’ll be guided through an
                                                         authentication process. Upon completion, a public_token will be passed back to the server and exchanged for
                                                         access_token.
           </p>
 
-                                                    <button id="link-btn" class="button button--is-primary">Connect with Plaid</button>
+                                                    <button id="link-btn" className="button button--is-primary">Connect with Plaid</button>
                                                 </div>
 
-                                                <div id="app" class="connected-view">
-                                                    <div class="item-overview">
-                                                        <div class="item-overview__column">
-                                                            <h3 class="item-overview__heading">item_id</h3>
-                                                            <p class="item-overview__id" id="item_id">san.asjsansakjsakjasjksajkas</p>
+                                                <div id="app" className="connected-view">
+                                                    <div className="item-overview">
+                                                        <div className="item-overview__column">
+                                                            <h3 className="item-overview__heading">item_id</h3>
+                                                            <p className="item-overview__id" id="item_id">san.asjsansakjsakjasjksajkas</p>
                                                         </div>
-                                                        <div class="item-overview__column">
-                                                            <h3 class="item-overview__heading">access_token</h3>
-                                                            <p class="item-overview__id" id="access_token">••••••••hsakjsl</p>
+                                                        <div className="item-overview__column">
+                                                            <h3 className="item-overview__heading">access_token</h3>
+                                                            <p className="item-overview__id" id="access_token">••••••••hsakjsl</p>
                                                         </div>
 
                                                         <div style="clear: both"></div>
@@ -54,25 +54,25 @@
 
                                                     <p>Now that you have an access_token you can make all of the following API requests:</p>
 
-                                                    <div class="box">
-                                                        <h3 class="box__heading">Products</h3>
+                                                    <div className="box">
+                                                        <h3 className="box__heading">Products</h3>
 
                                                         <!-- Auth -->
-            <div class="item-data-row">
-                                                            <div class="item-data-row__left">
-                                                                <div class="item-data-row__request-type">post</div>
+            <div className="item-data-row">
+                                                            <div className="item-data-row__left">
+                                                                <div className="item-data-row__request-type">post</div>
                                                             </div>
-                                                            <div class="item-data-row__center">
-                                                                <div class="item-data-row__nicename">Auth</div>
-                                                                <div class="item-data-row__endpoint">/auth/get</div>
-                                                                <div class="item-data-row__description">Retrieve account and routing numbers for checking and savings
+                                                            <div className="item-data-row__center">
+                                                                <div className="item-data-row__nicename">Auth</div>
+                                                                <div className="item-data-row__endpoint">/auth/get</div>
+                                                                <div className="item-data-row__description">Retrieve account and routing numbers for checking and savings
                   accounts.</div>
                                                             </div>
-                                                            <div class="item-data-row__right">
-                                                                <button id="get-auth-btn" class="button button--is-small button--is-default button--is-full-width">Send
+                                                            <div className="item-data-row__right">
+                                                                <button id="get-auth-btn" className="button button--is-small button--is-default button--is-full-width">Send
                   request</button>
                                                             </div>
-                                                            <div class="item-data-row__response">
+                                                            <div className="item-data-row__response">
                                                                 <table>
                                                                     <tbody id="get-auth-data"></tbody>
                                                                 </table>
@@ -80,16 +80,16 @@
                                                         </div>
 
                                                         <!--Transactions -->
-            <div class="item-data-row">
-                                                            <div class="item-data-row__center">
-                                                                <div class="item-data-row__nicename">My PennyWise Savings</div>
-                                                                <div class="item-data-row__description">View your PennyWise savings history from the last 30 days.</div>
+            <div className="item-data-row">
+                                                            <div className="item-data-row__center">
+                                                                <div className="item-data-row__nicename">My PennyWise Savings</div>
+                                                                <div className="item-data-row__description">View your PennyWise savings history from the last 30 days.</div>
                                                             </div>
-                                                            <div class="item-data-row__right">
+                                                            <div className="item-data-row__right">
                                                                 <button id="get-transactions-btn"
-                                                                    class="button button--is-small button--is-default button--is-full-width">Vew Savings</button>
+                                                                    className="button button--is-small button--is-default button--is-full-width">Vew Savings</button>
                                                             </div>
-                                                            <div class="item-data-row__response">
+                                                            <div className="item-data-row__response">
                                                                 <table>
                                                                     <tbody id="get-transactions-data"></tbody>
                                                                 </table>
@@ -97,21 +97,21 @@
                                                         </div>
 
                                                         <!-- Identity -->
-            <div class="item-data-row">
-                                                            <div class="item-data-row__left">
-                                                                <div class="item-data-row__request-type">post</div>
+            <div className="item-data-row">
+                                                            <div className="item-data-row__left">
+                                                                <div className="item-data-row__request-type">post</div>
                                                             </div>
-                                                            <div class="item-data-row__center">
-                                                                <div class="item-data-row__nicename">Identity</div>
-                                                                <div class="item-data-row__endpoint">/identity/get</div>
-                                                                <div class="item-data-row__description">Retrieve Identity information on file with the bank. Reduce
+                                                            <div className="item-data-row__center">
+                                                                <div className="item-data-row__nicename">Identity</div>
+                                                                <div className="item-data-row__endpoint">/identity/get</div>
+                                                                <div className="item-data-row__description">Retrieve Identity information on file with the bank. Reduce
                   fraud by comparing user-submitted data to validate identity.</div>
                                                             </div>
-                                                            <div class="item-data-row__right">
+                                                            <div className="item-data-row__right">
                                                                 <button id="get-identity-btn"
-                                                                    class="button button--is-small button--is-default button--is-full-width">Send request</button>
+                                                                    className="button button--is-small button--is-default button--is-full-width">Send request</button>
                                                             </div>
-                                                            <div class="item-data-row__response">
+                                                            <div className="item-data-row__response">
                                                                 <table>
                                                                     <tbody id="get-identity-data"></tbody>
                                                                 </table>
@@ -119,21 +119,21 @@
                                                         </div>
 
                                                         <!-- Balance -->
-            <div class="item-data-row">
-                                                            <div class="item-data-row__left">
-                                                                <div class="item-data-row__request-type">post</div>
+            <div className="item-data-row">
+                                                            <div className="item-data-row__left">
+                                                                <div className="item-data-row__request-type">post</div>
                                                             </div>
-                                                            <div class="item-data-row__center">
-                                                                <div class="item-data-row__nicename">Balance</div>
-                                                                <div class="item-data-row__endpoint">/accounts/balance/get</div>
-                                                                <div class="item-data-row__description">Check balances in real time to prevent non-sufficient funds
+                                                            <div className="item-data-row__center">
+                                                                <div className="item-data-row__nicename">Balance</div>
+                                                                <div className="item-data-row__endpoint">/accounts/balance/get</div>
+                                                                <div className="item-data-row__description">Check balances in real time to prevent non-sufficient funds
                   fees.</div>
                                                             </div>
-                                                            <div class="item-data-row__right">
+                                                            <div className="item-data-row__right">
                                                                 <button id="get-balance-btn"
-                                                                    class="button button--is-small button--is-default button--is-full-width">Send request</button>
+                                                                    className="button button--is-small button--is-default button--is-full-width">Send request</button>
                                                             </div>
-                                                            <div class="item-data-row__response">
+                                                            <div className="item-data-row__response">
                                                                 <table>
                                                                     <tbody id="get-balance-data"></tbody>
                                                                 </table>
@@ -141,25 +141,25 @@
                                                         </div>
 
                                                         <!-- Assets (hidden unless 'assets' is included in the product list) -->
-            <div id='assets' class="item-data-row" style='display:none;'>
-                                                            <div class="item-data-row__left">
-                                                                <div class="item-data-row__request-type">post</div>
+            <div id='assets' className="item-data-row" style='display:none;'>
+                                                            <div className="item-data-row__left">
+                                                                <div className="item-data-row__request-type">post</div>
                                                             </div>
-                                                            <div class="item-data-row__center">
-                                                                <div class="item-data-row__nicename">Assets</div>
-                                                                <div class="item-data-row__endpoint">/asset_report/*</div>
-                                                                <div class="item-data-row__description">Create a point-in-time snapshot of a user's assets.</div>
+                                                            <div className="item-data-row__center">
+                                                                <div className="item-data-row__nicename">Assets</div>
+                                                                <div className="item-data-row__endpoint">/asset_report/*</div>
+                                                                <div className="item-data-row__description">Create a point-in-time snapshot of a user's assets.</div>
                                                             </div>
 
-                                                            <div class="item-data-row__right">
+                                                            <div className="item-data-row__right">
                                                                 <button id="get-assets-btn"
-                                                                    class="button button--is-small button--is-default button--is-full-width">Send request</button>
+                                                                    className="button button--is-small button--is-default button--is-full-width">Send request</button>
 
-                                                                <a id="download-assets-pdf-btn" class="button button--is-small button--is-primary button--is-full-width"
+                                                                <a id="download-assets-pdf-btn" className="button button--is-small button--is-primary button--is-full-width"
                                                                     style="display: none; margin: 10px 0px;" ; >Download as PDF</a>
                                                         </div>
 
-                                                        <div class="item-data-row__response">
+                                                        <div className="item-data-row__response">
                                                             <table>
                                                                 <tbody id="get-assets-data"></tbody>
                                                             </table>
@@ -168,42 +168,42 @@
 
                                                 </div>
 
-                                                <div class="box">
-                                                    <h3 class="box__heading">Item management</h3>
+                                                <div className="box">
+                                                    <h3 className="box__heading">Item management</h3>
 
-                                                    <div class="item-data-row">
-                                                        <div class="item-data-row__left">
-                                                            <div class="item-data-row__request-type">post</div>
+                                                    <div className="item-data-row">
+                                                        <div className="item-data-row__left">
+                                                            <div className="item-data-row__request-type">post</div>
                                                         </div>
-                                                        <div class="item-data-row__center">
-                                                            <div class="item-data-row__endpoint">/item/get</div>
-                                                            <div class="item-data-row__description">Retrieve information about an Item, like the institution, billed
+                                                        <div className="item-data-row__center">
+                                                            <div className="item-data-row__endpoint">/item/get</div>
+                                                            <div className="item-data-row__description">Retrieve information about an Item, like the institution, billed
                   products, available products, and webhook information.</div>
                                                         </div>
 
-                                                        <div class="item-data-row__right">
-                                                            <button id="get-item-btn" class="button button--is-small button--is-default button--is-full-width">Send
+                                                        <div className="item-data-row__right">
+                                                            <button id="get-item-btn" className="button button--is-small button--is-default button--is-full-width">Send
                   request</button>
                                                         </div>
 
-                                                        <div class="item-data-row__response">
+                                                        <div className="item-data-row__response">
                                                             <table>
                                                                 <tbody id="get-item-data"></tbody>
                                                             </table>
                                                         </div>
                                                     </div>
 
-                                                    <div class="item-data-row">
-                                                        <div class="item-data-row__center">
-                                                            <div class="item-data-row__nicename">My Connected Accounts</div>
-                                                            <div class="item-data-row__description">View all of your accounts currently connected to PennyWise.
+                                                    <div className="item-data-row">
+                                                        <div className="item-data-row__center">
+                                                            <div className="item-data-row__nicename">My Connected Accounts</div>
+                                                            <div className="item-data-row__description">View all of your accounts currently connected to PennyWise.
                 </div>
                                                         </div>
-                                                        <div class="item-data-row__right">
+                                                        <div className="item-data-row__right">
                                                             <button id="get-accounts-btn"
-                                                                class="button button--is-small button--is-default button--is-full-width">View Accounts</button>
+                                                                className="button button--is-small button--is-default button--is-full-width">View Accounts</button>
                                                         </div>
-                                                        <div class="item-data-row__response">
+                                                        <div className="item-data-row__response">
                                                             <table>
                                                                 <tbody id="get-accounts-data"></tbody>
                                                             </table>
@@ -281,7 +281,7 @@
                                             $.get('/accounts', function (data1) {
                                                 $('#get-accounts-data').slideUp(function () {
                                                     var html = '<tr><td><strong>Name</strong></td><td><strong>Subtype</strong></td><td><strong>Institution Name</strong></td><td><strong>Delete?</strong></td>tr>';
-                                                    var deleteButton = '<button type="button" class="btn btn-outline-danger"> <i class="fas fa-times"></i> </button>'
+                                                    var deleteButton = '<button type="button" className="btn btn-outline-danger"> <i className="fas fa-times"></i> </button>'
                                                     data1.accounts.accounts.forEach(function (account, idx) {
                                                         html += '<tr>';
                                                         html += '<td>' + account.name + '</td>';
@@ -340,7 +340,7 @@
                                         $.get('/identity', function (data) {
                                             $('#get-identity-data').slideUp(function () {
                                                 var identityData = data.identity.identity;
-                                                var html = '<tr class="response-row response-row--is-identity"><td><strong>Names</strong></td><td><strong>Emails</strong></td><td><strong>Phone numbers</strong></td><td><strong>Addresses</strong></td></tr><tr class="response-row response-row--is-identity">';
+                                                var html = '<tr className="response-row response-row--is-identity"><td><strong>Names</strong></td><td><strong>Emails</strong></td><td><strong>Phone numbers</strong></td><td><strong>Addresses</strong></td></tr><tr className="response-row response-row--is-identity">';
                                                 html += '<td>';
                                                 identityData.names.forEach(function (name, idx) {
                                                     html += name + '<br />';
@@ -386,13 +386,13 @@
                                         $.get('/transactions', function (data) {
                                             if (data.error != null && data.error.error_code != null) {
                                                 // Format the error
-                                                var errorHtml = '<div class="inner"><p>' +
+                                                var errorHtml = '<div className="inner"><p>' +
                                                     '<strong>' + data.error.error_code + ':</strong> ' +
                                                     (data.error.display_message == null ? data.error.error_message : data.error.display_message) + '</p></div>';
 
                                                 if (data.error.error_code === 'PRODUCT_NOT_READY') {
                                                     // Add additional context for `PRODUCT_NOT_READY` errors
-                                                    errorHtml += '<div class="inner"><p>Note: The PRODUCT_NOT_READY ' +
+                                                    errorHtml += '<div className="inner"><p>Note: The PRODUCT_NOT_READY ' +
                                                         'error is returned when a request to retrieve Transaction data ' +
                                                         'is made before Plaid finishes the <a href="https://plaid.com/' +
                                                         'docs/quickstart/#transaction-data-with-webhooks">initial ' +
