@@ -1,7 +1,7 @@
 import auth0 from 'auth0-js';
 import { AUTH_CONFIG } from './auth0-variables';
 import history from '../history';
-import axios from "axios"
+import axios from "axios";
 
 export default class Auth {
 
@@ -44,6 +44,9 @@ export default class Auth {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
+        this.getProfile(function(err, res){
+          err ? console.log(err) : console.log('This is what I have', res)
+        });
       } else if (err) {
         history.replace('/home');
         console.log(err);
@@ -82,6 +85,7 @@ export default class Auth {
     this.auth0.checkSession({}, (err, authResult) => {
        if (authResult && authResult.accessToken && authResult.idToken) {
          this.setSession(authResult);
+         this.getProfile();
        } else if (err) {
          this.logout();
          console.log(err);
@@ -101,16 +105,17 @@ export default class Auth {
         // auth0 management API to get user information such as email
         axios.request({
           method: "POST",
-          url: "/authAPI",
+          url: "/api/authAPI",
           data: {user_id}
 
         }).then( (res) => {console.log("userID post success", res.data)
           if(res.data.existingUser === false){
             console.log('This user should already be registered with Plaid')
+            history.replace('/plaid')
           }
           else {
             console.log('This user must first register with Plaid')
-            history.replace('/plaid')
+            history.replace('/home')
           }
         }).catch( (err) => {console.log("userID post failed", err)})
       }

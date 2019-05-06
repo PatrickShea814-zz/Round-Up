@@ -540,22 +540,22 @@ var respondWithAssetReport = (
 
 //Route Sign in user for new or returning user
 // require("./routes/Auth0")(app)
-app.post("/authAPI", (req, res) => {
-  AUTH0_ID = req.body.user_id  
+app.post("/api/authAPI", async function( req, res) {
+     
   db.User.find({
-    auth0_ID: AUTH0_ID
+    auth0_ID: req.body.user_id
   }).then(function(dbData){
-    if (dbData[0].auth0_ID === AUTH0_ID) {
+    if (dbData.auth0_ID === req.body.user_id) {
       console.log("i'm an existing user")
-      res.send({
+      res.json({
         'existingUser': true
       })
     } else {
       db.User.create({
-        auth0_ID: AUTH0_ID
+        auth0_ID: req.body.user_id
       }).then(user => console.log('This is our new user:', user))
       console.log("im a new user")
-      res.send({
+      res.json({
         'existingUser': false
       })
       // res.send("im a new user")
@@ -682,7 +682,6 @@ app.get('/api/updateUser', function (request, response, next) {
     let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, TokenCreator, StripeAccountCreator, StripeDataCreator];
     pseries(arr)
     .then(res => {
-      
       response.json(res)
     })
     .catch(err => response.json(err));
