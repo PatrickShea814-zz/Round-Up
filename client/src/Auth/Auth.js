@@ -5,16 +5,13 @@ import axios from "axios"
 
 export default class Auth {
 
-  state = {
-    "newUser": true
-  }
-
   accessToken;
   idToken;
   expiresAt;
   userProfile;
   scopes;
   requestedScopes = 'openid profile read:messages write:messages';
+
 
   auth0 = new auth0.WebAuth({
     domain: AUTH_CONFIG.domain,
@@ -65,11 +62,12 @@ export default class Auth {
 
   setSession(authResult) {
     // Set isLoggedIn flag in localStorage
-    localStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem('isLoggedIn', 'true');
 
     // Set the time that the access token will expire at
     let expiresAt = (authResult.expiresIn * 1000) + new Date().getTime();
     this.accessToken = authResult.accessToken;
+    sessionStorage.setItem('accessToken', this.accessToken)
     this.idToken = authResult.idToken;
     this.expiresAt = expiresAt;
 
@@ -93,7 +91,8 @@ export default class Auth {
   }
 
   getProfile(cb) {
-    this.auth0.client.userInfo(this.accessToken, (err, profile) => {
+    const accessToken = sessionStorage.getItem('accessToken');
+    this.auth0.client.userInfo(accessToken, (err, profile) => {
       if (profile) {
         this.userProfile = profile;
         var user_id = profile.sub;
@@ -104,6 +103,7 @@ export default class Auth {
           method: "POST",
           url: "/authAPI",
           data: {user_id}
+
         }).then( (res) => {console.log("userID post success", res.data)
           if(res.data.existingUser === false){
             console.log('This user should already be registered with Plaid')
@@ -131,7 +131,7 @@ export default class Auth {
     this.userProfile = null;
 
     // Remove isLoggedIn flag from localStorage
-    localStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('IsLoggedIn');
 
     // navigate to the home route
     history.replace('/home');

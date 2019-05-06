@@ -1,12 +1,11 @@
 import React, { Component } from "react";
-import { Navbar, Button } from "react-bootstrap";
-import NavLogo from './Images/navlogo.png'
-import Masonry from './Components/WishListDash/Masonry'
-import "./App.css";
-import "./Components/WishListDash/WishList.css";
-import MainNav from "./Components/MainNav/MainNav";
-
-
+import Auth  from './Auth/Auth';
+import History from './history';
+import './Components/DarkMode/styles.scss';
+import './App.scss';
+import Header from './Components/Landing/Header/Header';
+import Footer from './Components/Landing/Footer/Footer';
+import MainNav from './Components/MainNav/MainNav';
 
 class App extends Component {
 
@@ -29,22 +28,23 @@ class App extends Component {
       renewSession();
     }
   }
+  
+  render(){
 
-
-  render() {
-
-    return (
-      <div>
-        <Navbar container-fluid>
-          <Navbar.Header id="navHeader">
-            <Navbar.Brand>
-            </Navbar.Brand>
-            <MainNav auth={this.props.auth} history={this.props.history} />
-          </Navbar.Header>
-        </Navbar>
-      </div>
-    );
+    const { isAuthenticated } = this.props.auth;
+    
+      return (
+        <div className="App">
+          {isAuthenticated() && (
+            <MainNav auth={this.props.auth} {...this.props} />
+          )}
+          {!isAuthenticated() && (
+            <Header {...this.props} />
+          )}
+          <Footer />
+        </div>
+      )
+    }
   }
-}
 
 export default App;

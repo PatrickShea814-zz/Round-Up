@@ -24,6 +24,7 @@ const handleAuthentication = ({ location }) => {
 };
 
 export const makeMainRoutes = () => {
+  const loggedIn = sessionStorage.getItem('isLoggedIn')
   return (
     <Router history={history}>
       
@@ -41,20 +42,10 @@ export const makeMainRoutes = () => {
               )
           }
         />
-        <Route
-          path="/ping"
-          render={props =>
-            !auth.isAuthenticated() ? (
-              <Redirect to="/home" />
-            ) : (
-                <Ping auth={auth} {...props} />
-              )
-          }
-        />
         {/*{<Route
           path="/vault"
           render={props =>
-            !auth.isAuthenticated() ? (
+            !loggedIn ? (
               <Redirect to="/home" />
             ) : (
                 <Vault auth={auth} {...props} />
@@ -116,6 +107,7 @@ export const makeMainRoutes = () => {
           path="/callback"
           render={props => {
             handleAuthentication(props);
+
             return <Callback {...props} />;
           }}
         />
