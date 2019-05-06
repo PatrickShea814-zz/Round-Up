@@ -604,8 +604,6 @@ app.get('/api/updateUser', function (request, response, next) {
 
     }
 
-      
-
     let PlaidItemIntoUserModel = (res => {
      
       return Promise.resolve(
