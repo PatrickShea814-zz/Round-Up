@@ -46,7 +46,7 @@ app.use(helmet());
 // needed for heroku build deployment
 
 if (process.env.NODE_ENV === "production") {
-  console.log("production running")
+  console.log("production is running")
   app.use(express.static("./client/build"));
 }
 
