@@ -541,18 +541,19 @@ var respondWithAssetReport = (
 //Route Sign in user for new or returning user
 // require("./routes/Auth0")(app)
 app.post("/api/authAPI", async function( req, res) {
-     
-  db.User.find({
-    auth0_ID: req.body.user_id
+  AUTH0_ID = req.body.user_id;
+  
+  await db.User.findOne({
+    auth0_ID: AUTH0_ID
   }).then(function(dbData){
-    if (dbData.auth0_ID === req.body.user_id) {
+    if (dbData) {
       console.log("i'm an existing user")
       res.json({
         'existingUser': true
       })
     } else {
       db.User.create({
-        auth0_ID: req.body.user_id
+        auth0_ID: AUTH0_ID
       }).then(user => console.log('This is our new user:', user))
       console.log("im a new user")
       res.json({

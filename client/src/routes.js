@@ -29,13 +29,13 @@ export const makeMainRoutes = () => {
     <Router history={history}>
       
       <div>
-      {console.log(auth.isAuthenticated())}
+      {console.log(loggedIn)}
         <Route path="/" render={props => <App auth={auth} {...props} />} />
         <Route path="/home" render={props => <Home auth={auth} {...props} />} />
         <Route
           path="/profile"
           render={props =>
-            !auth.isAuthenticated() ? (
+            !loggedIn ? (
               <Redirect to="/home" />
             ) : (
                 <Profile auth={auth} {...props} />
@@ -55,7 +55,7 @@ export const makeMainRoutes = () => {
         <Route
         path="/masonry"
         render={props =>
-          !auth.isAuthenticated() ? (
+          !loggedIn ? (
             <Redirect to="/home" />
           ) : (
               <Masonry auth={auth} {...props} />
@@ -65,7 +65,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/payment"
           render={props =>
-            auth.isAuthenticated() ? (
+            loggedIn ? (
               <Redirect to="/vault" />
             ) : (
                 <CheckoutForm auth={auth} {...props} />
@@ -75,7 +75,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/plaid"
           render={props =>
-            !auth.isAuthenticated() ? (
+            !loggedIn ? (
               <Redirect to="/home" />
             ) : (
                 <Plaid auth={auth} {...props} />
@@ -85,7 +85,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/signup"
           render={props =>
-            !auth.isAuthenticated() ? (
+            !loggedIn ? (
               <Redirect to="/Vault" />
             ) : (
                 <Signup auth={auth} {...props} />
@@ -95,7 +95,7 @@ export const makeMainRoutes = () => {
         <Route
           path="/admin"
           render={props =>
-            !auth.isAuthenticated() ||
+            !loggedIn ||
               !auth.userHasScopes(["write:messages"]) ? (
                 <Redirect to="/home" />
               ) : (
