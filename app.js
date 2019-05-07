@@ -179,6 +179,7 @@ async function StripeTokenCreator (accToken, accId){
 async function TransactionFinder (user, trns){
 
   const transactionsArray = [];
+  const accountsArray = [];
 
   for (let i = 0; i < trns.transactions.length; i++) {
 
@@ -187,24 +188,43 @@ async function TransactionFinder (user, trns){
     if (toBeRounded === 0){
       toBeRounded = 1;
     }
-    
-    let getTransactions = await db.RoundedTrans.create({
-      userID: user._id,
-      account_id: trns.transactions[i].account_id,
-      date: trns.transactions[i].date,
-      transactionName: trns.transactions[i].name,
-      originalAmount: trns.transactions[i].amount,
-      currencyCode: trns.transactions[i].iso_currency_code,
-      category: trns.transactions[i].category,
-      roundedAmount: toBeRounded,
-      transaction_id: trns.transactions[i].transaction_id,
-      transactionDate: trns.transactions[i].date
-    })
-    
+
+    function AccountConstructor(name, id){
+
+      return { "account_name": name,
+                "account_id": id
+            }
+    }
+
+    for(let j =0; j < trns.accounts.length; j++){
+      let acctObj = AccountConstructor();
+      let account = trns.accounts[j];
+      accountsArray.push(AccountConstructor(trns.accounts[j].name, trns.accounts[j].account_id))
+    }
+
+    for (let k = 0; k < accountsArray.length; k++){
+      if (accountsArray[k].account_id === trns.transactions[i].account_id){
+        let getTransactions = await db.RoundedTrans.create({
+          userID: user._id,
+          account_id: trns.transactions[i].account_id,
+          date: trns.transactions[i].date,
+          name: accountsArray[k].account_name,
+          transactionName: trns.transactions[i].name,
+          originalAmount: trns.transactions[i].amount,
+          currencyCode: trns.transactions[i].iso_currency_code,
+          category: trns.transactions[i].category,
+          roundedAmount: toBeRounded,
+          transaction_id: trns.transactions[i].transaction_id,
+          transactionDate: trns.transactions[i].date
+        })
+        
     transactionsArray.push(getTransactions)
   }
-
+}
+  console.log('FIXED IT', transactionsArray)
   return transactionsArray
+}
+
 }
 
 async function StripeCharger (customer, charges, accounts){
@@ -254,12 +274,16 @@ app.post('/api/get_access_token', function (request, response, next) {
 
 // Retrieve Transactions for an Item
 // https://plaid.com/docs/#transactions
-app.get('/api/transactions/:id', function (request, response, next) {
+app.get('/api/transactions/:id', async function (request, response, next) {
   // Pull transactions for the Item for the last 30 days
   AUTH0_ID = request.params.id;
+
+  let currentUser = await db.User.findOne({ auth0_ID: AUTH0_ID}).then(res =>{return res});
+  ACCESS_TOKEN = currentUser.plaidAccounts[0].accessToken;
+ 
   var startDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
   var endDate = moment().format('YYYY-MM-DD');
-  client.getTransactions('access-sandbox-50a1b97f-71aa-4e07-86ca-b303e76bb0de', startDate, endDate, {
+  client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
     count: 10,
     offset: 0,
   }, function (error, transactionsResponse) {
