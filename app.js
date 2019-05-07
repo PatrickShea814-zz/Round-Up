@@ -598,6 +598,13 @@ app.post('/set_access_token', function (request, response, next) {
   });
 });
 
+var scraper = require('product-scraper');
+let wishURL = "https://www.amazon.com/gp/product/B06XCM9LJ4/ref=s9_acsd_al_bw_c_x_3_w?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=merchandised-search-4&pf_rd_r=363Y9VMJZ50VE0SEJ7N1&pf_rd_t=101&pf_rd_p=a0a68ca2-dfab-4f21-a539-ffe2b8c8b486&pf_rd_i=9818047011"
+ 
+scraper.init(wishURL, function(data){
+    console.log(data);
+});
+
 // app.get("/callback", (req, res) => {
 //   res.redirect("/");
 // });
@@ -605,7 +612,9 @@ app.post('/set_access_token', function (request, response, next) {
 // app.get("*", (req, res) => {
 //   res.redirect("/");
 // });
-
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "./client/public/index.html"));
+});
 
 
 // REMEMBER TO ADD AN .OPEN WITHIN A ROUTE HIT BY THE USER SO THAT THEY CAN ACCESS THEIR ACCOUNT SELECTION PROCESS AGAIN, BOTH
