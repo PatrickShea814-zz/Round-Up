@@ -176,7 +176,7 @@ async function StripeTokenCreator (accToken, accId){
   }
 
 async function TransactionFinder (user, trns){
-  
+
   const transactionsArray = [];
 
   for (let i = 0; i < trns.transactions.length; i++) {
@@ -184,7 +184,7 @@ async function TransactionFinder (user, trns){
     let toBeRounded = Math.ceil(trns.transactions[i].amount) - trns.transactions[i].amount;
 
     if (toBeRounded === 0){
-      toBeRounded = 100;
+      toBeRounded = 1;
     }
     
     let getTransactions = await db.RoundedTrans.create({
@@ -306,7 +306,7 @@ app.get('/transactions/:id', function (request, response, next) {
         console.log('STRIPE CUSTOMER', stripeCus)
 
           let charges = await stripe.charges.create({
-            amount: 100,
+            amount: sum * 100,
             currency: 'usd',
             customer: stripeCus.stripeID,
           }).then(charge => {
@@ -314,7 +314,7 @@ app.get('/transactions/:id', function (request, response, next) {
             return charge
           })
         
-        return [res[0], id, chargesArray, chargeNamesArray, charges]
+        return [res[0], id, chargesArray, chargeNamesArray, charges, transactions]
       }
 
       async function DepoLogger(res){
@@ -330,7 +330,7 @@ app.get('/transactions/:id', function (request, response, next) {
 
         user.update({$push:{deposits: Depos}}).then(res => console.log(res));
         
-        return [Depos, res[4]];
+        return [{"Stripe Deposits": res[4]}, {"New Transactions": res[5]}];
     }
 
 

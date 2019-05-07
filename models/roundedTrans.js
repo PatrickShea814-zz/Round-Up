@@ -24,10 +24,16 @@ let roundedTransSchema = new Schema({
         type: String,
         required: true
     },
+
     // Category of transaction.
     // For future use for User Savings Preferences & Settings.
     category: {
         type: Array,
+        required: true
+    },
+    // Original transaction amount.
+    originalAmount: {
+        type: Number,
         required: true
     },
     // amount rounded up from transaction to be accessed from Stripe
