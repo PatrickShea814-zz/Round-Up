@@ -13,6 +13,7 @@ import CheckoutForm from "./Components/CheckoutForm";
 import Signup from "./Components/SignUp/index";
 import Plaid from "./Components/Plaid/index";
 import Masonry from "./Components/WishListDash/Masonry";
+import Transactions from "./Components/Transactions";
 import WishList from "./Components/WishListDash/WishList";
 
 const auth = new Auth();
@@ -42,16 +43,10 @@ export const makeMainRoutes = () => {
               )
           }
         />
-        {/*{<Route
-          path="/vault"
-          render={props =>
-            !loggedIn ? (
-              <Redirect to="/home" />
-            ) : (
-                <Vault auth={auth} {...props} />
-              )
-          }
-        />*/}
+        <Route
+          path="/transactions"
+          component={Transactions}
+        />
         <Route
         path="/masonry"
         render={props =>

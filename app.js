@@ -253,7 +253,7 @@ app.post('/api/get_access_token', function (request, response, next) {
 
 // Retrieve Transactions for an Item
 // https://plaid.com/docs/#transactions
-app.get('/transactions/:id', function (request, response, next) {
+app.get('/api/transactions/:id', function (request, response, next) {
   // Pull transactions for the Item for the last 30 days
   AUTH0_ID = request.params.id;
   var startDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
@@ -329,7 +329,7 @@ app.get('/transactions/:id', function (request, response, next) {
 
         user.update({$push:{deposits: Depos}}).then(res => console.log(res));
         
-        return [{"Stripe Deposits": res[4]}, {"New Transactions": res[5]}];
+        return [ res[4], res[5]];
     }
 
 
