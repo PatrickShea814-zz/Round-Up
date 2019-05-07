@@ -14,8 +14,8 @@ const MainList = styled.ul`
     display: flex;
     flex-wrap: wrap;
     margin: 0;
+    letter-spacing: 2px;
     padding: 30px 0 0 0;
-    font-weight: 100;
     li {
         display: block;
         flex-basis: 0;

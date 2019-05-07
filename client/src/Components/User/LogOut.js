@@ -3,14 +3,13 @@ import styled, { css } from 'styled-components';
 
 
 const LogOutButton = styled.button`
-font-size: 18px;
-letter-spacing: 1.9px;
-font-weight: 100;
-margin: 0px auto;
-width: 100%;
-padding: 12px 2em;
-color: white;
-background-color: #00a79d;
+    font-size: 18px;
+    letter-spacing: 2px;
+    margin: 0px auto;
+    width: 100%;
+    padding: 12px 2em;
+    color: white;
+    background-color: #00a79d;
     cursor: pointer;
     text-decoration: one;
     vertical-align: middle;
