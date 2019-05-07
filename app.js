@@ -46,6 +46,7 @@ app.use(helmet());
 // needed for heroku build deployment
 
 if (process.env.NODE_ENV === "production") {
+  console.log("production is running")
   app.use(express.static("./client/build"));
 }
 
@@ -597,6 +598,15 @@ app.post('/set_access_token', function (request, response, next) {
   });
 });
 
+const PriceFinder = require('price-finder');
+const priceFinder = new PriceFinder();
+ 
+// Price Scraper, works on Amazon, Walmart, Newegg, etc...
+const wishURL = 'https://www.amazon.com/gp/product/B079QHML21?pf_rd_p=f3acc539-5d5f-49a3-89ea-768a917d5900&pf_rd_r=5TSCQ4EWVQQFWZQZ1H8A';
+priceFinder.findItemPrice(wishURL, function(err, price) {
+    console.log(price); // 8.91
+});
+
 // app.get("/callback", (req, res) => {
 //   res.redirect("/");
 // });
@@ -604,7 +614,9 @@ app.post('/set_access_token', function (request, response, next) {
 // app.get("*", (req, res) => {
 //   res.redirect("/");
 // });
-
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "./client/public/index.html"));
+});
 
 
 // REMEMBER TO ADD AN .OPEN WITHIN A ROUTE HIT BY THE USER SO THAT THEY CAN ACCESS THEIR ACCOUNT SELECTION PROCESS AGAIN, BOTH
