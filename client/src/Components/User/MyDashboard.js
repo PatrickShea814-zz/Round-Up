@@ -9,7 +9,6 @@ const DashboardBtn = styled.button`
     cursor: pointer;
     text-decoration: none;
     vertical-align: middle;
-    font-family: Arial, sans-serif;
     text-align: center;
     letter-spacing: 1.9px;
     font-weight: 100;

@@ -177,7 +177,7 @@ async function StripeTokenCreator (accToken, accId){
   }
 
 async function TransactionFinder (user, trns){
-  
+
   const transactionsArray = [];
 
   for (let i = 0; i < trns.transactions.length; i++) {
@@ -185,7 +185,7 @@ async function TransactionFinder (user, trns){
     let toBeRounded = Math.ceil(trns.transactions[i].amount) - trns.transactions[i].amount;
 
     if (toBeRounded === 0){
-      toBeRounded = 100;
+      toBeRounded = 1;
     }
     
     let getTransactions = await db.RoundedTrans.create({
@@ -253,11 +253,11 @@ app.post('/api/get_access_token', function (request, response, next) {
   });
 });
 
-
 // Retrieve Transactions for an Item
 // https://plaid.com/docs/#transactions
-app.get('/transactions', function (request, response, next) {
+app.get('/transactions/:id', function (request, response, next) {
   // Pull transactions for the Item for the last 30 days
+  AUTH0_ID = request.params.id;
   var startDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
   var endDate = moment().format('YYYY-MM-DD');
   client.getTransactions('access-sandbox-50a1b97f-71aa-4e07-86ca-b303e76bb0de', startDate, endDate, {
@@ -307,15 +307,15 @@ app.get('/transactions', function (request, response, next) {
         console.log('STRIPE CUSTOMER', stripeCus)
 
           let charges = await stripe.charges.create({
-            amount: 100,
+            amount: sum * 100,
             currency: 'usd',
-            customer: stripeCus.stripeID
+            customer: stripeCus.stripeID,
           }).then(charge => {
             console.log('THIS IS OUR CHARGE:', charge);
             return charge
           })
         
-        return [res[0], id, chargesArray, chargeNamesArray, charges]
+        return [res[0], id, chargesArray, chargeNamesArray, charges, transactions]
       }
 
       async function DepoLogger(res){
@@ -323,7 +323,7 @@ app.get('/transactions', function (request, response, next) {
         let Depos =  await db.StripeDepos.create({
           userID: res[1],
           transactionNames: res[2],
-          amountDeposited: res[4].amount,
+          amountDeposited: res[4].amount/100,
           depositDate: res[4].created,
           TransactionId: res[4].id,
           originalTransIds: res[2],
@@ -331,10 +331,13 @@ app.get('/transactions', function (request, response, next) {
 
         user.update({$push:{deposits: Depos}}).then(res => console.log(res));
         
+        return [{"Stripe Deposits": res[4]}, {"New Transactions": res[5]}];
     }
 
 
       pseries([USER, TransactionFunction, StripeCharger, DepoLogger,])
+        .then(res => response.json(res))
+        .catch(err => response.json(err))
       
     }
       
@@ -358,36 +361,6 @@ app.get('/identity', function (request, response, next) {
   });
 });
 
-// Retrieve real-time Balances for each of an Item's accounts
-// https://plaid.com/docs/#balance
-app.get('/balance', function (request, response, next) {
-  client.getBalance(ACCESS_TOKEN, function (error, balanceResponse) {
-    if (error != null) {
-      prettyPrintResponse(error);
-      return response.json({
-        error: error,
-      });
-    }
-    prettyPrintResponse(balanceResponse);
-    response.json({ error: null, balance: balanceResponse });
-  });
-});
-
-// Retrieve an Item's accounts
-// https://plaid.com/docs/#accounts
-app.get('/accounts', function (request, response, next) {
-  client.getAccounts(ACCESS_TOKEN, function (error, accountsResponse) {
-    if (error != null) {
-      prettyPrintResponse(error);
-      return response.json({
-        error: error,
-      });
-    }
-    prettyPrintResponse(accountsResponse);
-    response.json({ error: null, accounts: accountsResponse });
-  });
-});
-
 // Retrieve ACH or ETF Auth data for an Item's accounts
 // https://plaid.com/docs/#auth
 app.get('/auth', function (request, response, next) {
@@ -402,83 +375,6 @@ app.get('/auth', function (request, response, next) {
     response.json({ error: null, auth: authResponse });
   });
 });
-
-
-// Create and then retrieve an Asset Report for one or more Items. Note that an
-// Asset Report can contain up to 100 items, but for simplicity we're only
-// including one Item here.
-// https://plaid.com/docs/#assets
-app.get('/assets', function (request, response, next) {
-  // You can specify up to two years of transaction history for an Asset
-  // Report.
-  var daysRequested = 10;
-
-  // The `options` object allows you to specify a webhook for Asset Report
-  // generation, as well as information that you want included in the Asset
-  // Report. All fields are optional.
-  var options = {
-    client_report_id: 'Custom Report ID #123',
-    // webhook: 'https://your-domain.tld/plaid-webhook',
-    user: {
-      client_user_id: 'Custom User ID #456',
-      first_name: 'Alice',
-      middle_name: 'Bobcat',
-      last_name: 'Cranberry',
-      ssn: '123-45-6789',
-      phone_number: '555-123-4567',
-      email: 'alice@example.com',
-    },
-  };
-  client.createAssetReport(
-    [ACCESS_TOKEN],
-    daysRequested,
-    options,
-    function (error, assetReportCreateResponse) {
-      if (error != null) {
-        prettyPrintResponse(error);
-        return response.json({
-          error: error,
-        });
-      }
-      prettyPrintResponse(assetReportCreateResponse);
-
-      var assetReportToken = assetReportCreateResponse.asset_report_token;
-      respondWithAssetReport(20, assetReportToken, client, response);
-    }
-  );
-});
-
-// Retrieve information about an Item
-// https://plaid.com/docs/#retrieve-item
-app.get('/item', function (request, response, next) {
-  // Pull the Item - this includes information about available products,
-  // billed products, webhook information, and more.
-  client.getItem(ACCESS_TOKEN, function (error, itemResponse) {
-    if (error != null) {
-      prettyPrintResponse(error);
-      return response.json({
-        error: error
-      });
-    }
-    // Also pull information about the institution
-    client.getInstitutionById(itemResponse.item.institution_id, function (err, instRes) {
-      if (err != null) {
-        var msg = 'Unable to pull institution information from the Plaid API.';
-        console.log(msg + '\n' + JSON.stringify(error));
-        return response.json({
-          error: msg
-        });
-      } else {
-        prettyPrintResponse(itemResponse);
-        response.json({
-          item: itemResponse.item,
-          institution: instRes.institution,
-        });
-      }
-    });
-  });
-});
-
 
 var prettyPrintResponse = response => {
   console.log(util.inspect(response, { colors: true, depth: 4 }));
@@ -541,14 +437,15 @@ var respondWithAssetReport = (
 
 //Route Sign in user for new or returning user
 // require("./routes/Auth0")(app)
-app.post("/authAPI", (req, res) => {
-  AUTH0_ID = req.body.user_id  
-  db.User.find({
+app.post("/api/authAPI", async function( req, res) {
+  AUTH0_ID = req.body.user_id;
+  
+  await db.User.findOne({
     auth0_ID: AUTH0_ID
   }).then(function(dbData){
-    if (dbData[0].auth0_ID === AUTH0_ID) {
+    if (dbData) {
       console.log("i'm an existing user")
-      res.send({
+      res.json({
         'existingUser': true
       })
     } else {
@@ -556,7 +453,7 @@ app.post("/authAPI", (req, res) => {
         auth0_ID: AUTH0_ID
       }).then(user => console.log('This is our new user:', user))
       console.log("im a new user")
-      res.send({
+      res.json({
         'existingUser': false
       })
       // res.send("im a new user")
@@ -604,8 +501,6 @@ app.get('/api/updateUser', function (request, response, next) {
 
     }
 
-      
-
     let PlaidItemIntoUserModel = (res => {
      
       return Promise.resolve(
@@ -643,7 +538,7 @@ app.get('/api/updateUser', function (request, response, next) {
 
       let StripeCustomer = await stripe.customers.create({
           
-          "source": strTok,
+          "source": 'btok_us_verified',
 
         })
       
@@ -667,6 +562,7 @@ app.get('/api/updateUser', function (request, response, next) {
       let Customer = await db.StripeCustomer.create({
         userId: USER._id,
         stripeID: StrCust.id,
+        stripeToken: 'btok_us_verified',
         created: StrCust.created,
         sourceURL: StrCust.sources.url,
         subscriptionsURL: StrCust.subscriptions.url
@@ -683,7 +579,6 @@ app.get('/api/updateUser', function (request, response, next) {
     let arr = [NewUserCreator, NewUserPlaidItemCreator, PlaidItemIntoUserModel, PlaidAccountsCreator, PlaidAccountsIntoUserModel, TokenCreator, StripeAccountCreator, StripeDataCreator];
     pseries(arr)
     .then(res => {
-      
       response.json(res)
     })
     .catch(err => response.json(err));
