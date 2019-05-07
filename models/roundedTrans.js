@@ -13,6 +13,11 @@ let roundedTransSchema = new Schema({
         type: String,
         required: true
     },
+
+    name: {
+        type: String,
+        trim: true
+    },
     // name of the transaction that is being rounded up.
     transactionName: {
         type: String,

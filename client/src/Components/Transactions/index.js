@@ -13,25 +13,28 @@ class Transactions extends React.Component {
     componentDidMount(){
         let user_id = sessionStorage.getItem('user_id');
         if (user_id){
-            axios.get(`api/transactions/${user_id}`).then(res =>
+            axios.get(`api/transactions/${user_id}`).then(res =>{
                 this.setState({transactions: res.data[1]})
-            )
+            })
     }
     }
 
      renderTableRows =  () => {
      var rows = [];
+     if (this.state.transactions){
      this.state.transactions.map(item =>{
       
      rows.push (
        <tr>
          <td>{item.date}</td>
+         <td>{item.name}</td>
          <td >{item.transactionName}</td>
          <td>{item.originalAmount}</td>
        </tr>
      )
       
      })
+    }
 
      var tby = <tbody>
            {rows.map((item) => {
@@ -53,7 +56,8 @@ class Transactions extends React.Component {
               <thead>
                 <tr>
                   <th>Date</th>
-                  <th>Name</th>
+                  <th>Account</th>
+                  <th>Vendor</th>
                   <th>Amount</th>
                 </tr>
               </thead>
