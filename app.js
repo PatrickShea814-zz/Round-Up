@@ -190,6 +190,7 @@ async function TransactionFinder (user, trns){
     let getTransactions = await db.RoundedTrans.create({
       userID: user._id,
       account_id: trns.transactions[i].account_id,
+      date: trns.transactions[i].date,
       transactionName: trns.transactions[i].name,
       originalAmount: trns.transactions[i].amount,
       currencyCode: trns.transactions[i].iso_currency_code,
@@ -201,8 +202,6 @@ async function TransactionFinder (user, trns){
     
     transactionsArray.push(getTransactions)
   }
-
-  console.log('These are the newly logged transactions', transactionsArray);
 
   return transactionsArray
 }

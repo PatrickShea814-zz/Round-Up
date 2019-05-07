@@ -31,6 +31,12 @@ let roundedTransSchema = new Schema({
         type: Array,
         required: true
     },
+
+    date: {
+        type: Date,
+        required: true
+    },
+    
     // Original transaction amount.
     originalAmount: {
         type: Number,
