@@ -26,7 +26,6 @@ let userSchema = new Schema({
     // This is the email stored that comes from Auth0
     email: {
         type: String,
-        unique: true,
         required: false
     },
     auth0_ID: {
