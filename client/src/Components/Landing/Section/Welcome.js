@@ -21,14 +21,13 @@ const Section = styled.section`
 
 const Title = styled.h1`
     font-size: 2em;
-    margin: 0 0 0.2em;
-    font-weight: 700;
+    margin: 0 0 20px 0;
+    letter-spacing: 3px;
 `;
 
 const Subtitle = styled.p`
-width: 55%;
-    margin: 20x 0 0 20px;
-    font-weight: 300;
+    width: 55%;
+    margin: 0 0 20px 0;
     @media (max-width: 800px) {
         margin: 0 auto;
         text-align: center;
@@ -37,8 +36,7 @@ width: 55%;
 
 const MainJoinButton = styled.button`
     font-size: 16px;
-    letter-spacing: 1.9px;
-    font-weight: 150;
+    letter-spacing: 2px;
     margin: 0 1em 0 1em;
     padding: 12px 2em;
     color: #00a79d;
@@ -46,7 +44,6 @@ const MainJoinButton = styled.button`
     cursor: pointer;
     text-decoration: none;
     vertical-align: middle;
-    font-family: Arial, sans-serif;
     border-radius: 5px;
     user-select: none;
     text-align: center;
@@ -60,8 +57,7 @@ const MainJoinButton = styled.button`
 
 const ChromeExt = styled.button`
     font-size: 16px;
-    letter-spacing: 1.9px;
-    font-weight: 150;
+    letter-spacing: 2px;
     margin: 0 1em 0 1em;
     padding: 12px 2em;
     color: #00a79d;
@@ -69,7 +65,6 @@ const ChromeExt = styled.button`
     cursor: pointer;
     text-decoration: none;
     vertical-align: middle;
-    font-family: Arial, sans-serif;
     border-radius: 5px;
     user-select: none;
     text-align: center;
@@ -88,7 +83,7 @@ class Welcome extends Component {
             <Section>
                 <Title>Wish. Save. Reward.</Title>
                 <Subtitle>Purchase your wish list items with the change saved from rounding up everyday purchases.</Subtitle>
-                <Subtitle>Get Pennywise.<MainJoinButton onClick={()=>login()}>Sign Up Today</MainJoinButton></Subtitle>
+                <Subtitle>Get Pennywise.<MainJoinButton onClick={() => login()}>Sign Up Today</MainJoinButton></Subtitle>
                 <Subtitle>Chrome Extension.<ChromeExt>Download</ChromeExt></Subtitle>
             </Section>
         )

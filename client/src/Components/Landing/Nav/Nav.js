@@ -7,8 +7,6 @@ import MyDashboard from '../../User/MyDashboard';
 
 const Nav = styled.nav`
     height: 10%;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    /* PennyWise logo */
     img {
         width: 240px;
         height : 70px;
@@ -23,8 +21,7 @@ const Nav = styled.nav`
 
 const NavButton = styled.button`
     font-size: 18px;
-    letter-spacing: 1.9px;
-    font-weight: 100;
+    letter-spacing: 2px;
     margin: 18px 3% 0 0;
     padding: 10px 2em 12px 1em;
     color: white;
@@ -32,7 +29,6 @@ const NavButton = styled.button`
     cursor: pointer;
     text-decoration: one;
     vertical-align: middle;
-    font-family: Arial, sans-serif;
     border-radius: 5px;
     text-align: center;
     line-height: normal;
@@ -49,8 +45,7 @@ const NavButton = styled.button`
 
 const SignInButton = styled.button`
     font-size: 18px;
-    letter-spacing: 1.9px;
-    font-weight: 100;
+    letter-spacing: 2px;
     margin: 18px 3% 0 0;
     padding: 10px 2em;
     color: #00a79d;
@@ -58,7 +53,6 @@ const SignInButton = styled.button`
     cursor: pointer;
     text-decoration: one;
     vertical-align: middle;
-    font-family: Arial, sans-serif;
     border-radius: 5px;
     text-align: center;
     line-height: normal;
