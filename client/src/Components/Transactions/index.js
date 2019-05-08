@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React, { Redirect, Component, History } from 'react';
+import Home from '../Home/HomeAbout'
 import axios from 'axios';
 
-class Transactions extends React.Component {
+class Transactions extends Component {
     constructor(props) {
       super(props);
 
@@ -11,17 +12,28 @@ class Transactions extends React.Component {
     }
 
     componentDidMount(){
+
         let user_id = sessionStorage.getItem('user_id');
-        if (user_id){
-            axios.get(`api/transactions/${user_id}`).then(res =>{
-                this.setState({transactions: res.data[1]})
-            })
+
+        if(!user_id) this.props.history.replace('/home');
+
+        else {axios.get(`api/transactions/${user_id}`).then(res =>{
+          console.log('THIS IS OUR RESPONSE', res.data)
+          if(res.data.length !== 0){
+          this.setState({transactions: res.data})
+          }
+          else {
+            this.props.history.replace('/plaid')
+          }
+        })
+      }
+          
     }
-    }
+    
 
      renderTableRows =  () => {
      var rows = [];
-     if (this.state.transactions){
+     if (this.state.transactions.length > 0){
      this.state.transactions.map(item =>{
       
      rows.push (
@@ -49,7 +61,7 @@ class Transactions extends React.Component {
     }
      
       render() {
-          console.log('HELLO');
+       if(this.state.transactions.length > 0){
         return ( 
            <div>
             <table className="table table-hover">
@@ -68,6 +80,11 @@ class Transactions extends React.Component {
            </div>
         );
       }
-}
+      else return (
+        <Home />
+      )
+  }
 
+}
+    
 export default Transactions;

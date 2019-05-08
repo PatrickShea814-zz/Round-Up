@@ -79,8 +79,6 @@ class HomeNav extends Component {
                 <SignInButton right onClick={()=>login()}>Sign In</SignInButton>
                 <NavButton right>Contact Us</NavButton>
                 <NavButton right>About Us</NavButton>
-                <CurrentUser />
-                <MyDashboard />
             </Nav>
         )
     }
