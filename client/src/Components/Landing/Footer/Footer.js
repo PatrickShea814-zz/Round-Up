@@ -34,7 +34,7 @@ const MainList = styled.ul`
         a {
             text-decoration: none;
             span {
-                color: #ffffff;
+                color: #00a79d;
                 &:hover {
                     text-decoration: underline;
                     color: #00a79d;
