@@ -45,7 +45,13 @@ export const makeMainRoutes = () => {
         />
         <Route
           path="/transactions"
-          component={Transactions}
+          render={props=>
+            !loggedIn ? (
+              <Redirect to="/home"/>
+            ) : (
+              <Transactions auth={auth} {...props} />
+            )
+          }
         />
         <Route
         path="/masonry"
