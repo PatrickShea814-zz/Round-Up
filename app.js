@@ -22,6 +22,9 @@ const cors = require('cors');
 // REQUIRING OUR MODELS
 const db = require("./models");
 
+//REQUIRING HELPER FUNCTIONS
+const pseries = require("./controllers/pseries");
+const transactionFinder = require("./controllers/transactionFinder")
 
 // SETS UP AND INITIALIZES THE EXPRESS APP 
 // =============================================================
@@ -120,12 +123,6 @@ var client = new plaid.Client(
   { version: '2018-05-22' }
 );
 
-let TonyDang = {
-  email: 'TonyDang@gmail.com',
-  password: 'Password',
-  _id: 'AeR5A1#@ed'
-}
-
 var app = express();
 // app.use(express.static('public'));
 app.set('view engine', 'ejs');
@@ -138,12 +135,6 @@ app.use(bodyParser.json());
 // Exchange token flow - exchange a Link public_token for
 // an API access_token
 // https://plaid.com/docs/#exchange-token-flow
-function pseries(list) {
-  var p = Promise.resolve();
-  return list.reduce(function (pacc, fn) {
-    return pacc = pacc.then(fn);
-  }, p);
-}
 
 async function accountCreator(res, accessToken, accts) {
 
@@ -175,64 +166,6 @@ async function StripeTokenCreator (accToken, accId){
 
     return asyncStripe
   }
-
-async function TransactionFinder (user, trns){
-
-  const transactionsArray = [];
-  const accountsArray = [];
-
-  for (let i = 0; i < trns.transactions.length; i++) {
-
-    let toBeRounded = Math.ceil(trns.transactions[i].amount) - trns.transactions[i].amount;
-
-    if (toBeRounded === 0){
-      toBeRounded = 1;
-    }
-
-    function AccountConstructor(name, id){
-
-      return { "account_name": name,
-                "account_id": id
-            }
-    }
-
-    for(let j =0; j < trns.accounts.length; j++){
-      let acctObj = AccountConstructor();
-      let account = trns.accounts[j];
-      accountsArray.push(AccountConstructor(trns.accounts[j].name, trns.accounts[j].account_id))
-    }
-
-    for (let k = 0; k < accountsArray.length; k++){
-      if (accountsArray[k].account_id === trns.transactions[i].account_id){
-        let getTransactions = await db.RoundedTrans.create({
-          userID: user._id,
-          account_id: trns.transactions[i].account_id,
-          date: trns.transactions[i].date,
-          name: accountsArray[k].account_name,
-          transactionName: trns.transactions[i].name,
-          originalAmount: trns.transactions[i].amount,
-          currencyCode: trns.transactions[i].iso_currency_code,
-          category: trns.transactions[i].category,
-          roundedAmount: toBeRounded,
-          transaction_id: trns.transactions[i].transaction_id,
-          transactionDate: trns.transactions[i].date
-        })
-        
-    transactionsArray.push(getTransactions)
-  }
-}
-  console.log('FIXED IT', transactionsArray)
-  return transactionsArray
-}
-
-}
-
-async function StripeCharger (customer, charges, accounts){
-
-  for (let i = 0; i < charges.length; i++){
-    
-  }
-}
 
 app.get('/', function (request, response, next) {
   // TEST HOME FRONT END PLAID LINK BUTTON FILE
@@ -272,15 +205,36 @@ app.post('/api/get_access_token', function (request, response, next) {
   });
 });
 
+app.get('/api/transactions/:id', async function(req, res){
+  AUTH0_ID = req.params.id
+  let currentUser = await db.User.findOne({ auth0_ID: AUTH0_ID}).then(res =>{return res});
+  let transactions = await db.RoundedTrans.find({ userID: currentUser._id}).then(transactions => { return transactions});
+
+  console.log('Transactions', transactions);
+
+  if (!currentUser || !currentUser.plaidAccounts){
+    return res.json({ "existingUser": false})
+  }
+
+  else if (!transactions){
+    return res.json({"new_transactions": false})
+  }
+
+  else {
+    return res.json(transactions)
+   }
+
+})
+
 // Retrieve Transactions for an Item
 // https://plaid.com/docs/#transactions
-app.get('/api/transactions/:id', async function (request, response, next) {
+app.get('/api/getTransactions/:id', async function (request, response, next) {
   // Pull transactions for the Item for the last 30 days
   AUTH0_ID = request.params.id;
-
+ 
   let currentUser = await db.User.findOne({ auth0_ID: AUTH0_ID}).then(res =>{return res});
   ACCESS_TOKEN = currentUser.plaidAccounts[0].accessToken;
- 
+  
   var startDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
   var endDate = moment().format('YYYY-MM-DD');
   client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
@@ -293,80 +247,91 @@ app.get('/api/transactions/:id', async function (request, response, next) {
         error: error
       });
     } else {
-      
-      let USER = () => {
-        return Promise.resolve(db.User.findOne({auth0_ID: AUTH0_ID})
-          .then(res => {
-            if (res){return res}
-            else return "NO USER FOUND";
-          }))
-      }
 
-      async function TransactionFunction(user) {
+      async function TransactionFunction() {
+        
+        if (!transactionsResponse.transactions.length){
+          return response.json({ new_transactions: false})
+        }
+        
+        else return await transactionFinder(currentUser, transactionsResponse);
 
-        let transactions = await TransactionFinder(user, transactionsResponse);
-
-        return [user, transactions]
       }
 
       async function StripeCharger(res){
         
-        let id = await res[0]._id;
-        
-        let transactions = await res[1];
+        if (res[0].name === 'MongoError'){
+          return response.json({ new_transactions: false })
+        }
 
-        let stripeCus = await db.StripeCustomer.findOne({userId: id}).then(strCust => {return strCust});
-      
+        else if (res === []){
+          return response.json({ new_transactions: false})
+        }
+
+        else {
+        
+        let stripeCus = await db.StripeCustomer.findOne({ userId: currentUser._id }).then(strCust => {return strCust});
+       
         let chargesArray = [];
         let chargeNamesArray = [];
         let sum = 0;
 
-        for (let i = 0; i < transactions.length; i++){
-          sum += parseInt(transactions[i].roundedAmount)
-          chargesArray.push(transactions[i].transaction_id)
-          chargeNamesArray.push(transactions[i].transactionName)
+        for (let i = 0; i < res.length; i++){
+          sum += res[i].roundedAmount
+          chargesArray.push(res[i].transaction_id)
+          chargeNamesArray.push(res[i].name)
         }
-
-        console.log('STRIPE CUSTOMER', stripeCus)
 
           let charges = await stripe.charges.create({
             amount: sum * 100,
             currency: 'usd',
-            customer: stripeCus.stripeID,
-          }).then(charge => {
-            console.log('THIS IS OUR CHARGE:', charge);
+            customer: stripeCus.stripeID
+          })
+          .then(charge => {
             return charge
           })
-        
-        return [res[0], id, chargesArray, chargeNamesArray, charges, transactions]
+          .catch(err =>{
+            return err
+          })
+
+        return [chargesArray, chargeNamesArray, charges, res]
       }
+    }
 
       async function DepoLogger(res){
-        let user = res[0];
+        console.log('HELLO', res[2])
         let Depos =  await db.StripeDepos.create({
-          userID: res[1],
+          userID: currentUser._id,
           transactionNames: res[2],
-          amountDeposited: res[4].amount/100,
-          depositDate: res[4].created,
-          TransactionId: res[4].id,
-          originalTransIds: res[2],
-        }).then(res => {return res})
+          amountDeposited: res[3].roundedamount,
+          depositDate: res[3].created,
+          TransactionId: res[2].id,
+          originalTransIds: res[1]
+        })
+        .then(res => {
+          {return res}
+        })
 
-        user.update({$push:{deposits: Depos}}).then(res => console.log(res));
+        currentUser.update({$push:{deposits: Depos}}).then(res => console.log(res));
         
-        return [ res[4], res[5]];
+        return [res[5]];
     }
 
+      pseries([TransactionFunction, StripeCharger, DepoLogger])
+        .then(res => {
+          return response.json(res)
+        })
+        .catch(err => {
 
-      pseries([USER, TransactionFunction, StripeCharger, DepoLogger,])
-        .then(res => response.json(res))
-        .catch(err => response.json(err))
+         console.log(err)
+
+        })
       
     }
-      
-    })
 
   })
+
+})
   
 
 // Retrieve Identity for an Item
