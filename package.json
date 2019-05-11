@@ -26,6 +26,7 @@
     "moment": "^2.24.0",
     "mongoose": "^5.4.20",
     "morgan": "~1.9.0",
+    "nuka-carousel": "^4.5.5",
     "plaid": "^3.1.0",
     "price-finder": "^5.0.2",
     "react": "^16.8.6",

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import HomeCarousel from './HomeCarousel';
 
 const Section = styled.section`
     color: white;
@@ -85,6 +86,7 @@ class Welcome extends Component {
                 <Subtitle>Purchase your wish list items with the change saved from rounding up everyday purchases.</Subtitle>
                 <Subtitle>Get Pennywise.<MainJoinButton onClick={() => login()}>Sign Up Today</MainJoinButton></Subtitle>
                 <Subtitle>Chrome Extension.<ChromeExt>Download</ChromeExt></Subtitle>
+                <HomeCarousel />
             </Section>
         )
     }
