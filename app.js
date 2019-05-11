@@ -463,6 +463,8 @@ app.get('/api/updateUser', function (request, response, next) {
   if (arr.length > 0){
     return response.json(arr)
   }
+
+  
   client.getIdentity(ACCESS_TOKEN, function (error, identityResponse) {
     if (error != null) {
       prettyPrintResponse(error);
